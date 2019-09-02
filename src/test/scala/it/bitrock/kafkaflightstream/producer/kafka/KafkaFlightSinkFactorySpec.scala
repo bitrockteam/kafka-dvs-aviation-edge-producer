@@ -34,43 +34,43 @@ class KafkaFlightSinkFactorySpec
 
         val message = FlightMessageJson(
           GeographyJson(
-            1548891000000L,
-            1548891000000L,
-            1548891000000L,
-            1548891000000L
+            49.2655,
+            -1.9623,
+            9753.6,
+            282.76
           ),
           SpeedJson(
-            1548891000000L,
-            1548891000000L
+            805.14,
+            0
           ),
           CommonCodeJson(
-            "feg",
-            "gsh"
+            "ZRH",
+            "LSZH"
           ),
           CommonCodeJson(
-            "feg",
-            "gsh"
+            "ORD",
+            "KORD"
           ),
           AircraftJson(
-            "feg",
-            "gsh",
-            "feg",
-            "gsh"
+            "HBJHA",
+            "A333",
+            "",
+            "A333"
           ),
           CommonCodeJson(
-            "feg",
-            "gsh"
+            "LX",
+            "SWR"
           ),
           FlightJson(
-            "gdgf",
-            "gsdgd",
-            "gsdgds"
+            "LX6U",
+            "SWR6U",
+            "6U"
           ),
           SystemJson(
-            "fgdsf",
-            "ghdhd"
+            "1567415880",
+            "3061"
           ),
-          "dotnet-Sao-Paulo"
+          "en-route"
         )
 
         val result = withRunningKafka {
@@ -129,7 +129,7 @@ class KafkaFlightSinkFactorySpec
     override def withFixture(body: Resource => Any): Any = {
       implicit val embeddedKafkaConfig: EmbeddedKafkaConfig = EmbeddedKafkaConfig()
 
-      val outputTopic     = "rsvp_received"
+      val outputTopic     = "flight_received"
       val rsvpRawKeySerde = Serdes.String
       val rsvpRawSer      = specificAvroSerializer[KafkaTypesFlight.Value]
 
