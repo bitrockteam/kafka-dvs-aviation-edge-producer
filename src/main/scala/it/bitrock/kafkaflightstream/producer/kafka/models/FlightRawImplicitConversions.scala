@@ -35,7 +35,7 @@ object FlightRawImplicitConversions {
       new System(gj.updated, gj.squawk)
   }
 
-  implicit class FlightRowStreamEventOps(mrse: FlightMessageJson) {
+  implicit class FlightRawStreamEventOps(mrse: FlightMessageJson) {
     def toFlightRaw: FlightRaw =
       FlightRaw(
         mrse.geography.toGeography,

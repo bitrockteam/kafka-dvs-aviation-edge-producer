@@ -26,7 +26,7 @@ password=<your-password>
 
 The application references the following Kafka topic:
 
-- `rsvp_raw`
+- `flight_raw`
 
 ## How to test
 
