@@ -12,7 +12,12 @@ final case class FlightMessageJson(
     status: String
 )
 
-final case class GeographyJson(latitude: Double, longitude: Double, altitude: Double, direction: Double)
+final case class GeographyJson(
+    latitude: Double,
+    longitude: Double,
+    altitude: Double,
+    direction: Double
+)
 
 final case class SpeedJson(
     horizontal: Double,

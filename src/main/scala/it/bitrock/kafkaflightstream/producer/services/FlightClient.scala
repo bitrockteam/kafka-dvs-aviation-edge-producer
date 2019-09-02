@@ -18,7 +18,6 @@ class FlightClient()(implicit system: ActorSystem, materializer: ActorMaterializ
   import system.dispatcher
 
   def flightRequest: Flow[HttpRequest, Future[List[FlightMessageJson]], NotUsed] = {
-    // parametro di conf per 30 sec
     Flow.fromFunction(
       request =>
         Http().singleRequest(request).flatMap {

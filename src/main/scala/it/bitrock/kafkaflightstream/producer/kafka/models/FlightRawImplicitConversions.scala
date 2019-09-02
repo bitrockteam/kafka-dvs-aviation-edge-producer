@@ -2,7 +2,7 @@ package it.bitrock.kafkaflightstream.producer.kafka.models
 
 import it.bitrock.kafkaflightstream.model._
 import it.bitrock.kafkaflightstream.producer.model._
-//OK
+
 object FlightRawImplicitConversions {
 
   implicit class GeographyOps(gj: GeographyJson) {
