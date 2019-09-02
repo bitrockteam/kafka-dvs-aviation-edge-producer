@@ -1,16 +1,14 @@
 package it.bitrock.kafkaflightstream.producer
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest}
 import akka.kafka.ProducerSettings
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Keep, Source}
 import com.typesafe.scalalogging.LazyLogging
 import it.bitrock.kafkaflightstream.producer.config.AppConfig
 import it.bitrock.kafkaflightstream.producer.kafka.KafkaSinkFactory
 import it.bitrock.kafkaflightstream.producer.kafka.KafkaTypes.Flight
 import it.bitrock.kafkaflightstream.producer.model.FlightMessageJson
-import it.bitrock.kafkaflightstream.producer.services.FlightClient
+import it.bitrock.kafkaflightstream.producer.services.{FlightFlow, TickSource}
 import it.bitrock.kafkageostream.kafkacommons.serialization.AvroSerdes
 import org.apache.kafka.common.serialization.Serdes
 
@@ -34,22 +32,18 @@ object Main extends App with LazyLogging {
     flightRawSerde.serializer
   )
 
+  val flightFlow = new FlightFlow()
 
-
-
-  val flightClient = new FlightClient()
-
-  val source =
-    Source.tick(0.seconds, 30.seconds, HttpRequest(HttpMethods.GET, config.aviation.flightStream.getAviationUri()))
+  val flightSource = new TickSource(0.seconds, 30.seconds)
 
   val flightSinkFactory = new KafkaSinkFactory[FlightMessageJson, Flight.Key, Flight.Value](
     config.kafka.flightRawTopic,
     flightProducerSettings
   )
 
-  val cancellableFlightSource = source
-    .via(flightClient.flightRequest)
-    .mapAsync(4)(identity)
+  val cancellableFlightSource = flightSource.source
+    .via(flightFlow.requestFlow(config.aviation.flightStream.getAviationUri()))
+    .via(flightFlow.unmarshalFlow)
     .mapConcat(identity)
     .to(flightSinkFactory.sink)
     .run()
