@@ -108,4 +108,6 @@ project/plugins/project/
 
 
 ### only for first commit ###
-/src/test/
+/src/test/scala/it/bitrock/kafkaflightstream/producer/services/
+/src/test/scala/it/bitrock/kafkaflightstream/producer/stream/
+/src/test/scala/it/bitrock/kafkaflightstream/producer/DefaultEvents.scal
