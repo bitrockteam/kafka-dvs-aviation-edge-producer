@@ -25,20 +25,20 @@ final case class SpeedJson(
 )
 
 final case class CommonCodeJson(
-    iata_code: String,
-    icao_code: String
+    iataCode: String,
+    icaoCode: String
 )
 
 final case class AircraftJson(
-    reg_number: String,
-    icao_code: String,
+    regNumber: String,
+    icaoCode: String,
     icao24: String,
-    iata_code: String
+    iataCode: String
 )
 
 final case class FlightJson(
-    iata_number: String,
-    icao_number: String,
+    iataNumber: String,
+    icaoNumber: String,
     number: String
 )
 

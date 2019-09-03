@@ -17,17 +17,17 @@ object FlightRawImplicitConversions {
 
   implicit class CommonOps(gj: CommonCodeJson) {
     def toCommon =
-      new CommonCode(gj.iata_code, gj.icao_code)
+      new CommonCode(gj.iataCode, gj.icaoCode)
   }
 
   implicit class AircraftOps(gj: AircraftJson) {
     def toAircraft =
-      new Aircraft(gj.reg_number, gj.icao_code, gj.icao24, gj.iata_code)
+      new Aircraft(gj.regNumber, gj.icaoCode, gj.icao24, gj.iataCode)
   }
 
   implicit class FlightOps(gj: FlightJson) {
     def toFlight =
-      new Flight(gj.iata_number, gj.icao_number, gj.number)
+      new Flight(gj.iataNumber, gj.icaoNumber, gj.number)
   }
 
   implicit class SystemOps(gj: SystemJson) {

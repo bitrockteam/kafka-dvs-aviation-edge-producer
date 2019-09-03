@@ -42,8 +42,7 @@ object Main extends App with LazyLogging {
   )
 
   val cancellableFlightSource = flightSource.source
-    .via(flightFlow.requestFlow(config.aviation.flightStream.getAviationUri()))
-    .via(flightFlow.unmarshalFlow)
+    .via(flightFlow.flow(config.aviation.flightStream.getAviationUri()))
     .mapConcat(identity)
     .to(flightSinkFactory.sink)
     .run()

@@ -105,9 +105,3 @@ project/plugins/project/
 ### Begin custom section ###
 .sbt/
 ### End custom section ###
-
-
-### only for first commit ###
-/src/test/scala/it/bitrock/kafkaflightstream/producer/services/
-/src/test/scala/it/bitrock/kafkaflightstream/producer/stream/
-/src/test/scala/it/bitrock/kafkaflightstream/producer/DefaultEvents.scala

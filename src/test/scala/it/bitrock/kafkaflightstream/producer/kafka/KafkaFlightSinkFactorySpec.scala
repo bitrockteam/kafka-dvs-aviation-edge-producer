@@ -91,26 +91,26 @@ class KafkaFlightSinkFactorySpec
             message.speed.vertical
           ),
           CommonCode(
-            message.departure.iata_code,
-            message.departure.icao_code
+            message.departure.iataCode,
+            message.departure.icaoCode
           ),
           CommonCode(
-            message.arrival.iata_code,
-            message.arrival.icao_code
+            message.arrival.iataCode,
+            message.arrival.icaoCode
           ),
           Aircraft(
-            message.aircraft.reg_number,
-            message.aircraft.icao_code,
+            message.aircraft.regNumber,
+            message.aircraft.icaoCode,
             message.aircraft.icao24,
-            message.aircraft.iata_code
+            message.aircraft.iataCode
           ),
           CommonCode(
-            message.airline.iata_code,
-            message.airline.icao_code
+            message.airline.iataCode,
+            message.airline.icaoCode
           ),
           Flight(
-            message.flight.iata_number,
-            message.flight.icao_number,
+            message.flight.iataNumber,
+            message.flight.icaoNumber,
             message.flight.number
           ),
           System(
@@ -120,7 +120,7 @@ class KafkaFlightSinkFactorySpec
           message.status
         )
 
-        result shouldBe (message.flight.iata_number, expectedValue)
+        result shouldBe (message.flight.iataNumber, expectedValue)
     }
 
   }
