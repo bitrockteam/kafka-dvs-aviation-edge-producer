@@ -6,9 +6,9 @@ import it.bitrock.kafkaflightstream.producer.stream.SourceFactory
 
 import scala.concurrent.duration._
 
-class TickSource(start: FiniteDuration, interval: FiniteDuration) extends SourceFactory[Tick, Cancellable] {
+class TickSource(interval: Int) extends SourceFactory[Tick, Cancellable] {
 
-  def source: Source[Tick, Cancellable] = Source.tick(start, interval, Tick())
+  def source: Source[Tick, Cancellable] = Source.tick(0.seconds, interval.seconds, Tick())
 
 }
 

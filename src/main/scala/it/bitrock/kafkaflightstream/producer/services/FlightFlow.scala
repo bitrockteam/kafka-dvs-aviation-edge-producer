@@ -26,7 +26,7 @@ class FlightFlow()(implicit system: ActorSystem, materializer: ActorMaterializer
             val entityModified = entity.withContentType(ContentTypes.`application/json`)
             Unmarshal(entityModified).to[List[FlightMessageJson]].recover {
               case e =>
-                logger.warn(s"Unmarshal error ${e.printStackTrace()}")
+                logger.warn(s"Unmarshal error: $e")
                 List[FlightMessageJson]()
             }
           case HttpResponse(statusCodes, _, _, _) =>

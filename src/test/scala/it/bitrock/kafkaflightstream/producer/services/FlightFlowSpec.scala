@@ -22,12 +22,12 @@ class FlightFlowSpec extends TestKit(ActorSystem("FlightFlowSpec")) with Suite w
       case Resource(flightFlow, sinkProbe) =>
         val result = Source
           .single(Tick())
-          .via(flightFlow.flow("https://aviation-edge.com/v2/public/flights?key=896165-8a7104"))
+          .via(flightFlow.flow("https://aviation-edge.com/v2/public/flights?key=896165-8a7104&limit=1"))
           .mapConcat(identity)
           .toMat(sinkProbe)(Keep.right)
           .run()
 
-        val expectedValue = result.requestNext(20 seconds)
+        val expectedValue = result.requestNext(10 seconds)
 
         expectedValue shouldBe a[FlightMessageJson]
 
