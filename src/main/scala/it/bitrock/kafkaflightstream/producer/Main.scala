@@ -12,8 +12,6 @@ import it.bitrock.kafkaflightstream.producer.services.{FlightFlow, TickSource}
 import it.bitrock.kafkageostream.kafkacommons.serialization.AvroSerdes
 import org.apache.kafka.common.serialization.Serdes
 
-import scala.concurrent.duration._
-
 object Main extends App with LazyLogging {
   logger.info("Starting up")
 
@@ -34,7 +32,7 @@ object Main extends App with LazyLogging {
 
   val flightFlow = new FlightFlow()
 
-  val flightSource = new TickSource(0.seconds, 30.seconds)
+  val flightSource = new TickSource(config.aviation.flightStream.pollingInterval)
 
   val flightSinkFactory = new KafkaSinkFactory[FlightMessageJson, Flight.Key, Flight.Value](
     config.kafka.flightRawTopic,
@@ -42,8 +40,7 @@ object Main extends App with LazyLogging {
   )
 
   val cancellableFlightSource = flightSource.source
-    .via(flightFlow.requestFlow(config.aviation.flightStream.getAviationUri()))
-    .via(flightFlow.unmarshalFlow)
+    .via(flightFlow.flow(config.aviation.flightStream.getAviationUri))
     .mapConcat(identity)
     .to(flightSinkFactory.sink)
     .run()

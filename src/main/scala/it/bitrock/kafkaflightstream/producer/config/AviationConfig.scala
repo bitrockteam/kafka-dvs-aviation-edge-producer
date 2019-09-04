@@ -19,9 +19,10 @@ object AviationConfig {
 final case class AviationStreamConfig(
     host: URI,
     path: String,
-    key: String
+    key: String,
+    pollingInterval: Int
 ) {
-  def getAviationUri(): String = {
+  def getAviationUri: String = {
     val query = Uri.Query("key" -> key)
     Uri(host.resolve(path).toString)
       .withQuery(query)
