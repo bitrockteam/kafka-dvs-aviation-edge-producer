@@ -96,7 +96,7 @@ pipeline {
                         sh "docker push ${DOCKER_REPOSITORY}/${GITHUB_REPO}:${tagAfter}"
                         sh "docker tag ${DOCKER_REPOSITORY}/${GITHUB_REPO}:${tagAfter} ${DOCKER_REPOSITORY}/${GITHUB_REPO}:latest"
                         sh "docker push ${DOCKER_REPOSITORY}/${GITHUB_REPO}:latest"
-                        sh "printf '[{\"name\":\"kafka-geostream-meetup-producer\",\"imageUri\":\"%s\"}]' \$(git describe --tags --abbrev=0 | sed 's/^v//') > imagedefinitions.json"
+                        sh "printf '[{\"name\":\"kafka-flightstream-producer\",\"imageUri\":\"%s\"}]' \$(git describe --tags --abbrev=0 | sed 's/^v//') > imagedefinitions.json"
                     }
                 }
             }

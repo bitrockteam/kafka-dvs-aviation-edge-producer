@@ -21,7 +21,7 @@ object Dependencies {
     lazy val JakartaWsRs       = "2.1.4"
     lazy val Kafka             = "2.1.0"
     lazy val KafkaCommons      = "0.0.3"
-    lazy val KafkaGeoStream    = "0.0.1-SNAPSHOT"
+    lazy val KafkaFlightStream    = "0.0.1-SNAPSHOT"
     lazy val LogbackClassic    = "1.2.3"
     lazy val PureConfig        = "0.10.2"
     lazy val ScalaLogging      = "3.9.2"
@@ -51,7 +51,7 @@ object Dependencies {
     "com.typesafe.akka"            %% "akka-stream"                     % Versions.Akka,
     "com.typesafe.akka"            %% "akka-http-spray-json"            % Versions.AkkaHttp,
     "io.confluent"                 % "kafka-avro-serializer"            % Versions.ConfluentPlatform,
-    "it.bitrock.kafkaflightstream" %% "kafka-flightstream-avro-schemas" % Versions.KafkaGeoStream,
+    "it.bitrock.kafkaflightstream" %% "kafka-flightstream-avro-schemas" % Versions.KafkaFlightStream,
     "it.bitrock.kafkageostream"    %% "kafka-commons"                   % Versions.KafkaCommons,
     "org.apache.kafka"             % "kafka-clients"                    % Versions.Kafka,
     "com.typesafe.akka"            %% "akka-stream-kafka"               % Versions.Alpakka
