@@ -17,7 +17,9 @@ class KafkaSinkFactory[J, K, V](
 
   override def sink: Sink[J, Future[Done]] =
     Flow
-      .fromFunction(toValuePair.toValuePair)
+      .fromFunction(
+        toValuePair.toValuePair
+      )
       .map {
         case (k, v) =>
           new ProducerRecord[K, V](topic, k, v)

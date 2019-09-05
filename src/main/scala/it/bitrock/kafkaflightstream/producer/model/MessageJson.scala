@@ -1,5 +1,7 @@
 package it.bitrock.kafkaflightstream.producer.model
 
+sealed trait MessageJson extends Product
+
 final case class FlightMessageJson(
     geography: GeographyJson,
     speed: SpeedJson,
@@ -10,7 +12,39 @@ final case class FlightMessageJson(
     flight: FlightJson,
     system: SystemJson,
     status: String
-)
+) extends MessageJson
+
+final case class AirportMessageJson(
+    airportId: String,
+    nameAirport: String,
+    codeIataAirport: String,
+    latitudeAirport: String,
+    longitudeAirport: String,
+    nameCountry: String,
+    codeIso2Country: String,
+    codeIataCity: String
+) extends MessageJson
+
+final case class AirlineMessageJson(
+    airlineId: String,
+    nameAirline: String,
+    codeIataAirline: String,
+    codeIcaoAirline: String,
+    callsign: String,
+    statusAirline: String,
+    sizeAirline: String,
+    nameCountry: String,
+    codeIso2Country: String
+) extends MessageJson
+
+final case class CityMessageJson(
+    cityId: String,
+    nameCity: String,
+    codeIataCity: String,
+    codeIso2Country: String,
+    latitudeCity: String,
+    longitudeCity: String
+) extends MessageJson
 
 final case class GeographyJson(
     latitude: Double,

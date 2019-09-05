@@ -3,7 +3,7 @@ package it.bitrock.kafkaflightstream.producer.kafka.models
 import it.bitrock.kafkaflightstream.model._
 import it.bitrock.kafkaflightstream.producer.model._
 
-object FlightRawImplicitConversions {
+object RawImplicitConversions {
 
   implicit class GeographyOps(gj: GeographyJson) {
     def toGeography =
@@ -49,4 +49,46 @@ object FlightRawImplicitConversions {
         mrse.status
       )
   }
+
+  implicit class AirportRawStreamEventOps(mrse: AirportMessageJson) {
+    def toAirportRaw: AirportRaw =
+      AirportRaw(
+        mrse.airportId,
+        mrse.nameAirport,
+        mrse.codeIataAirport,
+        mrse.latitudeAirport,
+        mrse.longitudeAirport,
+        mrse.nameCountry,
+        mrse.codeIso2Country,
+        mrse.codeIataCity
+      )
+  }
+
+  implicit class AirlineRawStreamEventOps(mrse: AirlineMessageJson) {
+    def toAirlineRaw: AirlineRaw =
+      AirlineRaw(
+        mrse.airlineId,
+        mrse.nameAirline,
+        mrse.codeIataAirline,
+        mrse.codeIcaoAirline,
+        mrse.callsign,
+        mrse.statusAirline,
+        mrse.sizeAirline,
+        mrse.nameCountry,
+        mrse.codeIso2Country
+      )
+  }
+
+  implicit class CityRawStreamEventOps(mrse: CityMessageJson) {
+    def toCityRaw: CityRaw =
+      CityRaw(
+        mrse.cityId,
+        mrse.nameCity,
+        mrse.codeIataCity,
+        mrse.codeIso2Country,
+        mrse.latitudeCity,
+        mrse.longitudeCity
+      )
+  }
+
 }

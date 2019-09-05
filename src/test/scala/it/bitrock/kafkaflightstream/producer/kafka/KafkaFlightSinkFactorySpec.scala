@@ -129,18 +129,18 @@ class KafkaFlightSinkFactorySpec
     override def withFixture(body: Resource => Any): Any = {
       implicit val embeddedKafkaConfig: EmbeddedKafkaConfig = EmbeddedKafkaConfig()
 
-      val outputTopic     = "flight_received"
+      val outputTopic     = "output_topic"
       val rsvpRawKeySerde = Serdes.String
-      val rsvpRawSer      = specificAvroSerializer[KafkaTypesFlight.Value]
+      val rsvpRawSerde    = specificAvroSerializer[KafkaTypesFlight.Value]
 
-      val producerSettings = ProducerSettings(system, rsvpRawKeySerde.serializer, rsvpRawSer)
+      val producerSettings = ProducerSettings(system, rsvpRawKeySerde.serializer, rsvpRawSerde)
         .withBootstrapServers(s"localhost:${embeddedKafkaConfig.kafkaPort}")
         .withProperty(
           AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
           s"http://localhost:${embeddedKafkaConfig.schemaRegistryPort}"
         )
 
-      val factory = new KafkaSinkFactory[FlightMessageJson, KafkaTypesFlight.Key, KafkaTypesFlight.Value](
+      val factory = new KafkaSinkFactory[MessageJson, KafkaTypesFlight.Key, KafkaTypesFlight.Value](
         outputTopic,
         producerSettings
       )
@@ -167,7 +167,7 @@ object KafkaFlightSinkFactorySpec {
   final case class Resource(
       embeddedKafkaConfig: EmbeddedKafkaConfig,
       keySerde: Serde[KafkaTypesFlight.Key],
-      factory: KafkaSinkFactory[FlightMessageJson, KafkaTypesFlight.Key, KafkaTypesFlight.Value]
+      factory: KafkaSinkFactory[MessageJson, KafkaTypesFlight.Key, KafkaTypesFlight.Value]
   )
 
 }
