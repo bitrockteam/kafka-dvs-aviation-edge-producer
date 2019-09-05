@@ -46,15 +46,15 @@ object Dependencies {
   }
 
   lazy val prodDeps: Seq[ModuleID] = Seq(
-    "com.github.pureconfig" %% "pureconfig"           % Versions.PureConfig,
-    "com.typesafe.akka"     %% "akka-http"            % Versions.AkkaHttp,
-    "com.typesafe.akka"     %% "akka-stream"          % Versions.Akka,
-    "com.typesafe.akka"     %% "akka-http-spray-json" % Versions.AkkaHttp,
-    "io.confluent"          % "kafka-avro-serializer" % Versions.ConfluentPlatform,
+    "com.github.pureconfig"        %% "pureconfig"                      % Versions.PureConfig,
+    "com.typesafe.akka"            %% "akka-http"                       % Versions.AkkaHttp,
+    "com.typesafe.akka"            %% "akka-stream"                     % Versions.Akka,
+    "com.typesafe.akka"            %% "akka-http-spray-json"            % Versions.AkkaHttp,
+    "io.confluent"                 % "kafka-avro-serializer"            % Versions.ConfluentPlatform,
     "it.bitrock.kafkaflightstream" %% "kafka-flightstream-avro-schemas" % Versions.KafkaFlightStream,
-    "it.bitrock.kafkageostream" %% "kafka-commons"     % Versions.KafkaCommons,
-    "org.apache.kafka"          % "kafka-clients"      % Versions.Kafka,
-    "com.typesafe.akka"         %% "akka-stream-kafka" % Versions.Alpakka
+    "it.bitrock.kafkageostream"    %% "kafka-commons"                   % Versions.KafkaCommons,
+    "org.apache.kafka"             % "kafka-clients"                    % Versions.Kafka,
+    "com.typesafe.akka"            %% "akka-stream-kafka"               % Versions.Alpakka
   ) ++ Logging.prodDeps
 
   lazy val testDeps: Seq[ModuleID] = Seq(

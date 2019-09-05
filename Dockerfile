@@ -16,6 +16,7 @@ COPY src src
 COPY .scalafmt.conf .
 
 RUN sbt compile && \
+  sbt test && \
   sbt universal:packageBin && \
   mv "target/universal/kafka-flightstream-producer-${RELEASE_VERSION}.zip" /app.zip
 
