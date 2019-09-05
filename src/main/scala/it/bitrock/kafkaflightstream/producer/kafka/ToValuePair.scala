@@ -10,7 +10,7 @@ trait ToValuePair[J, K, V] {
 
 object ToValuePair {
   implicit val flightValuePair: ToValuePair[MessageJson, Flight.Key, Flight.Value] = (j: MessageJson) =>
-    (j.asInstanceOf[FlightMessageJson].flight.iataNumber, j.asInstanceOf[FlightMessageJson].toFlightRaw)
+    (j.asInstanceOf[FlightMessageJson].flight.icaoNumber, j.asInstanceOf[FlightMessageJson].toFlightRaw)
   implicit val airportValuePair: ToValuePair[MessageJson, Airport.Key, Airport.Value] = (j: MessageJson) =>
     (j.asInstanceOf[AirportMessageJson].codeIataAirport, j.asInstanceOf[AirportMessageJson].toAirportRaw)
   implicit val airlineValuePair: ToValuePair[MessageJson, Airline.Key, Airline.Value] = (j: MessageJson) =>

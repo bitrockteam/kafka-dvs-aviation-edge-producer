@@ -1,4 +1,4 @@
-package it.bitrock.kafkaflightstream.producer.stream
+package it.bitrock.kafkaflightstream.producer.services
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import it.bitrock.kafkaflightstream.producer.model._

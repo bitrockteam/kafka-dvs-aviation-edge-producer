@@ -6,7 +6,7 @@ import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.stream.testkit.TestSubscriber.Probe
 import akka.stream.testkit.scaladsl.TestSink
 import akka.testkit.TestKit
-import it.bitrock.kafkaflightstream.producer.model.{AirlineMessageJson, AirportMessageJson, CityMessageJson, FlightMessageJson, MessageJson}
+import it.bitrock.kafkaflightstream.producer.model._
 import it.bitrock.kafkaflightstream.producer.services.AviationFlowSpec.Resource
 import it.bitrock.kafkageostream.testcommons.{FixtureLoanerAnyResult, Suite}
 import org.scalatest.WordSpecLike

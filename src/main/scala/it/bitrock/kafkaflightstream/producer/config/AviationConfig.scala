@@ -1,10 +1,10 @@
 package it.bitrock.kafkaflightstream.producer.config
 
 import pureconfig.generic.auto._
-
 import java.net.URI
 
 import akka.http.scaladsl.model.Uri
+import it.bitrock.kafkaflightstream.producer.model.{AirlineStream, AirportStream, AviationStream, CityStream, FlightStream}
 
 final case class AviationConfig(
     host: URI,
@@ -38,9 +38,3 @@ object AviationConfig {
   def load: AviationConfig = pureconfig.loadConfigOrThrow[AviationConfig]("aviation")
 
 }
-
-sealed trait AviationStream
-case object FlightStream  extends AviationStream
-case object AirportStream extends AviationStream
-case object AirlineStream extends AviationStream
-case object CityStream    extends AviationStream
