@@ -120,7 +120,7 @@ class KafkaFlightSinkFactorySpec
           message.status
         )
 
-        result shouldBe (message.flight.iataNumber, expectedValue)
+        result shouldBe (message.flight.icaoNumber, expectedValue)
     }
 
   }

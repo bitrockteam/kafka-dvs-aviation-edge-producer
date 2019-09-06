@@ -8,8 +8,8 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Flow
 import com.typesafe.scalalogging.LazyLogging
-import it.bitrock.kafkaflightstream.producer.model.MessageJson
-import it.bitrock.kafkaflightstream.producer.stream.JsonSupport._
+import it.bitrock.kafkaflightstream.producer.model.{MessageJson, Tick}
+import JsonSupport._
 
 import scala.concurrent.Future
 
