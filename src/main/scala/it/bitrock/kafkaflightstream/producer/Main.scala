@@ -25,6 +25,14 @@ object Main extends App with LazyLogging {
     filterFlight
   )
 
+  val cancellableAirplane = runStream(
+    config.kafka.schemaRegistryUrl,
+    config.aviation.airplaneStream.pollingInterval,
+    config.aviation.getAviationUri(AirplaneStream),
+    config.kafka.airplaneRawTopic,
+    AirplaneStream
+  )
+
   val cancellableAirport = runStream(
     config.kafka.schemaRegistryUrl,
     config.aviation.airportStream.pollingInterval,
@@ -53,12 +61,10 @@ object Main extends App with LazyLogging {
   sys.addShutdownHook {
     logger.info("Shutting down")
     cancellableFlight.cancel()
+    cancellableAirplane.cancel()
     cancellableAirport.cancel()
     cancellableAirline.cancel()
     cancellableCity.cancel()
   }
-
-  //TODO filtrare iatacode di partenza e arrivo per i flight
-  //TODO filtrare la compagnia aerea sulla chiave icao e sul campo founding più recente
 
 }

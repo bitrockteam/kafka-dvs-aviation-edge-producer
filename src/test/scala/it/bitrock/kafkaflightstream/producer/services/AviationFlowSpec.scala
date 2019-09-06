@@ -31,6 +31,19 @@ class AviationFlowSpec extends TestKit(ActorSystem("AviationFlowSpec")) with Sui
 
     }
 
+    "parse a airplane JSON message into AirplaneMessageJson" in ResourceLoaner.withFixture {
+      case Resource(aviationFlow, sinkProbe) =>
+        val result = Source
+          .single(Tick())
+          .via(aviationFlow.flow("https://aviation-edge.com/v2/public/airplaneDatabase?key=896165-8a7104&codeIataAirline=0B"))
+          .mapConcat(identity)
+          .toMat(sinkProbe)(Keep.right)
+          .run()
+
+        result.requestNext(20.seconds) shouldBe a[AirplaneMessageJson]
+
+    }
+
     "parse a airport JSON message into AirportMessageJson" in ResourceLoaner.withFixture {
       case Resource(aviationFlow, sinkProbe) =>
         val result = Source

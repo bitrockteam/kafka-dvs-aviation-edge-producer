@@ -14,6 +14,20 @@ final case class FlightMessageJson(
     status: String
 ) extends MessageJson
 
+final case class AirplaneMessageJson(
+    airplaneId: String,
+    numberRegistration: String,
+    productionLine: String,
+    airplaneIataType: String,
+    planeModel: String,
+    modelCode: String,
+    hexIcaoAirplane: String,
+    codeIataPlaneLong: String,
+    enginesType: String,
+    planeAge: String,
+    planeStatus: String
+) extends MessageJson
+
 final case class AirportMessageJson(
     airportId: String,
     nameAirport: String,

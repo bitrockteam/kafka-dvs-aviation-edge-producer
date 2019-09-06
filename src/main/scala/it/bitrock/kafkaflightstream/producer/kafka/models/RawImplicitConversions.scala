@@ -50,6 +50,23 @@ object RawImplicitConversions {
       )
   }
 
+  implicit class AirplaneRawStreamEventOps(mrse: AirplaneMessageJson) {
+    def toAirplaneRaw: AirplaneRaw =
+      AirplaneRaw(
+        mrse.airplaneId,
+        mrse.numberRegistration,
+        mrse.productionLine,
+        mrse.airplaneIataType,
+        mrse.planeModel,
+        mrse.modelCode,
+        mrse.hexIcaoAirplane,
+        mrse.codeIataPlaneLong,
+        mrse.enginesType,
+        mrse.planeAge,
+        mrse.planeStatus
+      )
+  }
+
   implicit class AirportRawStreamEventOps(mrse: AirportMessageJson) {
     def toAirportRaw: AirportRaw =
       AirportRaw(

@@ -6,10 +6,11 @@ import akka.actor.{ActorSystem, Cancellable}
 import akka.kafka.ProducerSettings
 import akka.stream.ActorMaterializer
 import it.bitrock.kafkaflightstream.producer.kafka.KafkaSinkFactory
-import it.bitrock.kafkaflightstream.producer.kafka.KafkaTypes.{Airline, Airport, City, Flight}
+import it.bitrock.kafkaflightstream.producer.kafka.KafkaTypes.{Airline, Airplane, Airport, City, Flight}
 import it.bitrock.kafkaflightstream.producer.model.{
   AirlineMessageJson,
   AirlineStream,
+  AirplaneStream,
   AirportStream,
   AviationStream,
   CityStream,
@@ -22,7 +23,7 @@ import org.apache.kafka.common.serialization.Serdes
 
 object MainFunctions {
 
-  def runStream[T](
+  def runStream(
       schemaRegistryUrl: URI,
       pollingInterval: Int,
       aviationUri: String,
@@ -41,6 +42,10 @@ object MainFunctions {
         val flightRawSerde         = AvroSerdes.serdeFrom[Flight.Value](schemaRegistryUrl)
         val flightProducerSettings = ProducerSettings(system, keySerde.serializer, flightRawSerde.serializer)
         new KafkaSinkFactory[MessageJson, Flight.Key, Flight.Value](topic, flightProducerSettings).sink
+      case AirplaneStream =>
+        val airplaneRawSerde         = AvroSerdes.serdeFrom[Airplane.Value](schemaRegistryUrl)
+        val airplaneProducerSettings = ProducerSettings(system, keySerde.serializer, airplaneRawSerde.serializer)
+        new KafkaSinkFactory[MessageJson, Airplane.Key, Airplane.Value](topic, airplaneProducerSettings).sink
       case AirportStream =>
         val airportRawSerde         = AvroSerdes.serdeFrom[Airport.Value](schemaRegistryUrl)
         val airportProducerSettings = ProducerSettings(system, keySerde.serializer, airportRawSerde.serializer)
