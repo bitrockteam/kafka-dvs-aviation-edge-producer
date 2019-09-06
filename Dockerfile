@@ -1,8 +1,4 @@
-# TODO: lock to a specific tag (which one?)
-FROM bigtruedata/sbt AS sbt-build
-
-# TODO: take RELEASE_VERSION from version.sbt
-ARG RELEASE_VERSION="0.0.1-SNAPSHOT"
+FROM bigtruedata/sbt:0.13.15-2.12 AS sbt-build
 
 WORKDIR /app
 
@@ -18,7 +14,7 @@ COPY .scalafmt.conf .
 RUN sbt compile && \
   sbt test && \
   sbt universal:packageBin && \
-  mv "target/universal/kafka-flightstream-producer-${RELEASE_VERSION}.zip" /app.zip
+  mv "target/universal/kafka-flightstream-producer-$(sbt -no-colors version | tail -1 | cut -d ' ' -f 2).zip" /app.zip
 
 # end of build stage
 
