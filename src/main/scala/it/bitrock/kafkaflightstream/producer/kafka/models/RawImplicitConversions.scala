@@ -53,7 +53,6 @@ object RawImplicitConversions {
   implicit class AirplaneRawStreamEventOps(mrse: AirplaneMessageJson) {
     def toAirplaneRaw: AirplaneRaw =
       AirplaneRaw(
-        mrse.airplaneId,
         mrse.numberRegistration,
         mrse.productionLine,
         mrse.airplaneIataType,
@@ -61,6 +60,7 @@ object RawImplicitConversions {
         mrse.modelCode,
         mrse.hexIcaoAirplane,
         mrse.codeIataPlaneLong,
+        mrse.planeOwner,
         mrse.enginesType,
         mrse.planeAge,
         mrse.planeStatus
