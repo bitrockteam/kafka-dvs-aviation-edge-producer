@@ -12,29 +12,40 @@ import it.bitrock.kafkaflightstream.producer.model.{MessageJson, Tick}
 import JsonSupport._
 
 import scala.concurrent.Future
+import scala.concurrent.duration.FiniteDuration
 
 class AviationFlow()(implicit system: ActorSystem, materializer: ActorMaterializer) extends LazyLogging {
 
   import system.dispatcher
 
-  def flow(uri: Uri): Flow[Tick, List[MessageJson], NotUsed] = {
+  def flow(uri: Uri): Flow[Tick, List[MessageJson], NotUsed] = flow { _ =>
+    logger.info(s"Trying to call: $uri")
+    Http().singleRequest(HttpRequest(HttpMethods.GET, uri)).flatMap {
+      case HttpResponse(StatusCodes.OK, _, entity, _) =>
+        entity
+          .toStrict(FiniteDuration(20, "s"))
+          .map(r => r.data.toString())
+      case HttpResponse(statusCodes, _, _, _) =>
+        logger.warn(s"Bad response status code: $statusCodes")
+        Future("")
+    }
+  }
+
+  def flow(apiProvider: (Any) => Future[String]): Flow[Tick, List[MessageJson], NotUsed] = {
     Flow
       .fromFunction((x: Tick) => x)
       .mapAsync(1) { _ =>
-        logger.info(s"Trying to call: $uri")
-        Http().singleRequest(HttpRequest(HttpMethods.GET, uri)).flatMap {
-          case HttpResponse(StatusCodes.OK, _, entity, _) =>
-            val entityModified = entity.withoutSizeLimit().withContentType(ContentTypes.`application/json`)
-            Unmarshal(entityModified).to[List[MessageJson]].recover {
-              case e =>
-                logger.warn(s"Unmarshal error: $e")
-                List[MessageJson]()
-            }
-          case HttpResponse(statusCodes, _, _, _) =>
-            logger.warn(s"Bad response status code: $statusCodes")
-            Future(List[MessageJson]())
-        }
+        apiProvider().flatMap(response => unmarshal(response))
       }
   }
 
+  private def unmarshal(apiResponseBody: String): Future[List[MessageJson]] = {
+    if (apiResponseBody.isBlank)
+      return Future(List[MessageJson]())
+    Unmarshal(apiResponseBody).to[List[MessageJson]].recover {
+      case e =>
+        logger.warn(s"Unmarshal error: $e")
+        List[MessageJson]()
+    }
+  }
 }
