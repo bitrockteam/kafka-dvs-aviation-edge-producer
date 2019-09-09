@@ -18,7 +18,7 @@ class AviationFlow()(implicit system: ActorSystem, materializer: ActorMaterializ
 
   import system.dispatcher
 
-  def flow(uri: Uri, apiTimeout: Int): Flow[Tick, List[MessageJson], NotUsed] = flow { _ =>
+  def flow(uri: Uri, apiTimeout: Int): Flow[Tick, List[MessageJson], NotUsed] = flow { () =>
     logger.info(s"Trying to call: $uri")
     Http().singleRequest(HttpRequest(HttpMethods.GET, uri)).flatMap {
       case HttpResponse(StatusCodes.OK, _, entity, _) =>
@@ -31,7 +31,7 @@ class AviationFlow()(implicit system: ActorSystem, materializer: ActorMaterializ
     }
   }
 
-  def flow(apiProvider: (Any) => Future[String]): Flow[Tick, List[MessageJson], NotUsed] = {
+  def flow(apiProvider: () => Future[String]): Flow[Tick, List[MessageJson], NotUsed] = {
     Flow
       .fromFunction((x: Tick) => x)
       .mapAsync(1) { _ =>
@@ -40,8 +40,6 @@ class AviationFlow()(implicit system: ActorSystem, materializer: ActorMaterializ
   }
 
   private def unmarshal(apiResponseBody: String): Future[List[MessageJson]] = {
-    if (apiResponseBody.isEmpty)
-      return Future(List[MessageJson]())
     Unmarshal(apiResponseBody).to[List[MessageJson]].recover {
       case e =>
         logger.warn(s"Unmarshal error: $e")
