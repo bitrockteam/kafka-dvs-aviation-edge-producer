@@ -25,6 +25,7 @@ object MainFunctions {
 
   def runStream(
       schemaRegistryUrl: URI,
+      pollingStart: Int,
       pollingInterval: Int,
       aviationUri: String,
       topic: String,
@@ -32,7 +33,7 @@ object MainFunctions {
       filterFunction: MessageJson => Boolean = _ => true
   )(implicit system: ActorSystem, mat: ActorMaterializer): Cancellable = {
 
-    val source = new TickSource(pollingInterval).source
+    val source = new TickSource(pollingStart, pollingInterval).source
 
     val flow = new AviationFlow().flow(aviationUri)
 

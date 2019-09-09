@@ -18,6 +18,7 @@ object Main extends App with LazyLogging {
 
   val cancellableFlight = runStream(
     config.kafka.schemaRegistryUrl,
+    config.aviation.flightStream.pollingStart,
     config.aviation.flightStream.pollingInterval,
     config.aviation.getAviationUri(FlightStream),
     config.kafka.flightRawTopic,
@@ -27,6 +28,7 @@ object Main extends App with LazyLogging {
 
   val cancellableAirplane = runStream(
     config.kafka.schemaRegistryUrl,
+    config.aviation.airplaneStream.pollingStart,
     config.aviation.airplaneStream.pollingInterval,
     config.aviation.getAviationUri(AirplaneStream),
     config.kafka.airplaneRawTopic,
@@ -35,6 +37,7 @@ object Main extends App with LazyLogging {
 
   val cancellableAirport = runStream(
     config.kafka.schemaRegistryUrl,
+    config.aviation.airportStream.pollingStart,
     config.aviation.airportStream.pollingInterval,
     config.aviation.getAviationUri(AirportStream),
     config.kafka.airportRawTopic,
@@ -43,6 +46,7 @@ object Main extends App with LazyLogging {
 
   val cancellableAirline = runStream(
     config.kafka.schemaRegistryUrl,
+    config.aviation.airlineStream.pollingStart,
     config.aviation.airlineStream.pollingInterval,
     config.aviation.getAviationUri(AirlineStream),
     config.kafka.airlineRawTopic,
@@ -52,6 +56,7 @@ object Main extends App with LazyLogging {
 
   val cancellableCity = runStream(
     config.kafka.schemaRegistryUrl,
+    config.aviation.cityStream.pollingStart,
     config.aviation.cityStream.pollingInterval,
     config.aviation.getAviationUri(CityStream),
     config.kafka.cityRawTopic,

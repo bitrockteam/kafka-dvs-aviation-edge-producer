@@ -27,6 +27,10 @@ password=<your-password>
 The application references the following Kafka topic:
 
 - `flight_raw`
+- `airplane_raw`
+- `airport_raw`
+- `airline_raw`
+- `city_raw`
 
 ## How to test
 

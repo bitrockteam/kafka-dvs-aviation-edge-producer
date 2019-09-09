@@ -32,6 +32,7 @@ final case class AviationConfig(
 
 final case class AviationStreamConfig(
     path: String,
+    pollingStart: Int,
     pollingInterval: Int
 )
 
