@@ -24,7 +24,7 @@ class AviationFlowSpec extends TestKit(ActorSystem("AviationFlowSpec")) with Sui
       case Resource(aviationFlow, sinkProbe) =>
         val result = Source
           .single(Tick())
-          .via(aviationFlow.flow(_ => readFixture("flights")))
+          .via(aviationFlow.flow(() => readFixture("flights")))
           .mapConcat(identity)
           .toMat(sinkProbe)(Keep.right)
           .run()
@@ -36,7 +36,7 @@ class AviationFlowSpec extends TestKit(ActorSystem("AviationFlowSpec")) with Sui
       case Resource(aviationFlow, sinkProbe) =>
         val result = Source
           .single(Tick())
-          .via(aviationFlow.flow(_ => readFixture("airplaneDatabase")))
+          .via(aviationFlow.flow(() => readFixture("airplaneDatabase")))
           .mapConcat(identity)
           .toMat(sinkProbe)(Keep.right)
           .run()
@@ -48,7 +48,7 @@ class AviationFlowSpec extends TestKit(ActorSystem("AviationFlowSpec")) with Sui
       case Resource(aviationFlow, sinkProbe) =>
         val result = Source
           .single(Tick())
-          .via(aviationFlow.flow(_ => readFixture("airportDatabase")))
+          .via(aviationFlow.flow(() => readFixture("airportDatabase")))
           .mapConcat(identity)
           .toMat(sinkProbe)(Keep.right)
           .run()
@@ -60,7 +60,7 @@ class AviationFlowSpec extends TestKit(ActorSystem("AviationFlowSpec")) with Sui
       case Resource(aviationFlow, sinkProbe) =>
         val result = Source
           .single(Tick())
-          .via(aviationFlow.flow(_ => readFixture("airlineDatabase")))
+          .via(aviationFlow.flow(() => readFixture("airlineDatabase")))
           .mapConcat(identity)
           .toMat(sinkProbe)(Keep.right)
           .run()
@@ -72,7 +72,7 @@ class AviationFlowSpec extends TestKit(ActorSystem("AviationFlowSpec")) with Sui
       case Resource(aviationFlow, sinkProbe) =>
         val result = Source
           .single(Tick())
-          .via(aviationFlow.flow(_ => readFixture("cityDatabase")))
+          .via(aviationFlow.flow(() => readFixture("cityDatabase")))
           .mapConcat(identity)
           .toMat(sinkProbe)(Keep.right)
           .run()
@@ -84,7 +84,7 @@ class AviationFlowSpec extends TestKit(ActorSystem("AviationFlowSpec")) with Sui
       case Resource(flightFlow, sinkProbe) =>
         val result = Source
           .single(Tick())
-          .via(flightFlow.flow(_ => readFixture("invalidApiKey")))
+          .via(flightFlow.flow(() => readFixture("invalidApiKey")))
           .mapConcat(identity)
           .toMat(sinkProbe)(Keep.right)
           .run()
@@ -96,7 +96,7 @@ class AviationFlowSpec extends TestKit(ActorSystem("AviationFlowSpec")) with Sui
       case Resource(flightFlow, sinkProbe) =>
         val result = Source
           .single(Tick())
-          .via(flightFlow.flow(_ => Future("this-is-not-a-JSON-document")))
+          .via(flightFlow.flow(() => Future("this-is-not-a-JSON-document")))
           .mapConcat(identity)
           .toMat(sinkProbe)(Keep.right)
           .run()
