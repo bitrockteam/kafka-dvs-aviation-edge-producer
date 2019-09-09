@@ -6,8 +6,8 @@ import it.bitrock.kafkaflightstream.producer.model.Tick
 
 import scala.concurrent.duration._
 
-class TickSource(interval: Int) {
+class TickSource(start: Int, interval: Int) {
 
-  def source: Source[Tick, Cancellable] = Source.tick(0.seconds, interval.seconds, Tick())
+  def source: Source[Tick, Cancellable] = Source.tick(start.seconds, interval.seconds, Tick())
 
 }
