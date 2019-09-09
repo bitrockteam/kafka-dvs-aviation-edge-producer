@@ -12,19 +12,19 @@ import it.bitrock.kafkaflightstream.producer.model.{MessageJson, Tick}
 import JsonSupport._
 
 import scala.concurrent.Future
-import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration._
 
 class AviationFlow()(implicit system: ActorSystem, materializer: ActorMaterializer) extends LazyLogging {
 
   import system.dispatcher
 
-  def flow(uri: Uri): Flow[Tick, List[MessageJson], NotUsed] = flow { _ =>
+  def flow(uri: Uri, apiTimeout: Int): Flow[Tick, List[MessageJson], NotUsed] = flow { _ =>
     logger.info(s"Trying to call: $uri")
     Http().singleRequest(HttpRequest(HttpMethods.GET, uri)).flatMap {
       case HttpResponse(StatusCodes.OK, _, entity, _) =>
         entity
-          .toStrict(FiniteDuration(20, "s"))
-          .map(r => r.data.toString())
+          .toStrict(apiTimeout.seconds)
+          .map(_.data.toString())
       case HttpResponse(statusCodes, _, _, _) =>
         logger.warn(s"Bad response status code: $statusCodes")
         Future("")

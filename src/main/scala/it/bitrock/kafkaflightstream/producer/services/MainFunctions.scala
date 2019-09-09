@@ -28,6 +28,7 @@ object MainFunctions {
       pollingStart: Int,
       pollingInterval: Int,
       aviationUri: String,
+      apiTimeout: Int,
       topic: String,
       obj: AviationStream,
       filterFunction: MessageJson => Boolean = _ => true
@@ -35,7 +36,7 @@ object MainFunctions {
 
     val source = new TickSource(pollingStart, pollingInterval).source
 
-    val flow = new AviationFlow().flow(aviationUri)
+    val flow = new AviationFlow().flow(aviationUri, apiTimeout)
 
     val keySerde = Serdes.String()
     val sink = obj match {
