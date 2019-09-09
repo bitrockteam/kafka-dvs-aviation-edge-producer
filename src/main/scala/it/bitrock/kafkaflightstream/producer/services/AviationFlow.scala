@@ -40,7 +40,7 @@ class AviationFlow()(implicit system: ActorSystem, materializer: ActorMaterializ
   }
 
   private def unmarshal(apiResponseBody: String): Future[List[MessageJson]] = {
-    if (apiResponseBody.isBlank)
+    if (apiResponseBody.isEmpty)
       return Future(List[MessageJson]())
     Unmarshal(apiResponseBody).to[List[MessageJson]].recover {
       case e =>
