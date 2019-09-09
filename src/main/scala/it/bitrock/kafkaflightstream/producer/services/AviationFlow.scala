@@ -24,7 +24,7 @@ class AviationFlow()(implicit system: ActorSystem, materializer: ActorMaterializ
       case HttpResponse(StatusCodes.OK, _, entity, _) =>
         entity
           .toStrict(apiTimeout.seconds)
-          .map(_.data.toString())
+          .map(_.data.utf8String)
       case HttpResponse(statusCodes, _, _, _) =>
         logger.warn(s"Bad response status code: $statusCodes")
         Future("")
