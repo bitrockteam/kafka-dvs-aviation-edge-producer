@@ -21,6 +21,7 @@ class AviationFlow()(implicit system: ActorSystem, materializer: ActorMaterializ
     Flow
       .fromFunction((x: Tick) => x)
       .mapAsync(1) { _ =>
+        logger.info(s"Trying to call: $uri")
         Http().singleRequest(HttpRequest(HttpMethods.GET, uri)).flatMap {
           case HttpResponse(StatusCodes.OK, _, entity, _) =>
             val entityModified = entity.withoutSizeLimit().withContentType(ContentTypes.`application/json`)
