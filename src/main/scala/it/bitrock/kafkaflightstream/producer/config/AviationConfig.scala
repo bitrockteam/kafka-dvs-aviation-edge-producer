@@ -9,6 +9,7 @@ import it.bitrock.kafkaflightstream.producer.model.{AirlineStream, AirplaneStrea
 final case class AviationConfig(
     host: URI,
     key: String,
+    apiTimeout: Int,
     flightStream: AviationStreamConfig,
     airplaneStream: AviationStreamConfig,
     airportStream: AviationStreamConfig,

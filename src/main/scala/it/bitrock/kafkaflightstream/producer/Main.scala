@@ -21,6 +21,7 @@ object Main extends App with LazyLogging {
     config.aviation.flightStream.pollingStart,
     config.aviation.flightStream.pollingInterval,
     config.aviation.getAviationUri(FlightStream),
+    config.aviation.apiTimeout,
     config.kafka.flightRawTopic,
     FlightStream,
     filterFlight
@@ -31,6 +32,7 @@ object Main extends App with LazyLogging {
     config.aviation.airplaneStream.pollingStart,
     config.aviation.airplaneStream.pollingInterval,
     config.aviation.getAviationUri(AirplaneStream),
+    config.aviation.apiTimeout,
     config.kafka.airplaneRawTopic,
     AirplaneStream
   )
@@ -40,6 +42,7 @@ object Main extends App with LazyLogging {
     config.aviation.airportStream.pollingStart,
     config.aviation.airportStream.pollingInterval,
     config.aviation.getAviationUri(AirportStream),
+    config.aviation.apiTimeout,
     config.kafka.airportRawTopic,
     AirportStream
   )
@@ -49,6 +52,7 @@ object Main extends App with LazyLogging {
     config.aviation.airlineStream.pollingStart,
     config.aviation.airlineStream.pollingInterval,
     config.aviation.getAviationUri(AirlineStream),
+    config.aviation.apiTimeout,
     config.kafka.airlineRawTopic,
     AirlineStream,
     filterAirline
@@ -59,6 +63,7 @@ object Main extends App with LazyLogging {
     config.aviation.cityStream.pollingStart,
     config.aviation.cityStream.pollingInterval,
     config.aviation.getAviationUri(CityStream),
+    config.aviation.apiTimeout,
     config.kafka.cityRawTopic,
     CityStream
   )
