@@ -15,7 +15,6 @@ final case class FlightMessageJson(
 ) extends MessageJson
 
 final case class AirplaneMessageJson(
-    airplaneId: String,
     numberRegistration: String,
     productionLine: String,
     airplaneIataType: String,
@@ -23,6 +22,7 @@ final case class AirplaneMessageJson(
     modelCode: String,
     hexIcaoAirplane: String,
     codeIataPlaneLong: String,
+    planeOwner: String,
     enginesType: String,
     planeAge: String,
     planeStatus: String
