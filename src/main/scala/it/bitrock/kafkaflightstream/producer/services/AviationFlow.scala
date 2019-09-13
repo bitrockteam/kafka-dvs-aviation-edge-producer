@@ -1,5 +1,7 @@
 package it.bitrock.kafkaflightstream.producer.services
 
+import java.util.Calendar
+
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
@@ -19,6 +21,14 @@ class AviationFlow()(implicit system: ActorSystem, materializer: ActorMaterializ
   import system.dispatcher
 
   def flow(uri: Uri, apiTimeout: Int): Flow[Tick, List[MessageJson], NotUsed] = flow { () =>
+
+    // Only for development purpose
+    val now         = Calendar.getInstance()
+    val currentHour = now.get(Calendar.HOUR_OF_DAY)
+    if (currentHour < 6 || currentHour > 16)
+      return Flow.fromFunction(_ => List())
+    //------------------------------------------------
+
     logger.info(s"Trying to call: $uri")
     Http().singleRequest(HttpRequest(HttpMethods.GET, uri)).flatMap {
       case HttpResponse(StatusCodes.OK, _, entity, _) =>
