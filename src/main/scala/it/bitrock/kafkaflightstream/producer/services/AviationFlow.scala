@@ -22,10 +22,10 @@ class AviationFlow()(implicit system: ActorSystem, materializer: ActorMaterializ
 
   def flow(uri: Uri, apiTimeout: Int): Flow[Tick, List[MessageJson], NotUsed] = flow { () =>
 
-    // Only for development purpose
+    // Only for development purpose (2 hours shift: 4 -> 6 and 16 -> 18)
     val now         = Calendar.getInstance()
     val currentHour = now.get(Calendar.HOUR_OF_DAY)
-    if (currentHour < 6 || currentHour > 12)
+    if (currentHour < 4 || currentHour > 16)
       return Flow.fromFunction(_ => List())
     //------------------------------------------------
 
