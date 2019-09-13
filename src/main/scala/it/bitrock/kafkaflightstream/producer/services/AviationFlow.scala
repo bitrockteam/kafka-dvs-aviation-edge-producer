@@ -22,22 +22,24 @@ class AviationFlow()(implicit system: ActorSystem, materializer: ActorMaterializ
 
   def flow(uri: Uri, apiTimeout: Int): Flow[Tick, List[MessageJson], NotUsed] = flow { () =>
 
-    // Only for development purpose
+    // Only for development purpose (2 hours shift: 4 -> 6 and 16 -> 18)
     val now         = Calendar.getInstance()
     val currentHour = now.get(Calendar.HOUR_OF_DAY)
-    if (currentHour < 6 || currentHour > 12)
-      return Flow.fromFunction(_ => List())
+    if (currentHour < 4 || currentHour > 12)
+      Future("")
+    else {
     //------------------------------------------------
 
-    logger.info(s"Trying to call: $uri")
-    Http().singleRequest(HttpRequest(HttpMethods.GET, uri)).flatMap {
-      case HttpResponse(StatusCodes.OK, _, entity, _) =>
-        entity
-          .toStrict(apiTimeout.seconds)
-          .map(_.data.utf8String)
-      case HttpResponse(statusCodes, _, _, _) =>
-        logger.warn(s"Bad response status code: $statusCodes")
-        Future("")
+      logger.info(s"Trying to call: $uri")
+      Http().singleRequest(HttpRequest(HttpMethods.GET, uri)).flatMap {
+        case HttpResponse(StatusCodes.OK, _, entity, _) =>
+          entity
+            .toStrict(apiTimeout.seconds)
+            .map(_.data.utf8String)
+        case HttpResponse(statusCodes, _, _, _) =>
+          logger.warn(s"Bad response status code: $statusCodes")
+          Future("")
+      }
     }
   }
 
