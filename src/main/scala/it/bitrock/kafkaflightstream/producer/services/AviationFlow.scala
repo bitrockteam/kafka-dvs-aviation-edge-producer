@@ -25,7 +25,7 @@ class AviationFlow()(implicit system: ActorSystem, materializer: ActorMaterializ
     // Only for development purpose
     val now         = Calendar.getInstance()
     val currentHour = now.get(Calendar.HOUR_OF_DAY)
-    if (currentHour < 6 || currentHour > 18)
+    if (currentHour < 6 || currentHour > 12)
       return Flow.fromFunction(_ => List())
     //------------------------------------------------
 
