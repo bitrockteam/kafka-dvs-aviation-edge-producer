@@ -13,22 +13,19 @@ import com.typesafe.scalalogging.LazyLogging
 import it.bitrock.kafkaflightstream.producer.model.{MessageJson, Tick}
 import JsonSupport._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 
-class AviationFlow()(implicit system: ActorSystem, materializer: ActorMaterializer) extends LazyLogging {
-
-  import system.dispatcher
+class AviationFlow()(implicit system: ActorSystem, mat: ActorMaterializer, ec: ExecutionContext) extends LazyLogging {
 
   def flow(uri: Uri, apiTimeout: Int): Flow[Tick, List[MessageJson], NotUsed] = flow { () =>
-
     // Only for development purpose (2 hours shift: 4 -> 6 and 16 -> 18)
     val now         = Calendar.getInstance()
     val currentHour = now.get(Calendar.HOUR_OF_DAY)
     if (currentHour < 4 || currentHour > 16)
       Future("")
     else {
-    //------------------------------------------------
+      //------------------------------------------------
 
       logger.info(s"Trying to call: $uri")
       Http().singleRequest(HttpRequest(HttpMethods.GET, uri)).flatMap {
