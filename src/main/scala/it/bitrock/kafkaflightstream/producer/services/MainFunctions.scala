@@ -21,6 +21,8 @@ import it.bitrock.kafkaflightstream.producer.model.{
 import it.bitrock.kafkageostream.kafkacommons.serialization.AvroSerdes
 import org.apache.kafka.common.serialization.Serdes
 
+import scala.concurrent.ExecutionContext
+
 object MainFunctions {
 
   def runStream(
@@ -32,7 +34,7 @@ object MainFunctions {
       topic: String,
       obj: AviationStream,
       filterFunction: MessageJson => Boolean = _ => true
-  )(implicit system: ActorSystem, mat: ActorMaterializer): Cancellable = {
+  )(implicit system: ActorSystem, mat: ActorMaterializer, ec: ExecutionContext): Cancellable = {
 
     val source = new TickSource(pollingStart, pollingInterval).source
 

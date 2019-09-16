@@ -4,6 +4,7 @@ import pureconfig.generic.auto._
 
 final case class AppConfig(
     kafka: KafkaConfig,
+    server: ServerConfig,
     aviation: AviationConfig
 )
 

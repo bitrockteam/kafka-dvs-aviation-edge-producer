@@ -1,20 +1,36 @@
 package it.bitrock.kafkaflightstream.producer
 
 import akka.actor.ActorSystem
+import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.typesafe.scalalogging.LazyLogging
 import it.bitrock.kafkaflightstream.producer.config.AppConfig
 import it.bitrock.kafkaflightstream.producer.model._
+import it.bitrock.kafkaflightstream.producer.routes.Routes
 import it.bitrock.kafkaflightstream.producer.services.MainFunctions._
 
+import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext}
+
 object Main extends App with LazyLogging {
+
+  implicit val system: ActorSystem    = ActorSystem("KafkaFlightstreamProducer")
+  implicit val mat: ActorMaterializer = ActorMaterializer()
+  implicit val ec: ExecutionContext   = system.dispatcher
+
   logger.info("Starting up")
 
   val config = AppConfig.load
   logger.debug(s"Loaded configuration: $config")
 
-  implicit val system: ActorSystem    = ActorSystem("KafkaFlightstreamProducer")
-  implicit val mat: ActorMaterializer = ActorMaterializer()
+  val host: String  = config.server.host
+  val port: Int     = config.server.port
+  val routes        = new Routes(config.server)
+  val bindingFuture = Http().bindAndHandle(routes.routes, host, port)
+
+  bindingFuture.map { serverBinding =>
+    logger.info(s"Exposing to ${serverBinding.localAddress}")
+  }
 
   val cancellableFlight = runStream(
     config.kafka.schemaRegistryUrl,
@@ -75,6 +91,12 @@ object Main extends App with LazyLogging {
     cancellableAirport.cancel()
     cancellableAirline.cancel()
     cancellableCity.cancel()
+    val resourcesClosed = for {
+      binding <- bindingFuture
+      _       <- binding.terminate(hardDeadline = 3.seconds)
+      t       <- system.terminate()
+    } yield t
+    Await.result(resourcesClosed, 10.seconds)
   }
 
 }
