@@ -69,14 +69,20 @@ object MainFunctions {
   }
 
   def filterFlight: MessageJson => Boolean = { msg =>
-    val departureIataCode = msg.asInstanceOf[FlightMessageJson].departure.iataCode
-    val arrivalIataCode   = msg.asInstanceOf[FlightMessageJson].arrival.iataCode
-    !departureIataCode.isEmpty && !arrivalIataCode.isEmpty
+    validFlight(msg.asInstanceOf[FlightMessageJson])
   }
 
   def filterAirline: MessageJson => Boolean = { msg =>
-    val statusAirline = msg.asInstanceOf[AirlineMessageJson].statusAirline
-    statusAirline == "active"
+    msg.asInstanceOf[AirlineMessageJson].statusAirline == "active"
   }
+
+  private def validFlight(flight: FlightMessageJson): Boolean =
+    validFlightStatus(flight.status) &&
+      validFlightSpeed(flight.speed.horizontal) &&
+      validFlightJourney(flight.departure.iataCode, flight.arrival.iataCode)
+
+  private def validFlightStatus(status: String): Boolean                              = List("started", "en-route", "landed").contains(status)
+  private def validFlightSpeed(speed: Double): Boolean                                = speed < 1200
+  private def validFlightJourney(departureCode: String, arrivalCode: String): Boolean = !(departureCode.isEmpty || arrivalCode.isEmpty)
 
 }
