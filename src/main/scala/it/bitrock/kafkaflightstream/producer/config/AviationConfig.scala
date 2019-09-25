@@ -10,6 +10,7 @@ final case class AviationConfig(
     host: URI,
     key: String,
     apiTimeout: Int,
+    flightSpeedLimit: Int,
     flightStream: AviationStreamConfig,
     airplaneStream: AviationStreamConfig,
     airportStream: AviationStreamConfig,
@@ -28,6 +29,13 @@ final case class AviationConfig(
     Uri(host.resolve(path).toString)
       .withQuery(query)
       .toString
+  }
+  def getAviationStreamConfig(obj: AviationStream): AviationStreamConfig = obj match {
+    case FlightStream   => flightStream
+    case AirplaneStream => airplaneStream
+    case AirportStream  => airportStream
+    case AirlineStream  => airlineStream
+    case CityStream     => cityStream
   }
 }
 

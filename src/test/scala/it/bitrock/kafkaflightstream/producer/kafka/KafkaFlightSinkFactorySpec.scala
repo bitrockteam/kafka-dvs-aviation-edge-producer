@@ -6,8 +6,8 @@ import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Source
 import akka.testkit.TestKit
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
-import it.bitrock.kafkaflightstream.model._
-import it.bitrock.kafkaflightstream.producer.kafka.KafkaTypes.{Flight => KafkaTypesFlight}
+import it.bitrock.kafkaflightstream.producer.TestValues
+import it.bitrock.kafkaflightstream.producer.kafka.KafkaTypes.{Key, Flight => KafkaTypesFlight}
 import it.bitrock.kafkaflightstream.producer.model._
 import it.bitrock.kafkageostream.kafkacommons.serialization.ImplicitConversions._
 import it.bitrock.kafkageostream.testcommons.{FixtureLoanerAnyResult, Suite}
@@ -20,7 +20,8 @@ class KafkaFlightSinkFactorySpec
     with Suite
     with WordSpecLike
     with BeforeAndAfterAll
-    with EmbeddedKafka {
+    with EmbeddedKafka
+    with TestValues {
   import KafkaFlightSinkFactorySpec._
 
   implicit val mat: ActorMaterializer = ActorMaterializer()
@@ -30,97 +31,12 @@ class KafkaFlightSinkFactorySpec
     "convert a domain model to Kafka model and push it to a topic" in ResourceLoaner.withFixture {
       case Resource(embeddedKafkaConfig, keySerde, factory) =>
         implicit val embKafkaConfig: EmbeddedKafkaConfig = embeddedKafkaConfig
-        implicit val kSerde: Serde[KafkaTypesFlight.Key] = keySerde
-
-        val message = FlightMessageJson(
-          GeographyJson(
-            49.2655,
-            -1.9623,
-            9753.6,
-            282.76
-          ),
-          SpeedJson(
-            805.14,
-            0
-          ),
-          CommonCodeJson(
-            "ZRH",
-            "LSZH"
-          ),
-          CommonCodeJson(
-            "ORD",
-            "KORD"
-          ),
-          AircraftJson(
-            "HBJHA",
-            "A333",
-            "",
-            "A333"
-          ),
-          CommonCodeJson(
-            "LX",
-            "SWR"
-          ),
-          FlightJson(
-            "LX6U",
-            "SWR6U",
-            "6U"
-          ),
-          SystemJson(
-            "1567415880",
-            "3061"
-          ),
-          "en-route"
-        )
-
+        implicit val kSerde: Serde[Key]                  = keySerde
         val result = withRunningKafka {
-          Source.single(message).runWith(factory.sink)
-
-          consumeFirstKeyedMessageFrom[KafkaTypesFlight.Key, KafkaTypesFlight.Value](factory.topic)
+          Source.single(FlightMessage).runWith(factory.sink)
+          consumeFirstKeyedMessageFrom[Key, KafkaTypesFlight.Value](factory.topic)
         }
-
-        val expectedValue = FlightRaw(
-          Geography(
-            message.geography.latitude,
-            message.geography.longitude,
-            message.geography.altitude,
-            message.geography.direction
-          ),
-          Speed(
-            message.speed.horizontal,
-            message.speed.vertical
-          ),
-          CommonCode(
-            message.departure.iataCode,
-            message.departure.icaoCode
-          ),
-          CommonCode(
-            message.arrival.iataCode,
-            message.arrival.icaoCode
-          ),
-          Aircraft(
-            message.aircraft.regNumber,
-            message.aircraft.icaoCode,
-            message.aircraft.icao24,
-            message.aircraft.iataCode
-          ),
-          CommonCode(
-            message.airline.iataCode,
-            message.airline.icaoCode
-          ),
-          Flight(
-            message.flight.iataNumber,
-            message.flight.icaoNumber,
-            message.flight.number
-          ),
-          System(
-            message.system.updated,
-            message.system.squawk
-          ),
-          message.status
-        )
-
-        result shouldBe (message.flight.icaoNumber, expectedValue)
+        result shouldBe (IcaoNumber, ExpectedFlightRaw)
     }
 
   }
@@ -140,7 +56,7 @@ class KafkaFlightSinkFactorySpec
           s"http://localhost:${embeddedKafkaConfig.schemaRegistryPort}"
         )
 
-      val factory = new KafkaSinkFactory[MessageJson, KafkaTypesFlight.Key, KafkaTypesFlight.Value](
+      val factory = new KafkaSinkFactory[MessageJson, Key, KafkaTypesFlight.Value](
         outputTopic,
         producerSettings
       )
@@ -166,8 +82,8 @@ object KafkaFlightSinkFactorySpec {
 
   final case class Resource(
       embeddedKafkaConfig: EmbeddedKafkaConfig,
-      keySerde: Serde[KafkaTypesFlight.Key],
-      factory: KafkaSinkFactory[MessageJson, KafkaTypesFlight.Key, KafkaTypesFlight.Value]
+      keySerde: Serde[Key],
+      factory: KafkaSinkFactory[MessageJson, Key, KafkaTypesFlight.Value]
   )
 
 }

@@ -1,12 +1,12 @@
 package it.bitrock.kafkaflightstream.producer.services
 
-import java.net.URI
-
 import akka.actor.{ActorSystem, Cancellable}
+import akka.http.scaladsl.Http
 import akka.kafka.ProducerSettings
 import akka.stream.ActorMaterializer
+import it.bitrock.kafkaflightstream.producer.config.{AppConfig, AviationConfig, KafkaConfig, ServerConfig}
 import it.bitrock.kafkaflightstream.producer.kafka.KafkaSinkFactory
-import it.bitrock.kafkaflightstream.producer.kafka.KafkaTypes.{Airline, Airplane, Airport, City, Flight}
+import it.bitrock.kafkaflightstream.producer.kafka.KafkaTypes.{Airline, Airplane, Airport, City, Flight, Key}
 import it.bitrock.kafkaflightstream.producer.model.{
   AirlineMessageJson,
   AirlineStream,
@@ -18,65 +18,77 @@ import it.bitrock.kafkaflightstream.producer.model.{
   FlightStream,
   MessageJson
 }
+import it.bitrock.kafkaflightstream.producer.routes.Routes
 import it.bitrock.kafkageostream.kafkacommons.serialization.AvroSerdes
 import org.apache.kafka.common.serialization.Serdes
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 object MainFunctions {
 
-  def runStream(
-      schemaRegistryUrl: URI,
-      pollingStart: Int,
-      pollingInterval: Int,
-      aviationUri: String,
-      apiTimeout: Int,
-      topic: String,
-      obj: AviationStream,
-      filterFunction: MessageJson => Boolean = _ => true
-  )(implicit system: ActorSystem, mat: ActorMaterializer, ec: ExecutionContext): Cancellable = {
+  val serverConfig: ServerConfig     = AppConfig.server
+  val aviationConfig: AviationConfig = AppConfig.aviation
+  val kafkaConfig: KafkaConfig       = AppConfig.kafka
 
-    val source = new TickSource(pollingStart, pollingInterval).source
+  def openHealthCheckPort()(implicit system: ActorSystem, mat: ActorMaterializer): Future[Http.ServerBinding] = {
+    val host   = serverConfig.host
+    val port   = serverConfig.port
+    val routes = new Routes(serverConfig)
+    Http().bindAndHandle(routes.routes, host, port)
+  }
 
-    val flow = new AviationFlow().flow(aviationUri, apiTimeout)
+  def runStream(streamType: AviationStream)(implicit system: ActorSystem, mat: ActorMaterializer, ec: ExecutionContext): Cancellable = {
 
-    val keySerde = Serdes.String()
-    val sink = obj match {
+    val source = new TickSource(
+      aviationConfig.getAviationStreamConfig(streamType).pollingStart,
+      aviationConfig.getAviationStreamConfig(streamType).pollingInterval
+    ).source
+
+    val flow = new AviationFlow().flow(aviationConfig.getAviationUri(streamType), aviationConfig.apiTimeout)
+
+    val keySerializer = Serdes.String().serializer
+    val sink = streamType match {
       case FlightStream =>
-        val flightRawSerde         = AvroSerdes.serdeFrom[Flight.Value](schemaRegistryUrl)
-        val flightProducerSettings = ProducerSettings(system, keySerde.serializer, flightRawSerde.serializer)
-        new KafkaSinkFactory[MessageJson, Flight.Key, Flight.Value](topic, flightProducerSettings).sink
+        val flightRawSerializer    = AvroSerdes.serdeFrom[Flight.Value](kafkaConfig.schemaRegistryUrl).serializer
+        val flightProducerSettings = ProducerSettings(system, keySerializer, flightRawSerializer)
+        new KafkaSinkFactory[MessageJson, Key, Flight.Value](kafkaConfig.flightRawTopic, flightProducerSettings).sink
       case AirplaneStream =>
-        val airplaneRawSerde         = AvroSerdes.serdeFrom[Airplane.Value](schemaRegistryUrl)
-        val airplaneProducerSettings = ProducerSettings(system, keySerde.serializer, airplaneRawSerde.serializer)
-        new KafkaSinkFactory[MessageJson, Airplane.Key, Airplane.Value](topic, airplaneProducerSettings).sink
+        val airplaneRawSerializer    = AvroSerdes.serdeFrom[Airplane.Value](kafkaConfig.schemaRegistryUrl).serializer
+        val airplaneProducerSettings = ProducerSettings(system, keySerializer, airplaneRawSerializer)
+        new KafkaSinkFactory[MessageJson, Key, Airplane.Value](kafkaConfig.airplaneRawTopic, airplaneProducerSettings).sink
       case AirportStream =>
-        val airportRawSerde         = AvroSerdes.serdeFrom[Airport.Value](schemaRegistryUrl)
-        val airportProducerSettings = ProducerSettings(system, keySerde.serializer, airportRawSerde.serializer)
-        new KafkaSinkFactory[MessageJson, Airport.Key, Airport.Value](topic, airportProducerSettings).sink
+        val airportRawSerializer    = AvroSerdes.serdeFrom[Airport.Value](kafkaConfig.schemaRegistryUrl).serializer
+        val airportProducerSettings = ProducerSettings(system, keySerializer, airportRawSerializer)
+        new KafkaSinkFactory[MessageJson, Key, Airport.Value](kafkaConfig.airportRawTopic, airportProducerSettings).sink
       case AirlineStream =>
-        val airlineRawSerde         = AvroSerdes.serdeFrom[Airline.Value](schemaRegistryUrl)
-        val airlineProducerSettings = ProducerSettings(system, keySerde.serializer, airlineRawSerde.serializer)
-        new KafkaSinkFactory[MessageJson, Airline.Key, Airline.Value](topic, airlineProducerSettings).sink
+        val airlineRawSerializer    = AvroSerdes.serdeFrom[Airline.Value](kafkaConfig.schemaRegistryUrl).serializer
+        val airlineProducerSettings = ProducerSettings(system, keySerializer, airlineRawSerializer)
+        new KafkaSinkFactory[MessageJson, Key, Airline.Value](kafkaConfig.airlineRawTopic, airlineProducerSettings).sink
       case CityStream =>
-        val cityRawSerde         = AvroSerdes.serdeFrom[City.Value](schemaRegistryUrl)
-        val cityProducerSettings = ProducerSettings(system, keySerde.serializer, cityRawSerde.serializer)
-        new KafkaSinkFactory[MessageJson, City.Key, City.Value](topic, cityProducerSettings).sink
+        val cityRawSerializer    = AvroSerdes.serdeFrom[City.Value](kafkaConfig.schemaRegistryUrl).serializer
+        val cityProducerSettings = ProducerSettings(system, keySerializer, cityRawSerializer)
+        new KafkaSinkFactory[MessageJson, Key, City.Value](kafkaConfig.cityRawTopic, cityProducerSettings).sink
     }
 
     source.via(flow).mapConcat(identity).filter(filterFunction).to(sink).run()
 
   }
 
-  def filterFlight: MessageJson => Boolean = { msg =>
-    val departureIataCode = msg.asInstanceOf[FlightMessageJson].departure.iataCode
-    val arrivalIataCode   = msg.asInstanceOf[FlightMessageJson].arrival.iataCode
-    !departureIataCode.isEmpty && !arrivalIataCode.isEmpty
+  def filterFunction: MessageJson => Boolean = {
+    case msg: AirlineMessageJson => filterAirline(msg)
+    case msg: FlightMessageJson  => filterFlight(msg)
+    case _                       => true
   }
 
-  def filterAirline: MessageJson => Boolean = { msg =>
-    val statusAirline = msg.asInstanceOf[AirlineMessageJson].statusAirline
-    statusAirline == "active"
-  }
+  private def filterAirline(airline: AirlineMessageJson): Boolean = airline.statusAirline == "active"
+
+  private def filterFlight(flight: FlightMessageJson): Boolean =
+    validFlightStatus(flight.status) &&
+      validFlightSpeed(flight.speed.horizontal) &&
+      validFlightJourney(flight.departure.iataCode, flight.arrival.iataCode)
+
+  private def validFlightStatus(status: String): Boolean                              = List("started", "en-route", "landed").contains(status)
+  private def validFlightSpeed(speed: Double): Boolean                                = speed < aviationConfig.flightSpeedLimit
+  private def validFlightJourney(departureCode: String, arrivalCode: String): Boolean = !(departureCode.isEmpty || arrivalCode.isEmpty)
 
 }
