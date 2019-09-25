@@ -10,6 +10,10 @@ final case class AppConfig(
 
 object AppConfig {
 
-  def load: AppConfig = pureconfig.loadConfigOrThrow[AppConfig]
+  val config: AppConfig = pureconfig.loadConfigOrThrow[AppConfig]
+
+  def server: ServerConfig     = config.server
+  def aviation: AviationConfig = config.aviation
+  def kafka: KafkaConfig       = config.kafka
 
 }

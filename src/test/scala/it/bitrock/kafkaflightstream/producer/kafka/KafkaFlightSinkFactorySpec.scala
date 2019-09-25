@@ -7,7 +7,7 @@ import akka.stream.scaladsl.Source
 import akka.testkit.TestKit
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
 import it.bitrock.kafkaflightstream.producer.TestValues
-import it.bitrock.kafkaflightstream.producer.kafka.KafkaTypes.{Flight => KafkaTypesFlight}
+import it.bitrock.kafkaflightstream.producer.kafka.KafkaTypes.{Key, Flight => KafkaTypesFlight}
 import it.bitrock.kafkaflightstream.producer.model._
 import it.bitrock.kafkageostream.kafkacommons.serialization.ImplicitConversions._
 import it.bitrock.kafkageostream.testcommons.{FixtureLoanerAnyResult, Suite}
@@ -31,10 +31,10 @@ class KafkaFlightSinkFactorySpec
     "convert a domain model to Kafka model and push it to a topic" in ResourceLoaner.withFixture {
       case Resource(embeddedKafkaConfig, keySerde, factory) =>
         implicit val embKafkaConfig: EmbeddedKafkaConfig = embeddedKafkaConfig
-        implicit val kSerde: Serde[KafkaTypesFlight.Key] = keySerde
+        implicit val kSerde: Serde[Key]                  = keySerde
         val result = withRunningKafka {
           Source.single(FlightMessage).runWith(factory.sink)
-          consumeFirstKeyedMessageFrom[KafkaTypesFlight.Key, KafkaTypesFlight.Value](factory.topic)
+          consumeFirstKeyedMessageFrom[Key, KafkaTypesFlight.Value](factory.topic)
         }
         result shouldBe (IcaoNumber, ExpectedFlightRaw)
     }
@@ -56,7 +56,7 @@ class KafkaFlightSinkFactorySpec
           s"http://localhost:${embeddedKafkaConfig.schemaRegistryPort}"
         )
 
-      val factory = new KafkaSinkFactory[MessageJson, KafkaTypesFlight.Key, KafkaTypesFlight.Value](
+      val factory = new KafkaSinkFactory[MessageJson, Key, KafkaTypesFlight.Value](
         outputTopic,
         producerSettings
       )
@@ -82,8 +82,8 @@ object KafkaFlightSinkFactorySpec {
 
   final case class Resource(
       embeddedKafkaConfig: EmbeddedKafkaConfig,
-      keySerde: Serde[KafkaTypesFlight.Key],
-      factory: KafkaSinkFactory[MessageJson, KafkaTypesFlight.Key, KafkaTypesFlight.Value]
+      keySerde: Serde[Key],
+      factory: KafkaSinkFactory[MessageJson, Key, KafkaTypesFlight.Value]
   )
 
 }
