@@ -16,7 +16,7 @@ class FilterFunctionsSpec extends Suite with WordSpecLike with TestValues {
       messages.count(filterFunction) shouldBe 1
     }
 
-    "exclude flights with status not equal to started or en-route or landed" in {
+    "exclude flights with status not equal to en-route" in {
       val messages: List[MessageJson] = List(
         StartedFlightMessage,
         EnRouteFlightMessage,
@@ -24,7 +24,7 @@ class FilterFunctionsSpec extends Suite with WordSpecLike with TestValues {
         UnknownFlightMessage,
         CrashedFlightMessage
       )
-      messages.count(filterFunction) shouldBe 3
+      messages.count(filterFunction) shouldBe 1
     }
 
     "exclude flights with invalid speed" in {
