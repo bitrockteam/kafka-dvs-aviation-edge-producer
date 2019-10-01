@@ -23,11 +23,11 @@ object Main extends App with LazyLogging {
     logger.info(s"Exposing to ${serverBinding.localAddress}")
   }
 
-  val cancellableFlight   = runStream(FlightStream)
-  val cancellableAirplane = runStream(AirplaneStream)
-  val cancellableAirport  = runStream(AirportStream)
-  val cancellableAirline  = runStream(AirlineStream)
-  val cancellableCity     = runStream(CityStream)
+  val cancellableFlight   = runStream[FlightStream.type]()
+  val cancellableAirplane = runStream[AirplaneStream.type]()
+  val cancellableAirport  = runStream[AirportStream.type]()
+  val cancellableAirline  = runStream[AirlineStream.type]()
+  val cancellableCity     = runStream[CityStream.type]()
 
   sys.addShutdownHook {
     logger.info("Shutting down")
