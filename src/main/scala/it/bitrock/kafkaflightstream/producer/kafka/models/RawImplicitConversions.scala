@@ -79,7 +79,7 @@ object RawImplicitConversions {
         mrse.codeIso2Country,
         mrse.codeIataCity,
         mrse.timezone,
-        mrse.gmt
+        mrse.GMT
       )
   }
 
