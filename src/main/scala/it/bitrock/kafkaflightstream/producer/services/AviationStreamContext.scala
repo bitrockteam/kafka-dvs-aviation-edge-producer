@@ -6,11 +6,10 @@ import akka.kafka.ProducerSettings
 import akka.stream.scaladsl.Sink
 import it.bitrock.kafkaflightstream.producer.config.{AviationConfig, AviationStreamConfig, KafkaConfig}
 import it.bitrock.kafkaflightstream.producer.kafka.KafkaSinkFactory
-import it.bitrock.kafkaflightstream.producer.kafka.KafkaTypes.Flight.Value
 import it.bitrock.kafkaflightstream.producer.kafka.KafkaTypes._
 import it.bitrock.kafkaflightstream.producer.model._
 import it.bitrock.kafkageostream.kafkacommons.serialization.AvroSerdes
-import org.apache.kafka.common.serialization.{Serdes, Serializer}
+import org.apache.kafka.common.serialization.Serdes
 
 import scala.concurrent.Future
 
@@ -26,7 +25,7 @@ object AviationStreamContext {
     override def config(aviationConfig: AviationConfig): AviationStreamConfig = aviationConfig.flightStream
 
     override def sink(kafkaConfig: KafkaConfig)(implicit system: ActorSystem): Sink[MessageJson, Future[Done]] = {
-      val flightRawSerializer: Serializer[Value] = AvroSerdes.serdeFrom[Flight.Value](kafkaConfig.schemaRegistryUrl).serializer
+      val flightRawSerializer    = AvroSerdes.serdeFrom[Flight.Value](kafkaConfig.schemaRegistryUrl).serializer
       val flightProducerSettings = ProducerSettings(system, Serdes.String().serializer, flightRawSerializer)
       new KafkaSinkFactory[MessageJson, Key, Flight.Value](kafkaConfig.flightRawTopic, flightProducerSettings).sink
     }
@@ -53,7 +52,7 @@ object AviationStreamContext {
   }
 
   implicit val AirlineStreamContext: AviationStreamContext[AirlineStream.type] = new AviationStreamContext[AirlineStream.type] {
-    override def config(aviationConfig: AviationConfig): AviationStreamConfig = aviationConfig.airportStream
+    override def config(aviationConfig: AviationConfig): AviationStreamConfig = aviationConfig.airlineStream
 
     override def sink(kafkaConfig: KafkaConfig)(implicit system: ActorSystem): Sink[MessageJson, Future[Done]] = {
       val airlineRawSerializer    = AvroSerdes.serdeFrom[Airline.Value](kafkaConfig.schemaRegistryUrl).serializer
