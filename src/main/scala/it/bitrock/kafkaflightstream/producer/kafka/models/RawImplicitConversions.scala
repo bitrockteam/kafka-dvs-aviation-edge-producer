@@ -77,7 +77,9 @@ object RawImplicitConversions {
         mrse.longitudeAirport,
         mrse.nameCountry,
         mrse.codeIso2Country,
-        mrse.codeIataCity
+        mrse.codeIataCity,
+        mrse.timezone,
+        mrse.GMT
       )
   }
 

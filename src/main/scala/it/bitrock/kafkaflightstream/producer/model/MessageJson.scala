@@ -36,7 +36,9 @@ final case class AirportMessageJson(
     longitudeAirport: String,
     nameCountry: String,
     codeIso2Country: String,
-    codeIataCity: String
+    codeIataCity: String,
+    timezone: String,
+    GMT: String
 ) extends MessageJson
 
 final case class AirlineMessageJson(
