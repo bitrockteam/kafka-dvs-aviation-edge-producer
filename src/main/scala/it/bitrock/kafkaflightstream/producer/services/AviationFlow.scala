@@ -20,9 +20,11 @@ class AviationFlow()(implicit system: ActorSystem, mat: ActorMaterializer, ec: E
 
   def flow(uri: Uri, apiTimeout: Int): Flow[Tick, List[MessageJson], NotUsed] = flow { () =>
     // Only for development purpose (2 hours shift: 4 -> 6 and 16 -> 18)
-    val now         = Calendar.getInstance()
-    val currentHour = now.get(Calendar.HOUR_OF_DAY)
-    if (currentHour < 4 || currentHour > 16)
+    val now          = Calendar.getInstance()
+    val currentHour  = now.get(Calendar.HOUR_OF_DAY)
+    val isWeekendDay = List(Calendar.SATURDAY, Calendar.SUNDAY).contains(now.get(Calendar.DAY_OF_WEEK))
+
+    if (isWeekendDay || currentHour < 4 || currentHour > 16)
       Future("")
     else {
       //------------------------------------------------
