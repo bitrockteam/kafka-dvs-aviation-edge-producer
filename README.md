@@ -1,4 +1,4 @@
-# FlightStream Producer
+# DVS Producer
 
 ## Configuration
 
@@ -13,7 +13,7 @@ The application references the following environment variables:
 
 ### Resolvers
 
-Some dependencies are downloaded from a private Nexus repository. Make sure to provide a `~/.sbt/.credentials.flightstream` file containing valid credentials:
+Some dependencies are downloaded from a private Nexus repository. Make sure to provide a `~/.sbt/.credentials.dvs` file containing valid credentials:
 
 ```properties
 realm=Sonatype Nexus Repository Manager
