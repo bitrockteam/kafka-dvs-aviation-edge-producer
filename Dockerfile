@@ -19,7 +19,7 @@ COPY .scalafmt.conf .
 RUN sbt compile && \
   sbt test && \
   sbt universal:packageBin && \
-  mv "target/universal/kafka-flightstream-producer-$(sbt -no-colors version | tail -1 | cut -d ' ' -f 2).zip" /app.zip
+  mv "target/universal/kafka-dvs-producer-$(sbt -no-colors version | tail -1 | cut -d ' ' -f 2).zip" /app.zip
 
 # end of build stage
 
@@ -32,6 +32,6 @@ ENV JAVA_OPTS="-Xmx512m"
 COPY --from=sbt-build /app.zip .
 RUN unzip app.zip
 
-RUN chmod u+x bin/kafka-flightstream-producer
+RUN chmod u+x bin/kafka-dvs-producer
 
-ENTRYPOINT ["./bin/kafka-flightstream-producer"]
+ENTRYPOINT ["./bin/kafka-dvs-producer"]
