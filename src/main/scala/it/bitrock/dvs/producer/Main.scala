@@ -39,8 +39,8 @@ object Main extends App with LazyLogging {
     val resourcesClosed = for {
       binding <- bindingFuture
       _       <- binding.terminate(hardDeadline = 3.seconds)
-      t       <- system.terminate()
-    } yield t
+      _       <- system.terminate()
+    } yield ()
     Await.result(resourcesClosed, 10.seconds)
   }
 

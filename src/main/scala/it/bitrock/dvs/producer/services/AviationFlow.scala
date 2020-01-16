@@ -42,19 +42,17 @@ class AviationFlow()(implicit system: ActorSystem, mat: ActorMaterializer, ec: E
     }
   }
 
-  def flow(apiProvider: () => Future[String]): Flow[Tick, List[MessageJson], NotUsed] = {
+  def flow(apiProvider: () => Future[String]): Flow[Tick, List[MessageJson], NotUsed] =
     Flow
       .fromFunction((x: Tick) => x)
       .mapAsync(1) { _ =>
         apiProvider().flatMap(response => unmarshal(response))
       }
-  }
 
-  private def unmarshal(apiResponseBody: String): Future[List[MessageJson]] = {
+  private def unmarshal(apiResponseBody: String): Future[List[MessageJson]] =
     Unmarshal(apiResponseBody).to[List[MessageJson]].recover {
       case e =>
         logger.warn(s"Unmarshal error: $e")
         List[MessageJson]()
     }
-  }
 }

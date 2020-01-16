@@ -11,7 +11,7 @@ import it.bitrock.dvs.producer.TestValues
 import it.bitrock.dvs.producer.kafka.KafkaTypes.{Key, Flight => KafkaTypesFlight}
 import it.bitrock.kafkacommons.serialization.ImplicitConversions._
 import it.bitrock.testcommons.{FixtureLoanerAnyResult, Suite}
-import net.manub.embeddedkafka.schemaregistry.{EmbeddedKafka, EmbeddedKafkaConfig, _}
+import net.manub.embeddedkafka.schemaregistry._
 import org.apache.kafka.common.serialization.{Serde, Serdes}
 import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
 
@@ -36,7 +36,7 @@ class KafkaFlightSinkFactorySpec
           Source.single(FlightMessage).runWith(factory.sink)
           consumeFirstKeyedMessageFrom[Key, KafkaTypesFlight.Value](factory.topic)
         }
-        result shouldBe (IcaoNumber, ExpectedFlightRaw)
+        result shouldBe ((IcaoNumber, ExpectedFlightRaw))
     }
 
   }
@@ -45,11 +45,11 @@ class KafkaFlightSinkFactorySpec
     override def withFixture(body: Resource => Any): Any = {
       implicit val embeddedKafkaConfig: EmbeddedKafkaConfig = EmbeddedKafkaConfig()
 
-      val outputTopic     = "output_topic"
-      val rsvpRawKeySerde = Serdes.String
-      val rsvpRawSerde    = specificAvroSerializer[KafkaTypesFlight.Value]
+      val outputTopic       = "output_topic"
+      val rsvpRawKeySerde   = Serdes.String
+      val rsvpRawSerializer = specificAvroValueSerializer[KafkaTypesFlight.Value]
 
-      val producerSettings = ProducerSettings(system, rsvpRawKeySerde.serializer, rsvpRawSerde)
+      val producerSettings = ProducerSettings(system, rsvpRawKeySerde.serializer, rsvpRawSerializer)
         .withBootstrapServers(s"localhost:${embeddedKafkaConfig.kafkaPort}")
         .withProperty(
           AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
