@@ -11,7 +11,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val commonCodeJsonFormat: RootJsonFormat[CommonCodeJson]           = jsonFormat2(CommonCodeJson.apply)
   implicit val aircraftJsonFormat: RootJsonFormat[AircraftJson]               = jsonFormat4(AircraftJson.apply)
   implicit val flightJsonFormat: RootJsonFormat[FlightJson]                   = jsonFormat3(FlightJson.apply)
-  implicit val systemJsonFormat: RootJsonFormat[SystemJson]                   = jsonFormat2(SystemJson.apply)
+  implicit val systemJsonFormat: RootJsonFormat[SystemJson]                   = jsonFormat1(SystemJson.apply)
   implicit val flightMessageJsonFormat: RootJsonFormat[FlightMessageJson]     = jsonFormat9(FlightMessageJson.apply)
   implicit val airplaneMessageJsonFormat: RootJsonFormat[AirplaneMessageJson] = jsonFormat11(AirplaneMessageJson.apply)
   implicit val airportMessageJsonFormat: RootJsonFormat[AirportMessageJson]   = jsonFormat10(AirportMessageJson.apply)
