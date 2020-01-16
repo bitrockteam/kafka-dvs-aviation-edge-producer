@@ -10,9 +10,9 @@ class Routes(serverConfig: ServerConfig) {
 
   val routes: Route = health
 
-  def health: Route = get {
+  private def health: Route = get {
     path(serverConfig.rest.healthPath) {
-      complete({ StatusCodes.OK })
+      complete { StatusCodes.OK }
     }
   }
 

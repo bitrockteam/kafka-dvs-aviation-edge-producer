@@ -17,7 +17,7 @@ object Main extends App with LazyLogging {
 
   logger.info("Starting up")
 
-  val bindingFuture = openHealthCheckPort()
+  val bindingFuture = bindRoutes()
 
   bindingFuture.map { serverBinding =>
     logger.info(s"Exposing to ${serverBinding.localAddress}")

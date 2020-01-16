@@ -15,7 +15,7 @@ object MainFunctions {
   val aviationConfig: AviationConfig = AppConfig.aviation
   val kafkaConfig: KafkaConfig       = AppConfig.kafka
 
-  def openHealthCheckPort()(implicit system: ActorSystem, mat: ActorMaterializer): Future[Http.ServerBinding] = {
+  def bindRoutes()(implicit system: ActorSystem, mat: ActorMaterializer): Future[Http.ServerBinding] = {
     val host   = serverConfig.host
     val port   = serverConfig.port
     val routes = new Routes(serverConfig)
