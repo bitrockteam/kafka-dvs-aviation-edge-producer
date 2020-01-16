@@ -2,7 +2,6 @@ package it.bitrock.dvs.producer.services
 
 import akka.actor.{ActorSystem, Cancellable}
 import akka.http.scaladsl.Http
-import akka.stream.ActorMaterializer
 import it.bitrock.dvs.producer.config.{AppConfig, AviationConfig, KafkaConfig, ServerConfig}
 import it.bitrock.dvs.producer.model._
 import it.bitrock.dvs.producer.routes.Routes
@@ -15,14 +14,14 @@ object MainFunctions {
   val aviationConfig: AviationConfig = AppConfig.aviation
   val kafkaConfig: KafkaConfig       = AppConfig.kafka
 
-  def bindRoutes()(implicit system: ActorSystem, mat: ActorMaterializer): Future[Http.ServerBinding] = {
+  def bindRoutes()(implicit system: ActorSystem): Future[Http.ServerBinding] = {
     val host   = serverConfig.host
     val port   = serverConfig.port
     val routes = new Routes(serverConfig)
     Http().bindAndHandle(routes.routes, host, port)
   }
 
-  def runStream[A: AviationStreamContext]()(implicit system: ActorSystem, mat: ActorMaterializer, ec: ExecutionContext): Cancellable = {
+  def runStream[A: AviationStreamContext]()(implicit system: ActorSystem, ec: ExecutionContext): Cancellable = {
     val config = AviationStreamContext[A].config(aviationConfig)
     val source = new TickSource(config.pollingStart, config.pollingInterval).source
     val flow   = new AviationFlow().flow(aviationConfig.getAviationUri(config.path), aviationConfig.apiTimeout)

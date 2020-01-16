@@ -7,7 +7,6 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Flow
 import com.typesafe.scalalogging.LazyLogging
 import it.bitrock.dvs.producer.model.{MessageJson, Tick}
@@ -16,7 +15,7 @@ import JsonSupport._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 
-class AviationFlow()(implicit system: ActorSystem, mat: ActorMaterializer, ec: ExecutionContext) extends LazyLogging {
+class AviationFlow()(implicit system: ActorSystem, ec: ExecutionContext) extends LazyLogging {
 
   def flow(uri: Uri, apiTimeout: Int): Flow[Tick, List[MessageJson], NotUsed] = flow { () =>
     // Only for development purpose (2 hours shift: 4 -> 6 and 16 -> 18)

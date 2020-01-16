@@ -2,7 +2,6 @@ package it.bitrock.dvs.producer.kafka
 
 import akka.actor.ActorSystem
 import akka.kafka.ProducerSettings
-import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Source
 import akka.testkit.TestKit
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
@@ -23,8 +22,6 @@ class KafkaFlightSinkFactorySpec
     with EmbeddedKafka
     with TestValues {
   import KafkaFlightSinkFactorySpec._
-
-  implicit val mat: ActorMaterializer = ActorMaterializer()
 
   "sink method" should {
 

@@ -1,7 +1,6 @@
 package it.bitrock.dvs.producer.services
 
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.stream.testkit.TestSubscriber.Probe
 import akka.stream.testkit.scaladsl.TestSink
@@ -16,7 +15,6 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class AviationFlowSpec extends TestKit(ActorSystem("AviationFlowSpec")) with Suite with WordSpecLike {
-  implicit val mat: ActorMaterializer = ActorMaterializer()
 
   "flow method" should {
 

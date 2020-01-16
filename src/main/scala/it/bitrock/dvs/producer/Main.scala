@@ -1,7 +1,6 @@
 package it.bitrock.dvs.producer
 
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import com.typesafe.scalalogging.LazyLogging
 import it.bitrock.dvs.producer.model._
 import it.bitrock.dvs.producer.services.MainFunctions._
@@ -11,9 +10,8 @@ import scala.concurrent.{Await, ExecutionContext}
 
 object Main extends App with LazyLogging {
 
-  implicit val system: ActorSystem    = ActorSystem("KafkaDVSProducer")
-  implicit val mat: ActorMaterializer = ActorMaterializer()
-  implicit val ec: ExecutionContext   = system.dispatcher
+  implicit val system: ActorSystem  = ActorSystem("KafkaDVSProducer")
+  implicit val ec: ExecutionContext = system.dispatcher
 
   logger.info("Starting up")
 
