@@ -44,8 +44,9 @@ object MainFunctions {
       validFlightSpeed(flight.speed.horizontal) &&
       validFlightJourney(flight.departure.iataCode, flight.arrival.iataCode)
 
-  private def validFlightStatus(status: String): Boolean                              = status == "en-route"
-  private def validFlightSpeed(speed: Double): Boolean                                = speed < aviationConfig.flightSpeedLimit
-  private def validFlightJourney(departureCode: String, arrivalCode: String): Boolean = !(departureCode.isEmpty || arrivalCode.isEmpty)
+  private def validFlightStatus(status: String): Boolean = status == "en-route"
+  private def validFlightSpeed(speed: Double): Boolean   = speed < aviationConfig.flightSpeedLimit
+  private def validFlightJourney(departureCode: Option[String], arrivalCode: Option[String]): Boolean =
+    !(departureCode.getOrElse("").isEmpty || arrivalCode.getOrElse("").isEmpty)
 
 }
