@@ -29,11 +29,11 @@ final case class AirplaneMessageJson(
 ) extends MessageJson
 
 final case class AirportMessageJson(
-    airportId: String,
+    airportId: Long,
     nameAirport: String,
     codeIataAirport: String,
-    latitudeAirport: String,
-    longitudeAirport: String,
+    latitudeAirport: Double,
+    longitudeAirport: Double,
     nameCountry: String,
     codeIso2Country: String,
     codeIataCity: String,
@@ -42,24 +42,24 @@ final case class AirportMessageJson(
 ) extends MessageJson
 
 final case class AirlineMessageJson(
-    airlineId: String,
+    airlineId: Long,
     nameAirline: String,
     codeIataAirline: String,
     codeIcaoAirline: String,
     callsign: String,
     statusAirline: String,
-    sizeAirline: String,
+    sizeAirline: Long,
     nameCountry: String,
     codeIso2Country: String
 ) extends MessageJson
 
 final case class CityMessageJson(
-    cityId: String,
+    cityId: Long,
     nameCity: String,
     codeIataCity: String,
     codeIso2Country: String,
-    latitudeCity: String,
-    longitudeCity: String
+    latitudeCity: Double,
+    longitudeCity: Double
 ) extends MessageJson
 
 final case class GeographyJson(
@@ -71,11 +71,11 @@ final case class GeographyJson(
 
 final case class SpeedJson(
     horizontal: Double,
-    vertical: Double
+    vspeed: Double
 )
 
 final case class CommonCodeJson(
-    iataCode: String,
+    iataCode: Option[String],
     icaoCode: String
 )
 
@@ -87,12 +87,11 @@ final case class AircraftJson(
 )
 
 final case class FlightJson(
-    iataNumber: String,
+    iataNumber: Option[String],
     icaoNumber: String,
     number: String
 )
 
 final case class SystemJson(
-    updated: String,
-    squawk: String
+    updated: Long
 )

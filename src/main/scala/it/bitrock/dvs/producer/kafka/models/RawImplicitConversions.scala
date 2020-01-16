@@ -1,5 +1,7 @@
 package it.bitrock.dvs.producer.kafka.models
 
+import java.time.Instant
+
 import it.bitrock.dvs.model.avro._
 import it.bitrock.dvs.producer.model._
 
@@ -12,12 +14,12 @@ object RawImplicitConversions {
 
   implicit class SpeedOps(gj: SpeedJson) {
     def toSpeed =
-      new Speed(gj.horizontal, gj.vertical)
+      new Speed(gj.horizontal, gj.vspeed)
   }
 
   implicit class CommonOps(gj: CommonCodeJson) {
     def toCommon =
-      new CommonCode(gj.iataCode, gj.icaoCode)
+      new CommonCode(gj.iataCode.getOrElse("N/A"), gj.icaoCode)
   }
 
   implicit class AircraftOps(gj: AircraftJson) {
@@ -27,12 +29,11 @@ object RawImplicitConversions {
 
   implicit class FlightOps(gj: FlightJson) {
     def toFlight =
-      new Flight(gj.iataNumber, gj.icaoNumber, gj.number)
+      new Flight(gj.iataNumber.getOrElse("N/A"), gj.icaoNumber, gj.number)
   }
 
   implicit class SystemOps(gj: SystemJson) {
-    def toSystem =
-      new System(gj.updated, gj.squawk)
+    def toSystem = new System(Instant.ofEpochMilli(gj.updated))
   }
 
   implicit class FlightRawStreamEventOps(mrse: FlightMessageJson) {
