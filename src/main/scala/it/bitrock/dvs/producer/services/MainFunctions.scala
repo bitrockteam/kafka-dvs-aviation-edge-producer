@@ -23,7 +23,7 @@ object MainFunctions {
 
   def runStream[A: AviationStreamContext]()(implicit system: ActorSystem, ec: ExecutionContext): Cancellable = {
     val config = AviationStreamContext[A].config(aviationConfig)
-    val source = new TickSource(config.pollingStart, config.pollingInterval).source
+    val source = new TickSource(config.pollingStart, config.pollingInterval, aviationConfig.tickSource).source
     val flow   = new AviationFlow().flow(aviationConfig.getAviationUri(config.path), aviationConfig.apiTimeout)
     val sink   = AviationStreamContext[A].sink(kafkaConfig)
 

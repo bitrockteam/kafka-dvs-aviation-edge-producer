@@ -2,6 +2,7 @@ package it.bitrock.dvs.producer.config
 
 import pureconfig.generic.auto._
 import java.net.URI
+import java.time.DayOfWeek
 
 import akka.http.scaladsl.model.Uri
 
@@ -10,6 +11,7 @@ final case class AviationConfig(
     key: String,
     apiTimeout: Int,
     flightSpeedLimit: Int,
+    tickSource: TickSourceConfig,
     flightStream: AviationStreamConfig,
     airplaneStream: AviationStreamConfig,
     airportStream: AviationStreamConfig,
@@ -29,6 +31,8 @@ final case class AviationStreamConfig(
     pollingStart: Int,
     pollingInterval: Int
 )
+
+final case class TickSourceConfig(pollLowerHourLimit: Int, pollUpperHourLimit: Int, pollExcludedDays: List[DayOfWeek])
 
 object AviationConfig {
 
