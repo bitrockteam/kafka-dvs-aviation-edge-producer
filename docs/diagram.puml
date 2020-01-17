@@ -1,0 +1,28 @@
+@startuml
+
+title kafka-dvs-producer architecture
+
+cloud "Aviation Edge API" as AE_API
+
+[kafka-dvs-producer] as Producer
+
+node Kafka {
+    database "flight_raw\ntopic" as RawFlightTopic
+    database "airplane_raw\ntopic" as RawAirplaneTopic
+    database "airport_raw\ntopic" as RawAirportTopic
+    database "airline_raw\ntopic" as RawAirlineTopic
+    database "city_raw\ntopic" as RawCityTopic
+}
+
+AE_API --> Producer : flights
+AE_API --> Producer : airplaneDatabase
+AE_API --> Producer : airportDatabase
+AE_API --> Producer : airlineDatabase
+AE_API --> Producer : cityDatabase
+Producer --> RawFlightTopic
+Producer --> RawAirplaneTopic
+Producer --> RawAirportTopic
+Producer --> RawAirlineTopic
+Producer --> RawCityTopic
+
+@enduml
