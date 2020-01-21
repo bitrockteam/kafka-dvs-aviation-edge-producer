@@ -19,7 +19,7 @@ object ToValuePair {
   implicit val flightValuePair: ToValuePair[MessageJson, Key, Flight.Value] = (j: MessageJson) =>
     (j.asInstanceOf[FlightMessageJson].flight.icaoNumber, j.asInstanceOf[FlightMessageJson].toFlightRaw)
   implicit val airplaneValuePair: ToValuePair[MessageJson, Key, Airplane.Value] = (j: MessageJson) =>
-    (j.asInstanceOf[AirplaneMessageJson].numberRegistration.replace("-", ""), j.asInstanceOf[AirplaneMessageJson].toAirplaneRaw)
+    (j.asInstanceOf[AirplaneMessageJson].numberRegistration, j.asInstanceOf[AirplaneMessageJson].toAirplaneRaw)
   implicit val airportValuePair: ToValuePair[MessageJson, Key, Airport.Value] = (j: MessageJson) =>
     (j.asInstanceOf[AirportMessageJson].codeIataAirport, j.asInstanceOf[AirportMessageJson].toAirportRaw)
   implicit val airlineValuePair: ToValuePair[MessageJson, Key, Airline.Value] = (j: MessageJson) =>
