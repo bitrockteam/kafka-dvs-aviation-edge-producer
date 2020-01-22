@@ -16,19 +16,6 @@ The application references the following environment variables:
 - `AVIATION_EDGE.TIMEOUT`: request timeout in seconds to Aviation Edge API
 - `AVIATION_EDGE.FLIGHT_SPEED_LIMIT`: max flight speed to filter on
 
-## Dependencies
-
-### Resolvers
-
-Some dependencies are downloaded from a private Nexus repository. Make sure to provide a `~/.sbt/.credentials.bitrock` file containing valid credentials:
-
-```properties
-realm=Sonatype Nexus Repository Manager
-host=nexus.reactive-labs.io
-user=<your-username>
-password=<your-password>
-```
-
 ## How to test
 
 Execute unit tests running the following command:
