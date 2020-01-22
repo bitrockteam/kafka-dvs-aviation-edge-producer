@@ -119,7 +119,7 @@ class AviationFlowSpec extends TestKit(ActorSystem("AviationFlowSpec")) with Sui
 
   private def readFixture(fixtureName: String): Future[String] = Future {
     scala.io.Source
-      .fromResource(s"fixtures/aviation-edge-api/$fixtureName.json")
+      .fromResource(s"fixtures/aviation-edge-api/$fixtureName.json", this.getClass.getClassLoader)
       .mkString
   }
 }
