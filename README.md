@@ -1,6 +1,6 @@
-# DVS Producer
+# DVS Aviation Edge Producer
 
-[![Build Status](https://iproject-jenkins.reactive-labs.io/buildStatus/icon?job=kafka-dvs-producer%2Fmaster)](https://iproject-jenkins.reactive-labs.io/job/kafka-dvs-producer/job/master/)
+[![Build Status](https://iproject-jenkins.reactive-labs.io/buildStatus/icon?job=kafka-dvs-aviation-edge-producer%2Fmaster)](https://iproject-jenkins.reactive-labs.io/job/kafka-dvs-aviation-edge-producer/job/master/)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 
 ## Configuration

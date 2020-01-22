@@ -1,16 +1,16 @@
-package it.bitrock.dvs.producer
+package it.bitrock.dvs.producer.aviationedge
 
 import akka.actor.ActorSystem
 import com.typesafe.scalalogging.LazyLogging
-import it.bitrock.dvs.producer.model._
-import it.bitrock.dvs.producer.services.MainFunctions._
+import it.bitrock.dvs.producer.aviationedge.model._
+import it.bitrock.dvs.producer.aviationedge.services.MainFunctions._
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext}
 
 object Main extends App with LazyLogging {
 
-  implicit val system: ActorSystem  = ActorSystem("KafkaDVSProducer")
+  implicit val system: ActorSystem  = ActorSystem("KafkaDVSAviationEdgeProducer")
   implicit val ec: ExecutionContext = system.dispatcher
 
   logger.info("Starting up")

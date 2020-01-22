@@ -1,13 +1,13 @@
-package it.bitrock.dvs.producer.kafka
+package it.bitrock.dvs.producer.aviationedge.kafka
 
 import akka.actor.ActorSystem
 import akka.kafka.ProducerSettings
 import akka.stream.scaladsl.Source
 import akka.testkit.TestKit
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
-import it.bitrock.dvs.producer.model.MessageJson
-import it.bitrock.dvs.producer.TestValues
-import it.bitrock.dvs.producer.kafka.KafkaTypes.{Key, Flight => KafkaTypesFlight}
+import it.bitrock.dvs.producer.aviationedge.TestValues
+import it.bitrock.dvs.producer.aviationedge.model.MessageJson
+import it.bitrock.dvs.producer.aviationedge.kafka.KafkaTypes.{Key, Flight => KafkaTypesFlight}
 import it.bitrock.kafkacommons.serialization.ImplicitConversions._
 import it.bitrock.testcommons.{FixtureLoanerAnyResult, Suite}
 import net.manub.embeddedkafka.schemaregistry._

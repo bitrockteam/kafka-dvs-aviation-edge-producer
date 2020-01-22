@@ -57,7 +57,7 @@ lazy val testSettings = Seq(
 
 lazy val root = (project in file("."))
   .settings(
-    name := "kafka-dvs-producer",
+    name := "kafka-dvs-aviation-edge-producer",
     organization := "it.bitrock.dvs"
   )
   .settings(compileSettings: _*)

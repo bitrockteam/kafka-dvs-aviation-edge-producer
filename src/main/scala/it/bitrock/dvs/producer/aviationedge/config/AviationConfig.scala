@@ -1,4 +1,4 @@
-package it.bitrock.dvs.producer.config
+package it.bitrock.dvs.producer.aviationedge.config
 
 import pureconfig.generic.auto._
 import java.net.URI

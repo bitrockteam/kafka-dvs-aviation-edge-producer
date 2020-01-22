@@ -1,10 +1,10 @@
-package it.bitrock.dvs.producer.services
+package it.bitrock.dvs.producer.aviationedge.services
 
 import akka.actor.{ActorSystem, Cancellable}
 import akka.http.scaladsl.Http
-import it.bitrock.dvs.producer.config.{AppConfig, AviationConfig, KafkaConfig, ServerConfig}
-import it.bitrock.dvs.producer.model._
-import it.bitrock.dvs.producer.routes.Routes
+import it.bitrock.dvs.producer.aviationedge.config.{AppConfig, AviationConfig, KafkaConfig, ServerConfig}
+import it.bitrock.dvs.producer.aviationedge.model._
+import it.bitrock.dvs.producer.aviationedge.routes.Routes
 
 import scala.concurrent.{ExecutionContext, Future}
 

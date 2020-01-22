@@ -5,7 +5,7 @@ pipeline {
         AWS_REGION = 'eu-west-1'
         GITHUB_CREDENTIALS = 'BitrockCI token'
         GITHUB_ACCOUNT = 'bitrockteam'
-        GITHUB_REPO = 'kafka-dvs-producer'
+        GITHUB_REPO = 'kafka-dvs-aviation-edge-producer'
         GITHUB_SSH = "centos"
         RELEASE_BRANCH = "master"
         SBT_OPTS="-Xmx2048M"
@@ -102,7 +102,7 @@ pipeline {
                         sh "docker push ${DOCKER_REPOSITORY}/${GITHUB_REPO}:${tagAfter}"
                         sh "docker tag ${DOCKER_REPOSITORY}/${GITHUB_REPO}:${tagAfter} ${DOCKER_REPOSITORY}/${GITHUB_REPO}:latest"
                         sh "docker push ${DOCKER_REPOSITORY}/${GITHUB_REPO}:latest"
-                        sh "printf '[{\"name\":\"kafka-dvs-producer\",\"imageUri\":\"%s\"}]' \$(git describe --tags --abbrev=0 | sed 's/^v//') > imagedefinitions.json"
+                        sh "printf '[{\"name\":\"kafka-dvs-aviation-edge-producer\",\"imageUri\":\"%s\"}]' \$(git describe --tags --abbrev=0 | sed 's/^v//') > imagedefinitions.json"
                     }
                 }
             }
