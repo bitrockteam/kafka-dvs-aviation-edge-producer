@@ -106,11 +106,11 @@ pipeline {
                 }
             }
             steps {
-		build job: 'kafka-dvs-cd/master',
-			    parameters: [[$class: 'StringParameterValue', name: 'deployment', value: "${GITHUB_REPO}@${tagAfter}"]],
-			    wait: false
-	    }
- 	}
+                build job: 'kafka-dvs-cd/master',
+                    parameters: [[$class: 'StringParameterValue', name: 'deployment', value: "${GITHUB_REPO}@${tagAfter}"]],
+                    wait: false
+            }
+        }
         stage("Building feature/develop") {
              agent {
                 dockerfile {
