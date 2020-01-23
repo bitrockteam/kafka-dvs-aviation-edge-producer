@@ -39,3 +39,4 @@ Architectural diagram is available [here](docs/diagram.puml). It can be rendered
 ## Contribution
 
 If you'd like to contribute to the project, make sure to review our [recommendations](CONTRIBUTING.md).
+
