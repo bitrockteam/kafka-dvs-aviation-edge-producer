@@ -7,7 +7,7 @@ pipeline {
         GITHUB_ACCOUNT = 'bitrockteam'
         GITHUB_REPO = 'kafka-dvs-aviation-edge-producer'
         GITHUB_SSH = "centos"
-        RELEASE_BRANCH = "master"
+        RELEASE_BRANCH = "hotfix/jenkins-build-3"
         SBT_OPTS="-Xmx2048M"
     }
     options {
@@ -19,7 +19,8 @@ pipeline {
                 checkout([
                      $class: 'GitSCM',
                      branches: scm.branches,
-                     extensions: scm.extensions + [[$class: 'CleanCheckout'], [$class: 'LocalBranch', localBranch: '']],
+                     extensions: scm.extensions + [[$class: 'CleanCheckout'], [$class: 'LocalBranch', localBranch: ''],
+                        [$class: 'CloneOption', depth: 2, shallow: false]],
                      userRemoteConfigs: scm.userRemoteConfigs
                 ])
                 script {
