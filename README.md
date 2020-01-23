@@ -1,6 +1,7 @@
-# DVS Producer
+# DVS Aviation Edge Producer
 
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](code_of_conduct.md)
+[![Build Status](https://iproject-jenkins.reactive-labs.io/buildStatus/icon?job=kafka-dvs-aviation-edge-producer%2Fmaster)](https://iproject-jenkins.reactive-labs.io/job/kafka-dvs-aviation-edge-producer/job/master/)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 
 ## Configuration
 
@@ -10,29 +11,10 @@ The application references the following environment variables:
 - `PORT`: server port
 - `KAFKA.BOOTSTRAP.SERVERS`: valid `bootstrap.servers` value (see [Confluent docs](https://docs.confluent.io/current/clients/consumer.html#configuration))
 - `SCHEMAREGISTRY.URL`: valid `schema.registry.url` value (see [Confluent docs](https://docs.confluent.io/current/schema-registry/docs/schema_registry_tutorial.html#java-consumers))
-
-## Dependencies
-
-### Resolvers
-
-Some dependencies are downloaded from a private Nexus repository. Make sure to provide a `~/.sbt/.credentials.bitrock` file containing valid credentials:
-
-```properties
-realm=Sonatype Nexus Repository Manager
-host=nexus.reactive-labs.io
-user=<your-username>
-password=<your-password>
-```
-
-### Kafka topics
-
-The application references the following Kafka topic:
-
-- `flight_raw`
-- `airplane_raw`
-- `airport_raw`
-- `airline_raw`
-- `city_raw`
+- `AVIATION_EDGE.BASE_URL`: [Aviation Edge](http://aviation-edge.com/developers/) base URL
+- `AVIATION_EDGE.KEY`: Aviation Edge API key
+- `AVIATION_EDGE.TIMEOUT`: request timeout in seconds to Aviation Edge API
+- `AVIATION_EDGE.FLIGHT_SPEED_LIMIT`: max flight speed to filter on
 
 ## How to test
 
@@ -53,3 +35,7 @@ sbt docker:publish
 ## Architectural diagram
 
 Architectural diagram is available [here](docs/diagram.puml). It can be rendered using [PlantText](https://www.planttext.com).
+
+## Contribution
+
+If you'd like to contribute to the project, make sure to review our [recommendations](CONTRIBUTING.md).

@@ -1,6 +1,9 @@
 import Dependencies._
 import ReleaseTransformations._
 
+addCommandAlias("fix", "all compile:scalafix test:scalafix")
+addCommandAlias("fixCheck", "; compile:scalafix --check ; test:scalafix --check")
+
 lazy val compileSettings = Seq(
   Compile / compile := (Compile / compile)
     .dependsOn(
@@ -8,6 +11,8 @@ lazy val compileSettings = Seq(
       Compile / scalafmtAll
     )
     .value,
+  addCompilerPlugin(scalafixSemanticdb),
+  scalafixDependencies in ThisBuild += "org.scalatest" %% "autofix" % Versions.ScalaTestAutofix,
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding",
@@ -18,16 +23,11 @@ lazy val compileSettings = Seq(
     "-Ywarn-dead-code",
     "-Ywarn-unused"
   ),
+  scalacOptions -= "-Xfatal-warnings",
   scalaVersion := Versions.Scala
 )
 
 lazy val dependenciesSettings = Seq(
-  credentials ++= Seq(
-    baseDirectory.value / ".sbt" / ".credentials",
-    Path.userHome / ".sbt" / ".credentials.bitrock"
-  ).collect {
-    case c if c.exists => Credentials(c)
-  },
   excludeDependencies ++= excludeDeps,
   libraryDependencies ++= prodDeps ++ testDeps,
   resolvers ++= CustomResolvers.resolvers
@@ -57,7 +57,7 @@ lazy val testSettings = Seq(
 
 lazy val root = (project in file("."))
   .settings(
-    name := "kafka-dvs-producer",
+    name := "kafka-dvs-aviation-edge-producer",
     organization := "it.bitrock.dvs"
   )
   .settings(compileSettings: _*)
