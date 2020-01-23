@@ -71,6 +71,7 @@ pipeline {
             steps {
                 echo "Building master branch"
                 sshagent (credentials: ['centos']) {
+                    sh "git checkout ${BRANCH_NAME}"
                     sh "sbt -Dsbt.global.base=.sbt -Dsbt.boot.directory=.sbt -Dsbt.ivy.home=.ivy2 'release with-defaults'"
                     githubNotify status: "SUCCESS",
                             credentialsId: GITHUB_CREDENTIALS,
