@@ -53,11 +53,11 @@ pipeline {
                     \$(aws ecr get-login --no-include-email --region ${AWS_REGION})
                     set -x
                     """
-                AWS_CREDENTIALS = sh (
-                    script: '\$(aws ecr get-login --no-include-email --region ${AWS_REGION})',
-                    returnStdout: true
-                ).trim()
                 script {
+                    AWS_CREDENTIALS = sh (
+                        script: "\$(aws ecr get-login --no-include-email --region ${AWS_REGION})",
+                        returnStdout: true
+                    ).trim()
                     tagBefore = sh(
                             script: "git describe --tags --abbrev=0 | sed 's/^v//'",
                             returnStdout: true
