@@ -39,6 +39,8 @@ RUN mkdir /var/lib/jenkins/.ssh/ && \
     ssh-keyscan github.com >> /var/lib/jenkins/.ssh/known_hosts && \
     echo "Host *" >> /var/lib/jenkins/.ssh/config && \
     echo "    StrictHostKeyChecking no" >> /var/lib/jenkins/.ssh/config && \
+    echo "    UserKnownHostsFile /dev/null" >> /var/lib/jenkins/.ssh/config && \
     touch /var/lib/jenkins/.ssh/config
 
 USER jenkins
+UserKnownHostsFile=/dev/null
