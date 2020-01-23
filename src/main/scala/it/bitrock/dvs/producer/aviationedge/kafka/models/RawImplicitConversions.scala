@@ -1,9 +1,9 @@
-package it.bitrock.dvs.producer.kafka.models
+package it.bitrock.dvs.producer.aviationedge.kafka.models
 
 import java.time.Instant
 
 import it.bitrock.dvs.model.avro._
-import it.bitrock.dvs.producer.model._
+import it.bitrock.dvs.producer.aviationedge.model._
 
 object RawImplicitConversions {
 

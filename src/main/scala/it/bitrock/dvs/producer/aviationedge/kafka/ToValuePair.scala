@@ -1,8 +1,8 @@
-package it.bitrock.dvs.producer.kafka
+package it.bitrock.dvs.producer.aviationedge.kafka
 
 import KafkaTypes._
-import it.bitrock.dvs.producer.kafka.models.RawImplicitConversions._
-import it.bitrock.dvs.producer.model.{
+import it.bitrock.dvs.producer.aviationedge.kafka.models.RawImplicitConversions._
+import it.bitrock.dvs.producer.aviationedge.model.{
   AirlineMessageJson,
   AirplaneMessageJson,
   AirportMessageJson,

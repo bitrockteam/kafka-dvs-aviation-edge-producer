@@ -1,7 +1,7 @@
-package it.bitrock.dvs.producer.services
+package it.bitrock.dvs.producer.aviationedge.services
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import it.bitrock.dvs.producer.model._
+import it.bitrock.dvs.producer.aviationedge.model._
 import spray.json._
 
 object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {

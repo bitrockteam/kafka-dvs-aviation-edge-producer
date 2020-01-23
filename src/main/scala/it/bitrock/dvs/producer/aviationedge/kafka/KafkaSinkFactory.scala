@@ -1,4 +1,4 @@
-package it.bitrock.dvs.producer.kafka
+package it.bitrock.dvs.producer.aviationedge.kafka
 
 import akka.Done
 import akka.kafka.ProducerSettings

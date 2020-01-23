@@ -1,13 +1,13 @@
-package it.bitrock.dvs.producer.services
+package it.bitrock.dvs.producer.aviationedge.services
 
 import akka.Done
 import akka.actor.ActorSystem
 import akka.kafka.ProducerSettings
 import akka.stream.scaladsl.Sink
-import it.bitrock.dvs.producer.config.{AviationConfig, AviationStreamConfig, KafkaConfig}
-import it.bitrock.dvs.producer.kafka.KafkaSinkFactory
-import it.bitrock.dvs.producer.kafka.KafkaTypes._
-import it.bitrock.dvs.producer.model._
+import it.bitrock.dvs.producer.aviationedge.config.{AviationConfig, AviationStreamConfig, KafkaConfig}
+import it.bitrock.dvs.producer.aviationedge.kafka.KafkaSinkFactory
+import it.bitrock.dvs.producer.aviationedge.kafka.KafkaTypes._
+import it.bitrock.dvs.producer.aviationedge.model._
 import it.bitrock.kafkacommons.serialization.AvroSerdes
 import org.apache.kafka.common.serialization.Serdes
 
@@ -31,15 +31,16 @@ object AviationStreamContext {
     }
   }
 
-  implicit val AirplaneStreamContext: AviationStreamContext[AirplaneStream.type] = new AviationStreamContext[AirplaneStream.type] {
-    override def config(aviationConfig: AviationConfig): AviationStreamConfig = aviationConfig.airplaneStream
+  implicit val AirplaneStreamContext: AviationStreamContext[AirplaneStream.type] =
+    new AviationStreamContext[AirplaneStream.type] {
+      override def config(aviationConfig: AviationConfig): AviationStreamConfig = aviationConfig.airplaneStream
 
-    override def sink(kafkaConfig: KafkaConfig)(implicit system: ActorSystem): Sink[MessageJson, Future[Done]] = {
-      val airplaneRawSerializer    = AvroSerdes.serdeFrom[Airplane.Value](kafkaConfig.schemaRegistryUrl).serializer
-      val airplaneProducerSettings = ProducerSettings(system, Serdes.String().serializer, airplaneRawSerializer)
-      new KafkaSinkFactory[MessageJson, Key, Airplane.Value](kafkaConfig.airplaneRawTopic, airplaneProducerSettings).sink
+      override def sink(kafkaConfig: KafkaConfig)(implicit system: ActorSystem): Sink[MessageJson, Future[Done]] = {
+        val airplaneRawSerializer    = AvroSerdes.serdeFrom[Airplane.Value](kafkaConfig.schemaRegistryUrl).serializer
+        val airplaneProducerSettings = ProducerSettings(system, Serdes.String().serializer, airplaneRawSerializer)
+        new KafkaSinkFactory[MessageJson, Key, Airplane.Value](kafkaConfig.airplaneRawTopic, airplaneProducerSettings).sink
+      }
     }
-  }
 
   implicit val AirportStreamContext: AviationStreamContext[AirportStream.type] = new AviationStreamContext[AirportStream.type] {
     override def config(aviationConfig: AviationConfig): AviationStreamConfig = aviationConfig.airportStream

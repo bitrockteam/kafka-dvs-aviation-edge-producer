@@ -4,7 +4,7 @@ object Dependencies {
 
   object CustomResolvers {
 
-    lazy val BitrockNexus = "Bitrock Nexus" at "https://nexus.reactive-labs.io/repository/maven-bitrock/"
+    lazy val BitrockNexus = "Bitrock Nexus" at "https://nexus.reactive-labs.io/repository/maven-bitrock-public/"
     lazy val Confluent    = "confluent" at "https://packages.confluent.io/maven/"
 
     lazy val resolvers: Seq[Resolver] = Seq(BitrockNexus, Confluent)
@@ -20,14 +20,14 @@ object Dependencies {
     lazy val ConfluentPlatform = "5.4.0"
     lazy val JakartaWsRs       = "2.1.4"
     lazy val Kafka             = "2.4.0"
-    lazy val KafkaCommons      = "0.0.5"
-    lazy val KafkaDVS          = "0.1.17"
+    lazy val KafkaCommons      = "0.0.8"
+    lazy val KafkaDVS          = "1.0.0"
     lazy val LogbackClassic    = "1.2.3"
     lazy val PureConfig        = "0.10.2"
     lazy val ScalaLogging      = "3.9.2"
     lazy val ScalaTestAutofix  = "3.1.0.0"
     lazy val Slf4j             = "1.7.26"
-    lazy val TestCommons       = "0.0.5"
+    lazy val TestCommons       = "0.0.8"
 
   }
 

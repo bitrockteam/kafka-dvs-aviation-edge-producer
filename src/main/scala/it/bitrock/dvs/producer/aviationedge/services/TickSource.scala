@@ -1,11 +1,11 @@
-package it.bitrock.dvs.producer.services
+package it.bitrock.dvs.producer.aviationedge.services
 
 import java.time.{LocalDateTime, ZoneOffset}
 
 import akka.actor.Cancellable
 import akka.stream.scaladsl.Source
-import it.bitrock.dvs.producer.config.TickSourceConfig
-import it.bitrock.dvs.producer.model.Tick
+import it.bitrock.dvs.producer.aviationedge.config.TickSourceConfig
+import it.bitrock.dvs.producer.aviationedge.model.Tick
 
 import scala.concurrent.duration._
 

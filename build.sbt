@@ -28,12 +28,6 @@ lazy val compileSettings = Seq(
 )
 
 lazy val dependenciesSettings = Seq(
-  credentials ++= Seq(
-    baseDirectory.value / ".sbt" / ".credentials",
-    Path.userHome / ".sbt" / ".credentials.bitrock"
-  ).collect {
-    case c if c.exists => Credentials(c)
-  },
   excludeDependencies ++= excludeDeps,
   libraryDependencies ++= prodDeps ++ testDeps,
   resolvers ++= CustomResolvers.resolvers
@@ -63,7 +57,7 @@ lazy val testSettings = Seq(
 
 lazy val root = (project in file("."))
   .settings(
-    name := "kafka-dvs-producer",
+    name := "kafka-dvs-aviation-edge-producer",
     organization := "it.bitrock.dvs"
   )
   .settings(compileSettings: _*)

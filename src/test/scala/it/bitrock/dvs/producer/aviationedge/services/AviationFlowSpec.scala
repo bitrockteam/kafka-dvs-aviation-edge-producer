@@ -1,11 +1,11 @@
-package it.bitrock.dvs.producer.services
+package it.bitrock.dvs.producer.aviationedge.services
 
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.stream.testkit.TestSubscriber.Probe
 import akka.stream.testkit.scaladsl.TestSink
 import akka.testkit.TestKit
-import it.bitrock.dvs.producer.model._
+import it.bitrock.dvs.producer.aviationedge.model._
 import AviationFlowSpec.Resource
 import it.bitrock.testcommons.{FixtureLoanerAnyResult, Suite}
 import org.scalatest.WordSpecLike
@@ -119,7 +119,7 @@ class AviationFlowSpec extends TestKit(ActorSystem("AviationFlowSpec")) with Sui
 
   private def readFixture(fixtureName: String): Future[String] = Future {
     scala.io.Source
-      .fromResource(s"fixtures/aviation-edge-api/$fixtureName.json")
+      .fromResource(s"fixtures/aviation-edge-api/$fixtureName.json", this.getClass.getClassLoader)
       .mkString
   }
 }

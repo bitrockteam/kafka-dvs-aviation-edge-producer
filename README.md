@@ -1,6 +1,6 @@
-# DVS Producer
+# DVS Aviation Edge Producer
 
-[![Build Status](https://iproject-jenkins.reactive-labs.io/buildStatus/icon?job=kafka-dvs-producer%2Fmaster)](https://iproject-jenkins.reactive-labs.io/job/kafka-dvs-producer/job/master/)
+[![Build Status](https://iproject-jenkins.reactive-labs.io/buildStatus/icon?job=kafka-dvs-aviation-edge-producer%2Fmaster)](https://iproject-jenkins.reactive-labs.io/job/kafka-dvs-aviation-edge-producer/job/master/)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 
 ## Configuration
@@ -15,19 +15,6 @@ The application references the following environment variables:
 - `AVIATION_EDGE.KEY`: Aviation Edge API key
 - `AVIATION_EDGE.TIMEOUT`: request timeout in seconds to Aviation Edge API
 - `AVIATION_EDGE.FLIGHT_SPEED_LIMIT`: max flight speed to filter on
-
-## Dependencies
-
-### Resolvers
-
-Some dependencies are downloaded from a private Nexus repository. Make sure to provide a `~/.sbt/.credentials.bitrock` file containing valid credentials:
-
-```properties
-realm=Sonatype Nexus Repository Manager
-host=nexus.reactive-labs.io
-user=<your-username>
-password=<your-password>
-```
 
 ## How to test
 
