@@ -9,6 +9,7 @@ pipeline {
         GITHUB_SSH = "centos"
         RELEASE_BRANCH = "master"
         SBT_OPTS="-Xmx2048M"
+        AWS_CREDENTIALS=""
     }
     options {
         ansiColor('xterm')
@@ -19,10 +20,12 @@ pipeline {
                 checkout([
                      $class: 'GitSCM',
                      branches: scm.branches,
-                     extensions: scm.extensions + [[$class: 'CleanCheckout'], [$class: 'LocalBranch', localBranch: '']],
+                     extensions: scm.extensions + [[$class: 'CleanCheckout'], [$class: 'LocalBranch', localBranch: ''],
+                        [$class: 'CloneOption', depth: 2, shallow: false]],
                      userRemoteConfigs: scm.userRemoteConfigs
                 ])
                 script {
+                    sh "git checkout ${BRANCH_NAME}"
                     committerEmail = sh(
                             script: "git --no-pager show -s --format=\'%ae\'",
                             returnStdout: true
@@ -51,6 +54,10 @@ pipeline {
                     set -x
                     """
                 script {
+                    AWS_CREDENTIALS = sh (
+                        script: "aws ecr get-login --no-include-email --region ${AWS_REGION}",
+                        returnStdout: true
+                    ).trim()
                     tagBefore = sh(
                             script: "git describe --tags --abbrev=0 | sed 's/^v//'",
                             returnStdout: true
@@ -76,6 +83,22 @@ pipeline {
             steps {
                 echo "Building master branch"
                 sshagent (credentials: ['centos']) {
+                    checkout([
+                         $class: 'GitSCM',
+                         branches: scm.branches,
+                         extensions: scm.extensions + [[$class: 'CleanCheckout'], [$class: 'LocalBranch', localBranch: ''],
+                            [$class: 'CloneOption', depth: 2, shallow: false]],
+                         userRemoteConfigs: scm.userRemoteConfigs
+                    ])
+                    sh """
+                        set +x
+                        ${AWS_CREDENTIALS}
+                        set -x
+                        git checkout ${BRANCH_NAME}
+                        git config remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
+                        git config branch.${BRANCH_NAME}.remote origin
+                        git config branch.${BRANCH_NAME}.merge refs/heads/${BRANCH_NAME}
+                        """
                     sh "sbt -Dsbt.global.base=.sbt -Dsbt.boot.directory=.sbt -Dsbt.ivy.home=.ivy2 'release with-defaults'"
                     githubNotify status: "SUCCESS",
                             credentialsId: GITHUB_CREDENTIALS,
