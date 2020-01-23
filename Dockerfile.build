@@ -37,6 +37,7 @@ RUN adduser --home /var/lib/jenkins --disabled-password --gecos '' --uid 1000 je
 
 RUN mkdir /var/lib/jenkins/.ssh/ && \
     ssh-keyscan github.com >> /var/lib/jenkins/.ssh/known_hosts && \
+    ssh-keyscan 140.82.113.4 >> /var/lib/jenkins/.ssh/known_hosts && \
     touch /var/lib/jenkins/.ssh/config
 
 USER jenkins
