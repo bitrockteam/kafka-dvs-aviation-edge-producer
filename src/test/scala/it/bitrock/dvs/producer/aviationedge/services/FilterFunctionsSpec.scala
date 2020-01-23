@@ -1,7 +1,7 @@
-package it.bitrock.dvs.producer.services
+package it.bitrock.dvs.producer.aviationedge.services
 
-import it.bitrock.dvs.producer.TestValues
-import it.bitrock.dvs.producer.model.MessageJson
+import it.bitrock.dvs.producer.aviationedge.TestValues
+import it.bitrock.dvs.producer.aviationedge.model.MessageJson
 import it.bitrock.testcommons.Suite
 import org.scalatest.WordSpecLike
 

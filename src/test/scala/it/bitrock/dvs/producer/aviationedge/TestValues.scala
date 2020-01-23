@@ -1,18 +1,9 @@
-package it.bitrock.dvs.producer
+package it.bitrock.dvs.producer.aviationedge
 
 import java.time.Instant
 
-import it.bitrock.dvs.producer.model.{
-  AircraftJson,
-  AirlineMessageJson,
-  CommonCodeJson,
-  FlightJson,
-  FlightMessageJson,
-  GeographyJson,
-  SpeedJson,
-  SystemJson
-}
-import it.bitrock.dvs.model.avro.{Aircraft, CommonCode, Flight, FlightRaw, Geography, Speed, System}
+import it.bitrock.dvs.model.avro._
+import it.bitrock.dvs.producer.aviationedge.model._
 
 trait TestValues {
 

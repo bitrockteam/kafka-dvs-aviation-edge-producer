@@ -1,10 +1,10 @@
 @startuml
 
-title kafka-dvs-producer architecture
+title kafka-dvs-aviation-edge-producer architecture
 
 cloud "Aviation Edge API" as AE_API
 
-[kafka-dvs-producer] as Producer
+[kafka-dvs-aviation-edge-producer] as Producer
 
 node Kafka {
     database "flight_raw\ntopic" as RawFlightTopic

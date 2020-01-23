@@ -1,4 +1,4 @@
-package it.bitrock.dvs.producer.model
+package it.bitrock.dvs.producer.aviationedge.model
 
 sealed trait AviationStream
 case object FlightStream   extends AviationStream

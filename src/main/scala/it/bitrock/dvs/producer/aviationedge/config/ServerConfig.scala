@@ -1,4 +1,4 @@
-package it.bitrock.dvs.producer.config
+package it.bitrock.dvs.producer.aviationedge.config
 
 final case class ServerConfig(
     host: String,

@@ -1,4 +1,4 @@
-package it.bitrock.dvs.producer.services
+package it.bitrock.dvs.producer.aviationedge.services
 
 import akka.NotUsed
 import akka.actor.ActorSystem
@@ -7,7 +7,7 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.Flow
 import com.typesafe.scalalogging.LazyLogging
-import it.bitrock.dvs.producer.model.{MessageJson, Tick}
+import it.bitrock.dvs.producer.aviationedge.model.{MessageJson, Tick}
 import JsonSupport._
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -1,13 +1,13 @@
-package it.bitrock.dvs.producer.services
+package it.bitrock.dvs.producer.aviationedge.services
 
 import akka.Done
 import akka.actor.ActorSystem
 import akka.kafka.ProducerSettings
 import akka.stream.scaladsl.Sink
-import it.bitrock.dvs.producer.config.{AviationConfig, AviationStreamConfig, KafkaConfig}
-import it.bitrock.dvs.producer.kafka.KafkaSinkFactory
-import it.bitrock.dvs.producer.kafka.KafkaTypes._
-import it.bitrock.dvs.producer.model._
+import it.bitrock.dvs.producer.aviationedge.config.{AviationConfig, AviationStreamConfig, KafkaConfig}
+import it.bitrock.dvs.producer.aviationedge.kafka.KafkaSinkFactory
+import it.bitrock.dvs.producer.aviationedge.kafka.KafkaTypes._
+import it.bitrock.dvs.producer.aviationedge.model._
 import it.bitrock.kafkacommons.serialization.AvroSerdes
 import org.apache.kafka.common.serialization.Serdes
 

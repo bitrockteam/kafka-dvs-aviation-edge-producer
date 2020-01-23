@@ -4,7 +4,7 @@ echo -e "Building and starting the services...\n" >&2
 sleep 1
 
 docker-compose build && \
-  docker-compose up -d kafka-dvs-producer kafka-dvs-streams
+  docker-compose up -d kafka-dvs-aviation-edge-producer kafka-dvs-streams
 
 docker_cmd_status=$?
 
