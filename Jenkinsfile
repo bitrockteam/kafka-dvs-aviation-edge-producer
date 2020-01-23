@@ -16,8 +16,13 @@ pipeline {
     stages {
         stage("Branch checkout") {
             steps {
+                checkout([
+                     $class: 'GitSCM',
+                     branches: scm.branches,
+                     extensions: scm.extensions + [[$class: 'CleanCheckout'], [$class: 'LocalBranch', localBranch: '']],
+                     userRemoteConfigs: scm.userRemoteConfigs
+                ])
                 script {
-                    checkout scm
                     committerEmail = sh(
                             script: "git --no-pager show -s --format=\'%ae\'",
                             returnStdout: true
