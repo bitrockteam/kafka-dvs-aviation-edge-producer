@@ -43,4 +43,3 @@ RUN mkdir /var/lib/jenkins/.ssh/ && \
     touch /var/lib/jenkins/.ssh/config
 
 USER jenkins
-UserKnownHostsFile=/dev/null
