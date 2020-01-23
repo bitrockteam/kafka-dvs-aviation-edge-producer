@@ -64,7 +64,7 @@ pipeline {
             agent {
                 dockerfile {
                      filename 'Dockerfile.build'
-                     args '--group-add 994 -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/jenkins/.cache/coursier/v1:/sbt-cache/.cache/coursier/v1 -v /var/lib/jenkins/.sbtboot:/sbt-cache/.sbtboot -v /var/lib/jenkins/.sbt/boot/:/sbt-cache/.boot -v /var/lib/jenkins/.ivy2:/sbt-cache/.ivy2'
+                     args '--group-add 994 -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/jenkins/.cache/coursier/v1:/sbt-cache/.cache/coursier/v1 -v /var/lib/jenkins/.sbtboot:/sbt-cache/.sbtboot -v /var/lib/jenkins/.sbt/boot/:/sbt-cache/.boot -v /var/lib/jenkins/.ivy2:/sbt-cache/.ivy2 -v /var/lib/jenkins/.docker/config.json:/var/lib/jenkins/.docker/config.json'
                 }
             }
             when {
