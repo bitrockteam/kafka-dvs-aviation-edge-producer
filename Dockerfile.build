@@ -36,6 +36,7 @@ RUN apt-get install -y apt-transport-https ca-certificates curl gnupg2 software-
 RUN adduser --home /var/lib/jenkins --disabled-password --gecos '' --uid 1000 jenkins
 
 RUN mkdir /var/lib/jenkins/.ssh/ && \
-    ssh-keyscan github.com >> /var/lib/jenkins/.ssh/known_hosts
+    ssh-keyscan github.com >> /var/lib/jenkins/.ssh/known_hosts && \
+    touch /var/lib/jenkins/.ssh/config
 
 USER jenkins
