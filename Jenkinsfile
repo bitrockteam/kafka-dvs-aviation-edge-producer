@@ -85,7 +85,12 @@ pipeline {
                             [$class: 'CloneOption', depth: 2, shallow: false]],
                          userRemoteConfigs: scm.userRemoteConfigs
                     ])
-                    sh "git checkout ${BRANCH_NAME}"
+                    sh """
+                        git checkout ${BRANCH_NAME}
+                        git config remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
+                        git config branch.${BRANCH_NAME}.remote origin
+                        git config branch.${BRANCH_NAME}.merge refs/heads/${BRANCH_NAME}
+                        """
                     sh "sbt -Dsbt.global.base=.sbt -Dsbt.boot.directory=.sbt -Dsbt.ivy.home=.ivy2 'release with-defaults'"
                     githubNotify status: "SUCCESS",
                             credentialsId: GITHUB_CREDENTIALS,
