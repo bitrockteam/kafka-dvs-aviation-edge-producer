@@ -24,6 +24,7 @@ pipeline {
                      userRemoteConfigs: scm.userRemoteConfigs
                 ])
                 script {
+                    sh "git checkout ${BRANCH_NAME}"
                     committerEmail = sh(
                             script: "git --no-pager show -s --format=\'%ae\'",
                             returnStdout: true
