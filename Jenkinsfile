@@ -55,7 +55,7 @@ pipeline {
                     """
                 script {
                     AWS_CREDENTIALS = sh (
-                        script: "\$(aws ecr get-login --no-include-email --region ${AWS_REGION})",
+                        script: "aws ecr get-login --no-include-email --region ${AWS_REGION}",
                         returnStdout: true
                     ).trim()
                     tagBefore = sh(
