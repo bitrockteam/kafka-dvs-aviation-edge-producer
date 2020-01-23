@@ -9,7 +9,7 @@ pipeline {
         GITHUB_SSH = "centos"
         RELEASE_BRANCH = "hotfix/jenkins-build-3"
         SBT_OPTS="-Xmx2048M"
-        AWS_CREDENTIALS= ""
+        AWS_CREDENTIALS=""
     }
     options {
         ansiColor('xterm')
@@ -50,9 +50,13 @@ pipeline {
                 sh "git config --local user.email ci@bitrock.it"
                 sh """
                     set +x
-                    AWS_CREDENTIALS=\$(aws ecr get-login --no-include-email --region ${AWS_REGION})
+                    \$(aws ecr get-login --no-include-email --region ${AWS_REGION})
                     set -x
                     """
+                AWS_CREDENTIALS = sh (
+                    script: '\$(aws ecr get-login --no-include-email --region ${AWS_REGION})',
+                    returnStdout: true
+                ).trim()
                 script {
                     tagBefore = sh(
                             script: "git describe --tags --abbrev=0 | sed 's/^v//'",
@@ -87,9 +91,7 @@ pipeline {
                          userRemoteConfigs: scm.userRemoteConfigs
                     ])
                     sh """
-                        \${AWS_CREDENTIALS}
-                        """
-                    sh """
+                        ${AWS_CREDENTIALS}
                         git checkout ${BRANCH_NAME}
                         git config remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
                         git config branch.${BRANCH_NAME}.remote origin
