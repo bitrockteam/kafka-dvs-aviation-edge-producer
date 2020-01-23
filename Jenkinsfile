@@ -7,7 +7,7 @@ pipeline {
         GITHUB_ACCOUNT = 'bitrockteam'
         GITHUB_REPO = 'kafka-dvs-aviation-edge-producer'
         GITHUB_SSH = "centos"
-        RELEASE_BRANCH = "hotfix/jenkins-build-3"
+        RELEASE_BRANCH = "master"
         SBT_OPTS="-Xmx2048M"
         AWS_CREDENTIALS=""
     }
@@ -91,7 +91,9 @@ pipeline {
                          userRemoteConfigs: scm.userRemoteConfigs
                     ])
                     sh """
+                        set +x
                         ${AWS_CREDENTIALS}
+                        set -x
                         git checkout ${BRANCH_NAME}
                         git config remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
                         git config branch.${BRANCH_NAME}.remote origin
