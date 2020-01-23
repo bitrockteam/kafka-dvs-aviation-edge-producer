@@ -80,6 +80,7 @@ pipeline {
                 sshagent (credentials: ['centos']) {
                     sh "git checkout ${BRANCH_NAME}"
                     sh "git status"
+                    sh "git pull"
                     sh "sbt -Dsbt.global.base=.sbt -Dsbt.boot.directory=.sbt -Dsbt.ivy.home=.ivy2 'release with-defaults'"
                     githubNotify status: "SUCCESS",
                             credentialsId: GITHUB_CREDENTIALS,
