@@ -85,6 +85,7 @@ pipeline {
                             [$class: 'CloneOption', depth: 2, shallow: false]],
                          userRemoteConfigs: scm.userRemoteConfigs
                     ])
+                    sh "git checkout ${BRANCH_NAME}"
                     sh "sbt -Dsbt.global.base=.sbt -Dsbt.boot.directory=.sbt -Dsbt.ivy.home=.ivy2 'release with-defaults'"
                     githubNotify status: "SUCCESS",
                             credentialsId: GITHUB_CREDENTIALS,
