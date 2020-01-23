@@ -9,6 +9,7 @@ pipeline {
         GITHUB_SSH = "centos"
         RELEASE_BRANCH = "hotfix/jenkins-build-3"
         SBT_OPTS="-Xmx2048M"
+        AWS_CREDENTIALS= ""
     }
     options {
         ansiColor('xterm')
@@ -49,7 +50,7 @@ pipeline {
                 sh "git config --local user.email ci@bitrock.it"
                 sh """
                     set +x
-                    \$(aws ecr get-login --no-include-email --region ${AWS_REGION})
+                    AWS_CREDENTIALS=\$(aws ecr get-login --no-include-email --region ${AWS_REGION})
                     set -x
                     """
                 script {
@@ -86,9 +87,7 @@ pipeline {
                          userRemoteConfigs: scm.userRemoteConfigs
                     ])
                     sh """
-                        set +x
-                        \$(aws ecr get-login --no-include-email --region ${AWS_REGION})
-                        set -x
+                        \${AWS_CREDENTIALS}
                         """
                     sh """
                         git checkout ${BRANCH_NAME}
