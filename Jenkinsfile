@@ -64,7 +64,7 @@ pipeline {
             agent {
                 dockerfile {
                      filename 'Dockerfile.build'
-                     args '--group-add 994 -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/jenkins/.cache/coursier/v1:/sbt-cache/.cache/coursier/v1 -v /var/lib/jenkins/.sbtboot:/sbt-cache/.sbtboot -v /var/lib/jenkins/.sbt/boot/:/sbt-cache/.boot -v /var/lib/jenkins/.ivy2:/sbt-cache/.ivy2 -v /var/lib/jenkins/.docker/config.json:/var/lib/jenkins/.docker/config.json'
+                     args '--group-add 994 -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/jenkins/.cache/coursier/v1:/sbt-cache/.cache/coursier/v1 -v /var/lib/jenkins/.sbtboot:/sbt-cache/.sbtboot -v /var/lib/jenkins/.sbt/boot/:/sbt-cache/.boot -v /var/lib/jenkins/.ivy2:/sbt-cache/.ivy2'
                 }
             }
             when {
@@ -85,6 +85,11 @@ pipeline {
                             [$class: 'CloneOption', depth: 2, shallow: false]],
                          userRemoteConfigs: scm.userRemoteConfigs
                     ])
+                    sh """
+                        set +x
+                        \$(aws ecr get-login --no-include-email --region ${AWS_REGION})
+                        set -x
+                        """
                     sh """
                         git checkout ${BRANCH_NAME}
                         git config remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
