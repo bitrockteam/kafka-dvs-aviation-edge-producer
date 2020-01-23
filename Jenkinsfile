@@ -130,7 +130,7 @@ pipeline {
             }
             steps {
                 echo "Building feature/develop branch"
-                sh "sbt -Dsbt.global.base=.sbt -Dsbt.boot.directory=.sbt -Dsbt.ivy.home=.ivy2 test docker:publishLocal docker:clean"
+                sh "sbt -Dsbt.global.base=.sbt -Dsbt.boot.directory=.sbt -Dsbt.ivy.home=.ivy2 fix test docker:publishLocal docker:clean"
                 githubNotify status: "SUCCESS",
                         credentialsId: GITHUB_CREDENTIALS,
                         description: "Build success",
