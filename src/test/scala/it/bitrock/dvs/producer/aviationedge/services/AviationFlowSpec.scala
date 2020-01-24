@@ -8,13 +8,13 @@ import akka.testkit.TestKit
 import it.bitrock.dvs.producer.aviationedge.model._
 import AviationFlowSpec.Resource
 import it.bitrock.testcommons.{FixtureLoanerAnyResult, Suite}
-import org.scalatest.WordSpecLike
 
 import scala.concurrent.duration._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import org.scalatest.wordspec.AnyWordSpecLike
 
-class AviationFlowSpec extends TestKit(ActorSystem("AviationFlowSpec")) with Suite with WordSpecLike {
+class AviationFlowSpec extends TestKit(ActorSystem("AviationFlowSpec")) with Suite with AnyWordSpecLike {
 
   "flow method" should {
 

@@ -12,12 +12,13 @@ import it.bitrock.kafkacommons.serialization.ImplicitConversions._
 import it.bitrock.testcommons.{FixtureLoanerAnyResult, Suite}
 import net.manub.embeddedkafka.schemaregistry._
 import org.apache.kafka.common.serialization.{Serde, Serdes}
-import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.wordspec.AnyWordSpecLike
 
 class KafkaFlightSinkFactorySpec
     extends TestKit(ActorSystem("KafkaFlightSinkFactorySpec"))
     with Suite
-    with WordSpecLike
+    with AnyWordSpecLike
     with BeforeAndAfterAll
     with EmbeddedKafka
     with TestValues {

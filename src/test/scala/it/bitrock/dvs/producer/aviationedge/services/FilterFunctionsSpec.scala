@@ -3,9 +3,9 @@ package it.bitrock.dvs.producer.aviationedge.services
 import it.bitrock.dvs.producer.aviationedge.TestValues
 import it.bitrock.dvs.producer.aviationedge.model.MessageJson
 import it.bitrock.testcommons.Suite
-import org.scalatest.WordSpecLike
+import org.scalatest.wordspec.AnyWordSpecLike
 
-class FilterFunctionsSpec extends Suite with WordSpecLike with TestValues {
+class FilterFunctionsSpec extends Suite with AnyWordSpecLike with TestValues {
 
   import MainFunctions._
 
