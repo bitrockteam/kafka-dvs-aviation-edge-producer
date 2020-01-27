@@ -33,7 +33,7 @@ object RawImplicitConversions {
   }
 
   implicit class SystemOps(gj: SystemJson) {
-    def toSystem = new System(Instant.ofEpochMilli(gj.updated))
+    def toSystem = new System(Instant.ofEpochSecond(gj.updated))
   }
 
   implicit class FlightRawStreamEventOps(mrse: FlightMessageJson) {

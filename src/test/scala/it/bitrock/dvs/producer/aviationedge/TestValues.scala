@@ -29,7 +29,7 @@ trait TestValues {
     Aircraft("HBJHA", "A333", "", "A333"),
     CommonCode("LX", "SWR"),
     Flight("LX6U", IcaoNumber, "6U"),
-    System(Instant.ofEpochMilli(1567415880)),
+    System(Instant.ofEpochSecond(1567415880)),
     "en-route"
   )
 
