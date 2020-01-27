@@ -27,7 +27,13 @@ object MainFunctions {
     val flow   = new AviationFlow().flow(aviationConfig.getAviationUri(config.path), aviationConfig.apiTimeout)
     val sink   = AviationStreamContext[A].sink(kafkaConfig)
 
-    source.via(flow).mapConcat(identity).filter(filterFunction).to(sink).run()
+    source
+      .via(flow)
+      .mapConcat(identity)
+      .collect { case Right(x) => x }
+      .filter(filterFunction)
+      .to(sink)
+      .run()
   }
 
   def filterFunction: MessageJson => Boolean = {
@@ -45,7 +51,7 @@ object MainFunctions {
 
   private def validFlightStatus(status: String): Boolean = status == "en-route"
   private def validFlightSpeed(speed: Double): Boolean   = speed < aviationConfig.flightSpeedLimit
-  private def validFlightJourney(departureCode: Option[String], arrivalCode: Option[String]): Boolean =
-    !(departureCode.getOrElse("").isEmpty || arrivalCode.getOrElse("").isEmpty)
+  private def validFlightJourney(departureCode: String, arrivalCode: String): Boolean =
+    departureCode.nonEmpty && arrivalCode.nonEmpty
 
 }

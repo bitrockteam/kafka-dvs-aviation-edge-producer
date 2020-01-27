@@ -8,3 +8,5 @@ case object AirlineStream  extends AviationStream
 case object CityStream     extends AviationStream
 
 case class Tick()
+
+case class ErrorMessageJson(errorMessageJson: String, failedJson: String)
