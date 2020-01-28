@@ -1,18 +1,18 @@
 package it.bitrock.dvs.producer.aviationedge.services
 
+import AviationFlowSpec.Resource
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.stream.testkit.TestSubscriber.Probe
 import akka.stream.testkit.scaladsl.TestSink
 import akka.testkit.TestKit
 import it.bitrock.dvs.producer.aviationedge.model._
-import AviationFlowSpec.Resource
 import it.bitrock.testcommons.{FixtureLoanerAnyResult, Suite}
-
-import scala.concurrent.duration._
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 import org.scalatest.wordspec.AnyWordSpecLike
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.concurrent.duration._
 
 class AviationFlowSpec extends TestKit(ActorSystem("AviationFlowSpec")) with Suite with AnyWordSpecLike {
 

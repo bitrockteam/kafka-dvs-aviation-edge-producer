@@ -6,8 +6,8 @@ import akka.stream.scaladsl.Source
 import akka.testkit.TestKit
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
 import it.bitrock.dvs.producer.aviationedge.TestValues
-import it.bitrock.dvs.producer.aviationedge.model.MessageJson
 import it.bitrock.dvs.producer.aviationedge.kafka.KafkaTypes.{Key, Flight => KafkaTypesFlight}
+import it.bitrock.dvs.producer.aviationedge.model.MessageJson
 import it.bitrock.kafkacommons.serialization.ImplicitConversions._
 import it.bitrock.testcommons.{FixtureLoanerAnyResult, Suite}
 import net.manub.embeddedkafka.schemaregistry._
