@@ -1,5 +1,7 @@
 package it.bitrock.dvs.producer.aviationedge.services
 
+import java.time.Instant
+
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import it.bitrock.dvs.producer.aviationedge.model._
 import spray.json._
@@ -35,7 +37,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
             case j: JsObject if j.getFields("cityId") != Seq()     => json.convertTo[CityMessageJson]
           }
         ).toEither.left.map { ex =>
-          ErrorMessageJson(ex.getMessage, json.compactPrint)
+          ErrorMessageJson(ex.getMessage, json.compactPrint, Instant.now)
         }
     }
 

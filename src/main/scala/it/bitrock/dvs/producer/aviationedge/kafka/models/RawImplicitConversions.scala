@@ -115,4 +115,13 @@ object RawImplicitConversions {
       )
   }
 
+  implicit class ParserErrorStreamEventOps(mrse: ErrorMessageJson) {
+    def toParserError: ParserErrorMessage =
+      ParserErrorMessage(
+        mrse.errorMessage,
+        mrse.failedJson,
+        mrse.timestamp
+      )
+  }
+
 }

@@ -6,35 +6,35 @@ import akka.stream.scaladsl.Source
 import akka.testkit.TestKit
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
 import it.bitrock.dvs.producer.aviationedge.TestValues
-import it.bitrock.dvs.producer.aviationedge.model.MessageJson
-import it.bitrock.dvs.producer.aviationedge.kafka.KafkaTypes.{Flight, Key}
-import it.bitrock.kafkacommons.serialization.ImplicitConversions._
+import it.bitrock.dvs.producer.aviationedge.kafka.KafkaTypes.Error
+import it.bitrock.dvs.producer.aviationedge.model.ErrorMessageJson
 import it.bitrock.testcommons.{FixtureLoanerAnyResult, Suite}
 import net.manub.embeddedkafka.schemaregistry._
-import org.apache.kafka.common.serialization.{Serde, Serdes}
+import org.apache.kafka.common.serialization.{Deserializer, Serdes}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
 
-class KafkaFlightSinkFactorySpec
-    extends TestKit(ActorSystem("KafkaFlightSinkFactorySpec"))
+class KafkaErrorSinkFactorySpec
+    extends TestKit(ActorSystem("ErrorHandlerSpec"))
     with Suite
     with AnyWordSpecLike
     with BeforeAndAfterAll
     with EmbeddedKafka
     with TestValues {
-  import KafkaFlightSinkFactorySpec._
+
+  import KafkaErrorSinkFactorySpec._
 
   "sink method" should {
 
     "convert a domain model to Kafka model and push it to a topic" in ResourceLoaner.withFixture {
-      case Resource(embeddedKafkaConfig, keySerde, factory) =>
-        implicit val embKafkaConfig: EmbeddedKafkaConfig = embeddedKafkaConfig
-        implicit val kSerde: Serde[Key]                  = keySerde
+      case Resource(embeddedKafkaConfig, factory) =>
+        implicit val embKafkaConfig: EmbeddedKafkaConfig   = embeddedKafkaConfig
+        implicit val keyDeserializer: Deserializer[String] = Serdes.String.deserializer
         val result = withRunningKafka {
-          Source.single(FlightMessage).runWith(factory.sink)
-          consumeFirstKeyedMessageFrom[Key, Flight.Value](factory.topic)
+          Source.single(ErrorMessage).runWith(factory.sink)
+          consumeFirstKeyedMessageFrom[String, Error.Value](factory.topic)
         }
-        result shouldBe ((IcaoNumber, ExpectedFlightRaw))
+        result shouldBe ((null, ExpectedParserErrorMessage))
     }
 
   }
@@ -42,19 +42,17 @@ class KafkaFlightSinkFactorySpec
   object ResourceLoaner extends FixtureLoanerAnyResult[Resource] {
     override def withFixture(body: Resource => Any): Any = {
       implicit val embeddedKafkaConfig: EmbeddedKafkaConfig = EmbeddedKafkaConfig()
+      val outputTopic                                       = "output_topic"
+      val valueSerializer                                   = specificAvroValueSerializer[Error.Value]
 
-      val outputTopic       = "output_topic"
-      val rsvpRawKeySerde   = Serdes.String
-      val rsvpRawSerializer = specificAvroValueSerializer[Flight.Value]
-
-      val producerSettings = ProducerSettings(system, rsvpRawKeySerde.serializer, rsvpRawSerializer)
+      val producerSettings = ProducerSettings(system, Serdes.String.serializer, valueSerializer)
         .withBootstrapServers(s"localhost:${embeddedKafkaConfig.kafkaPort}")
         .withProperty(
           AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
           s"http://localhost:${embeddedKafkaConfig.schemaRegistryPort}"
         )
 
-      val factory = new KafkaSinkFactory[MessageJson, Key, Flight.Value](
+      val factory = new KafkaSinkFactory[ErrorMessageJson, String, Error.Value](
         outputTopic,
         producerSettings
       )
@@ -62,7 +60,6 @@ class KafkaFlightSinkFactorySpec
       body(
         Resource(
           embeddedKafkaConfig,
-          rsvpRawKeySerde,
           factory
         )
       )
@@ -76,12 +73,11 @@ class KafkaFlightSinkFactorySpec
 
 }
 
-object KafkaFlightSinkFactorySpec {
+object KafkaErrorSinkFactorySpec {
 
   final case class Resource(
       embeddedKafkaConfig: EmbeddedKafkaConfig,
-      keySerde: Serde[Key],
-      factory: KafkaSinkFactory[MessageJson, Key, Flight.Value]
+      factory: KafkaSinkFactory[ErrorMessageJson, String, Error.Value]
   )
 
 }
