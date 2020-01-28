@@ -26,7 +26,7 @@ object Dependencies {
     lazy val PureConfig        = "0.10.2"
     lazy val ScalaLogging      = "3.9.2"
     lazy val ScalaTestAutofix  = "3.1.0.0"
-    lazy val Slf4j             = "1.7.26"
+    lazy val Slf4j             = "1.7.28"
     lazy val TestCommons       = "0.0.8"
 
   }
@@ -55,6 +55,7 @@ object Dependencies {
     "it.bitrock.dvs"        %% "kafka-dvs-avro-schemas" % Versions.KafkaDVS,
     "it.bitrock"            %% "kafka-commons"          % Versions.KafkaCommons,
     "org.apache.kafka"      % "kafka-clients"           % Versions.Kafka,
+    "io.confluent"          % "monitoring-interceptors" % Versions.ConfluentPlatform exclude ("org.apache.kafka", "kafka-clients"),
     "com.typesafe.akka"     %% "akka-stream-kafka"      % Versions.Alpakka
   ) ++ Logging.prodDeps
 
