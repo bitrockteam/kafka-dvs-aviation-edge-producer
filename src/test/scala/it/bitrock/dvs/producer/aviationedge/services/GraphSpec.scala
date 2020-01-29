@@ -26,7 +26,7 @@ class GraphSpec
 
   "graph method" should {
 
-    "routes error messages and correct messages to different topics" in {
+    "routes error messages and correct messages to different sinks" in {
 
       val source     = Source(List(Right(FlightMessage), Left(ErrorMessage)))
       val flightSink = Sink.fold[List[MessageJson], MessageJson](Nil)(_ :+ _)
