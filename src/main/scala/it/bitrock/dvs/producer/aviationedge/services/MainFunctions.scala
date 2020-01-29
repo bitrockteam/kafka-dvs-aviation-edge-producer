@@ -1,5 +1,6 @@
 package it.bitrock.dvs.producer.aviationedge.services
 
+import akka.Done
 import akka.actor.{ActorSystem, Cancellable}
 import akka.http.scaladsl.Http
 import akka.stream.ClosedShape
@@ -23,7 +24,10 @@ object MainFunctions {
     Http().bindAndHandle(routes.routes, host, port)
   }
 
-  def runStream[A: AviationStreamContext]()(implicit system: ActorSystem, ec: ExecutionContext): Cancellable = {
+  def runStream[A: AviationStreamContext]()(
+      implicit system: ActorSystem,
+      ec: ExecutionContext
+  ): (Cancellable, Future[Done], Future[Done]) = {
 
     val config = AviationStreamContext[A].config(aviationConfig)
 
@@ -42,8 +46,8 @@ object MainFunctions {
       jsonSource: Source[Either[ErrorMessageJson, MessageJson], SourceMat],
       rawSink: Sink[MessageJson, SinkMat],
       errorSink: Sink[ErrorMessageJson, SinkMat]
-  ): RunnableGraph[SourceMat] = RunnableGraph.fromGraph(
-    GraphDSL.create(jsonSource) { implicit builder => source =>
+  ): RunnableGraph[(SourceMat, SinkMat, SinkMat)] = RunnableGraph.fromGraph(
+    GraphDSL.create(jsonSource, rawSink, errorSink)((x, y, z) => (x, y, z)) { implicit builder => (source, rightSink, leftSink) =>
       import GraphDSL.Implicits._
 
       val broadcast             = builder.add(Broadcast[Either[ErrorMessageJson, MessageJson]](2))
@@ -52,8 +56,8 @@ object MainFunctions {
       val filterInvalidMessages = builder.add(Flow[MessageJson].filter(filterFunction))
 
       source ~> broadcast
-      broadcast.out(0) ~> collectRight ~> filterInvalidMessages ~> rawSink
-      broadcast.out(1) ~> collectLeft ~> errorSink
+      broadcast.out(0) ~> collectRight ~> filterInvalidMessages ~> rightSink
+      broadcast.out(1) ~> collectLeft ~> leftSink
 
       ClosedShape
     }
