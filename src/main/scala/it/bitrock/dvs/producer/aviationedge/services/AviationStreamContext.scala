@@ -4,8 +4,8 @@ import akka.Done
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Sink
 import it.bitrock.dvs.producer.aviationedge.config.{AviationConfig, AviationStreamConfig, KafkaConfig}
-import it.bitrock.dvs.producer.aviationedge.kafka.{KafkaSinkFactory, ProducerSettingsFactory}
 import it.bitrock.dvs.producer.aviationedge.kafka.KafkaTypes._
+import it.bitrock.dvs.producer.aviationedge.kafka.{KafkaSinkFactory, ProducerSettingsFactory}
 import it.bitrock.dvs.producer.aviationedge.model._
 
 import scala.concurrent.Future

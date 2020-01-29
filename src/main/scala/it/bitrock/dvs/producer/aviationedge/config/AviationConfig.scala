@@ -1,10 +1,10 @@
 package it.bitrock.dvs.producer.aviationedge.config
 
-import pureconfig.generic.auto._
 import java.net.URI
 import java.time.DayOfWeek
 
 import akka.http.scaladsl.model.Uri
+import pureconfig.generic.auto._
 
 final case class AviationConfig(
     host: URI,
