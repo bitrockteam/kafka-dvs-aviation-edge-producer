@@ -1,6 +1,6 @@
 package it.bitrock.dvs.producer.aviationedge.kafka
 
-import it.bitrock.dvs.model.avro.{AirlineRaw, AirplaneRaw, AirportRaw, CityRaw, FlightRaw, ParserErrorMessage}
+import it.bitrock.dvs.model.avro.{AirlineRaw, AirplaneRaw, AirportRaw, CityRaw, FlightRaw, ParserError}
 
 object KafkaTypes {
 
@@ -22,7 +22,7 @@ object KafkaTypes {
     type Value = CityRaw
   }
   object Error {
-    type Value = ParserErrorMessage
+    type Value = ParserError
   }
 
 }

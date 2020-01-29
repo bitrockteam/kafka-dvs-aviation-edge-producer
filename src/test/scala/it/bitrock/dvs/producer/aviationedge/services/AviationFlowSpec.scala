@@ -14,8 +14,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatest.EitherValues
 
-
-
 class AviationFlowSpec extends TestKit(ActorSystem("AviationFlowSpec")) with Suite with AnyWordSpecLike with EitherValues {
 
   "flow method" should {

@@ -35,7 +35,7 @@ class KafkaErrorSinkFactorySpec
           Source.single(ErrorMessage).runWith(factory.sink)
           consumeFirstKeyedMessageFrom[Key, Error.Value](factory.topic)
         }
-        result shouldBe ((null, ExpectedParserErrorMessage))
+        result shouldBe ((null, ExpectedParserError))
     }
 
   }

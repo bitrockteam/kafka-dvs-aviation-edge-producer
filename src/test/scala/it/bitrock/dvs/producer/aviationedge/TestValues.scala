@@ -34,8 +34,8 @@ trait TestValues {
     "en-route"
   )
 
-  final val ErrorMessage               = ErrorMessageJson("a message", "a failed json", Timestamp)
-  final val ExpectedParserErrorMessage = ParserErrorMessage("a message", "a failed json", Timestamp)
+  final val ErrorMessage        = ErrorMessageJson("a message", "a failed json", Timestamp)
+  final val ExpectedParserError = ParserError("a message", "a failed json", Timestamp)
 
   final val ValidAirlineMessage           = AirlineMessageJson(0, "", "", "", "", "active", 0, "", "")
   final val InvalidAirlineMessage         = AirlineMessageJson(0, "", "", "", "", "invalid status", 0, "", "")
