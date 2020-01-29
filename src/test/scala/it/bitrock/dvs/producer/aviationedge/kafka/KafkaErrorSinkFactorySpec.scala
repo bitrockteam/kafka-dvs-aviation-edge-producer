@@ -33,9 +33,9 @@ class KafkaErrorSinkFactorySpec
         implicit val kSerde: Serde[Key]                  = keySerde
         val result = withRunningKafka {
           Source.single(ErrorMessage).runWith(factory.sink)
-          consumeFirstKeyedMessageFrom[Key, Error.Value](factory.topic)
+          consumeFirstKeyedMessageFrom[Key, Error.Value](factory.topic)._2
         }
-        result shouldBe ((null, ExpectedParserError))
+        result shouldBe ExpectedParserError
     }
 
   }

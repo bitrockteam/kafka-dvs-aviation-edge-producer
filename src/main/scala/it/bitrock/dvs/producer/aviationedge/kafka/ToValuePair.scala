@@ -27,5 +27,6 @@ object ToValuePair {
     (j.asInstanceOf[AirlineMessageJson].codeIcaoAirline, j.asInstanceOf[AirlineMessageJson].toAirlineRaw)
   implicit val cityValuePair: ToValuePair[MessageJson, Key, City.Value] = j =>
     (j.asInstanceOf[CityMessageJson].codeIataCity, j.asInstanceOf[CityMessageJson].toCityRaw)
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   implicit val parserErrorValuePair: ToValuePair[ErrorMessageJson, Key, Error.Value] = j => (null, j.toParserError)
 }
