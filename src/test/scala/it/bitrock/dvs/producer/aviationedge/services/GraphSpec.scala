@@ -2,20 +2,18 @@ package it.bitrock.dvs.producer.aviationedge.services
 
 import akka.actor.ActorSystem
 import akka.kafka.ProducerSettings
-import akka.stream.scaladsl.{Flow, Keep, Source}
+import akka.stream.scaladsl.Source
 import akka.testkit.TestKit
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
-import it.bitrock.dvs.producer.aviationedge.kafka.KafkaTypes.{Error, Flight}
 import it.bitrock.dvs.producer.aviationedge.TestValues
 import it.bitrock.dvs.producer.aviationedge.kafka.KafkaSinkFactory
-import it.bitrock.dvs.producer.aviationedge.model.{ErrorMessageJson, MessageJson, Tick}
+import it.bitrock.dvs.producer.aviationedge.kafka.KafkaTypes.{Error, Flight}
+import it.bitrock.dvs.producer.aviationedge.model.{ErrorMessageJson, MessageJson}
 import it.bitrock.testcommons.{FixtureLoanerAnyResult, Suite}
 import net.manub.embeddedkafka.schemaregistry._
 import org.apache.kafka.common.serialization.{Deserializer, Serdes}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
-
-import scala.concurrent.duration._
 
 class GraphSpec
     extends TestKit(ActorSystem("GraphSpec"))
@@ -35,18 +33,12 @@ class GraphSpec
         implicit val embKafkaConfig: EmbeddedKafkaConfig   = embeddedKafkaConfig
         implicit val keyDeserializer: Deserializer[String] = Serdes.String.deserializer
 
-        val list: List[Either[ErrorMessageJson, MessageJson]] = List(Right(FlightMessage), Left(ErrorMessage))
-
-        val source = Source
-          .tick(1.seconds, 10.seconds, Tick())
-          .viaMat(Flow.fromFunction(_ => list))(Keep.left)
-          .mapConcat(identity)
+        val source = Source(List(Right(FlightMessage), Left(ErrorMessage)))
 
         val result = withRunningKafka {
-          val controller = buildGraph(source, flightFactory.sink, errorFactory.sink).run()
-          val flight     = consumeFirstKeyedMessageFrom[String, Flight.Value](flightFactory.topic)._2
-          val error      = consumeFirstKeyedMessageFrom[String, Error.Value](errorFactory.topic)._2
-          controller.cancel()
+          buildGraph(source, flightFactory.sink, errorFactory.sink).run()
+          val flight = consumeFirstKeyedMessageFrom[String, Flight.Value](flightFactory.topic)._2
+          val error  = consumeFirstKeyedMessageFrom[String, Error.Value](errorFactory.topic)._2
           (flight, error)
         }
 

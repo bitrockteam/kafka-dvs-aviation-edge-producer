@@ -42,12 +42,11 @@ class KafkaFlightSinkFactorySpec
   object ResourceLoaner extends FixtureLoanerAnyResult[Resource] {
     override def withFixture(body: Resource => Any): Any = {
       implicit val embeddedKafkaConfig: EmbeddedKafkaConfig = EmbeddedKafkaConfig()
+      val outputTopic                                       = "output_topic"
+      val keySerde                                          = Serdes.String
+      val valueSerializer                                   = specificAvroValueSerializer[Flight.Value]
 
-      val outputTopic       = "output_topic"
-      val rsvpRawKeySerde   = Serdes.String
-      val rsvpRawSerializer = specificAvroValueSerializer[Flight.Value]
-
-      val producerSettings = ProducerSettings(system, rsvpRawKeySerde.serializer, rsvpRawSerializer)
+      val producerSettings = ProducerSettings(system, keySerde.serializer, valueSerializer)
         .withBootstrapServers(s"localhost:${embeddedKafkaConfig.kafkaPort}")
         .withProperty(
           AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
@@ -62,7 +61,7 @@ class KafkaFlightSinkFactorySpec
       body(
         Resource(
           embeddedKafkaConfig,
-          rsvpRawKeySerde,
+          keySerde,
           factory
         )
       )

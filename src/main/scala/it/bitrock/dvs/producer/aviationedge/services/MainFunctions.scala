@@ -1,6 +1,5 @@
 package it.bitrock.dvs.producer.aviationedge.services
 
-import akka.Done
 import akka.actor.{ActorSystem, Cancellable}
 import akka.http.scaladsl.Http
 import akka.stream.ClosedShape
@@ -39,11 +38,11 @@ object MainFunctions {
 
   }
 
-  def buildGraph(
-      jsonSource: Source[Either[ErrorMessageJson, MessageJson], Cancellable],
-      rawSink: Sink[MessageJson, Future[Done]],
-      errorSink: Sink[ErrorMessageJson, Future[Done]]
-  ): RunnableGraph[Cancellable] = RunnableGraph.fromGraph(
+  def buildGraph[SourceMat, SinkMat](
+      jsonSource: Source[Either[ErrorMessageJson, MessageJson], SourceMat],
+      rawSink: Sink[MessageJson, SinkMat],
+      errorSink: Sink[ErrorMessageJson, SinkMat]
+  ): RunnableGraph[SourceMat] = RunnableGraph.fromGraph(
     GraphDSL.create(jsonSource) { implicit builder => source =>
       import GraphDSL.Implicits._
 
