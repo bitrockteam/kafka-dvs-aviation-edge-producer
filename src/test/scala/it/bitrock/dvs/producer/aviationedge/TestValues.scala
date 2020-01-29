@@ -12,10 +12,10 @@ trait TestValues {
   final val FlightMessage = FlightMessageJson(
     GeographyJson(49.2655, -1.9623, 9753.6, 282.76),
     SpeedJson(805.14, 0),
-    CommonCodeJson(Some("ZRH"), "LSZH"),
-    CommonCodeJson(Some("ORD"), "KORD"),
+    DepartureJson(Some("ZRH"), "LSZH"),
+    ArrivalJson(Some("ORD"), "KORD"),
     AircraftJson("HBJHA", "A333", "", "A333"),
-    CommonCodeJson(Some("LX"), "SWR"),
+    AirlineJson(Some("LX"), "SWR"),
     FlightJson(Some("LX6U"), IcaoNumber, "6U"),
     SystemJson(1567415880),
     "en-route"
@@ -24,10 +24,10 @@ trait TestValues {
   final val ExpectedFlightRaw = FlightRaw(
     Geography(49.2655, -1.9623, 9753.6, 282.76),
     Speed(805.14, 0),
-    CommonCode("ZRH", "LSZH"),
-    CommonCode("ORD", "KORD"),
+    Departure("ZRH", "LSZH"),
+    Arrival("ORD", "KORD"),
     Aircraft("HBJHA", "A333", "", "A333"),
-    CommonCode("LX", "SWR"),
+    Airline("LX", "SWR"),
     Flight("LX6U", IcaoNumber, "6U"),
     System(Instant.ofEpochSecond(1567415880)),
     "en-route"
@@ -41,7 +41,7 @@ trait TestValues {
   final val UnknownFlightMessage          = FlightMessage.copy(status = "unknown")
   final val CrashedFlightMessage          = FlightMessage.copy(status = "crashed")
   final val InvalidSpeedFlightMessage     = FlightMessage.copy(speed = SpeedJson(1300.00, 0.0))
-  final val InvalidDepartureFlightMessage = FlightMessage.copy(departure = CommonCodeJson(Some(""), ""))
-  final val InvalidArrivalFlightMessage   = FlightMessage.copy(arrival = CommonCodeJson(Some(""), ""))
+  final val InvalidDepartureFlightMessage = FlightMessage.copy(departure = DepartureJson(Some(""), ""))
+  final val InvalidArrivalFlightMessage   = FlightMessage.copy(arrival = ArrivalJson(Some(""), ""))
 
 }
