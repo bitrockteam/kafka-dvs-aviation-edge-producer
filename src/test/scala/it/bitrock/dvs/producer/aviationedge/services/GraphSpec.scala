@@ -34,8 +34,14 @@ class GraphSpec
 
       val (_, futureFlight, futureError) = buildGraph(source, flightSink, errorSink).run()
 
-      whenReady(futureFlight) { _.head shouldBe FlightMessage }
-      whenReady(futureError) { _.head shouldBe ErrorMessage }
+      whenReady(futureFlight) { f =>
+        f.size shouldBe 1
+        f.head shouldBe FlightMessage
+      }
+      whenReady(futureError) { e =>
+        e.size shouldBe 1
+        e.head shouldBe ErrorMessage
+      }
 
     }
 
