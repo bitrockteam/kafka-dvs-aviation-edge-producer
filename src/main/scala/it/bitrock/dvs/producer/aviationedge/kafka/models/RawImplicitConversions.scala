@@ -18,13 +18,13 @@ object RawImplicitConversions {
   }
 
   implicit private def toDeparture(departureJson: DepartureJson): Departure =
-    new Departure(departureJson.iataCode.getOrElse("N/A"), departureJson.icaoCode)
+    new Departure(departureJson.iataCode, departureJson.icaoCode)
 
   implicit private def toArrival(arrivalJson: ArrivalJson): Arrival =
-    new Arrival(arrivalJson.iataCode.getOrElse("N/A"), arrivalJson.icaoCode)
+    new Arrival(arrivalJson.iataCode, arrivalJson.icaoCode)
 
   implicit private def toAirline(airlineJson: AirlineJson): Airline =
-    new Airline(airlineJson.iataCode.getOrElse("N/A"), airlineJson.icaoCode)
+    new Airline(airlineJson.iataCode, airlineJson.icaoCode)
 
   implicit private class AircraftOps(gj: AircraftJson) {
     def toAircraft =
@@ -33,7 +33,7 @@ object RawImplicitConversions {
 
   implicit private class FlightOps(gj: FlightJson) {
     def toFlight =
-      new Flight(gj.iataNumber.getOrElse("N/A"), gj.icaoNumber, gj.number)
+      new Flight(gj.iataNumber, gj.icaoNumber, gj.number)
   }
 
   implicit private class SystemOps(gj: SystemJson) {
@@ -112,6 +112,15 @@ object RawImplicitConversions {
         mrse.codeIso2Country,
         mrse.latitudeCity,
         mrse.longitudeCity
+      )
+  }
+
+  implicit class ParserErrorStreamEventOps(mrse: ErrorMessageJson) {
+    def toParserError: ParserError =
+      ParserError(
+        mrse.errorMessage,
+        mrse.failedJson,
+        mrse.timestamp
       )
   }
 

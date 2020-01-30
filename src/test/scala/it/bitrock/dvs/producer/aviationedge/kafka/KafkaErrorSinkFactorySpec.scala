@@ -6,8 +6,8 @@ import akka.stream.scaladsl.Source
 import akka.testkit.TestKit
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
 import it.bitrock.dvs.producer.aviationedge.TestValues
-import it.bitrock.dvs.producer.aviationedge.kafka.KafkaTypes.{Flight, Key}
-import it.bitrock.dvs.producer.aviationedge.model.MessageJson
+import it.bitrock.dvs.producer.aviationedge.kafka.KafkaTypes.{Error, Key}
+import it.bitrock.dvs.producer.aviationedge.model.ErrorMessageJson
 import it.bitrock.kafkacommons.serialization.ImplicitConversions._
 import it.bitrock.testcommons.{FixtureLoanerAnyResult, Suite}
 import net.manub.embeddedkafka.schemaregistry._
@@ -15,14 +15,15 @@ import org.apache.kafka.common.serialization.{Serde, Serdes}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
 
-class KafkaFlightSinkFactorySpec
-    extends TestKit(ActorSystem("KafkaFlightSinkFactorySpec"))
+class KafkaErrorSinkFactorySpec
+    extends TestKit(ActorSystem("KafkaErrorSinkFactorySpec"))
     with Suite
     with AnyWordSpecLike
     with BeforeAndAfterAll
     with EmbeddedKafka
     with TestValues {
-  import KafkaFlightSinkFactorySpec._
+
+  import KafkaErrorSinkFactorySpec._
 
   "sink method" should {
 
@@ -31,10 +32,10 @@ class KafkaFlightSinkFactorySpec
         implicit val embKafkaConfig: EmbeddedKafkaConfig = embeddedKafkaConfig
         implicit val kSerde: Serde[Key]                  = keySerde
         val result = withRunningKafka {
-          Source.single(FlightMessage).runWith(factory.sink)
-          consumeFirstKeyedMessageFrom[Key, Flight.Value](factory.topic)
+          Source.single(ErrorMessage).runWith(factory.sink)
+          consumeFirstKeyedMessageFrom[Key, Error.Value](factory.topic)._2
         }
-        result shouldBe ((IcaoNumber, ExpectedFlightRaw))
+        result shouldBe ExpectedParserError
     }
 
   }
@@ -44,7 +45,7 @@ class KafkaFlightSinkFactorySpec
       implicit val embeddedKafkaConfig: EmbeddedKafkaConfig = EmbeddedKafkaConfig()
       val outputTopic                                       = "output_topic"
       val keySerde                                          = Serdes.String
-      val valueSerializer                                   = specificAvroValueSerializer[Flight.Value]
+      val valueSerializer                                   = specificAvroValueSerializer[Error.Value]
 
       val producerSettings = ProducerSettings(system, keySerde.serializer, valueSerializer)
         .withBootstrapServers(s"localhost:${embeddedKafkaConfig.kafkaPort}")
@@ -53,7 +54,7 @@ class KafkaFlightSinkFactorySpec
           s"http://localhost:${embeddedKafkaConfig.schemaRegistryPort}"
         )
 
-      val factory = new KafkaSinkFactory[MessageJson, Key, Flight.Value](
+      val factory = new KafkaSinkFactory[ErrorMessageJson, Key, Error.Value](
         outputTopic,
         producerSettings
       )
@@ -75,12 +76,12 @@ class KafkaFlightSinkFactorySpec
 
 }
 
-object KafkaFlightSinkFactorySpec {
+object KafkaErrorSinkFactorySpec {
 
   final case class Resource(
       embeddedKafkaConfig: EmbeddedKafkaConfig,
       keySerde: Serde[Key],
-      factory: KafkaSinkFactory[MessageJson, Key, Flight.Value]
+      factory: KafkaSinkFactory[ErrorMessageJson, Key, Error.Value]
   )
 
 }

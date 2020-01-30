@@ -8,15 +8,16 @@ import it.bitrock.dvs.producer.aviationedge.model._
 trait TestValues {
 
   final val IcaoNumber = "SWR6U"
+  final val Timestamp  = Instant.now()
 
   final val FlightMessage = FlightMessageJson(
     GeographyJson(49.2655, -1.9623, 9753.6, 282.76),
     SpeedJson(805.14, 0),
-    DepartureJson(Some("ZRH"), "LSZH"),
-    ArrivalJson(Some("ORD"), "KORD"),
+    DepartureJson("ZRH", "LSZH"),
+    ArrivalJson("ORD", "KORD"),
     AircraftJson("HBJHA", "A333", "", "A333"),
-    AirlineJson(Some("LX"), "SWR"),
-    FlightJson(Some("LX6U"), IcaoNumber, "6U"),
+    AirlineJson("LX", "SWR"),
+    FlightJson("LX6U", IcaoNumber, "6U"),
     SystemJson(1567415880),
     "en-route"
   )
@@ -33,6 +34,9 @@ trait TestValues {
     "en-route"
   )
 
+  final val ErrorMessage        = ErrorMessageJson("a message", "a failed json", Timestamp)
+  final val ExpectedParserError = ParserError("a message", "a failed json", Timestamp)
+
   final val ValidAirlineMessage           = AirlineMessageJson(0, "", "", "", "", "active", 0, "", "")
   final val InvalidAirlineMessage         = AirlineMessageJson(0, "", "", "", "", "invalid status", 0, "", "")
   final val StartedFlightMessage          = FlightMessage.copy(status = "started")
@@ -41,7 +45,7 @@ trait TestValues {
   final val UnknownFlightMessage          = FlightMessage.copy(status = "unknown")
   final val CrashedFlightMessage          = FlightMessage.copy(status = "crashed")
   final val InvalidSpeedFlightMessage     = FlightMessage.copy(speed = SpeedJson(1300.00, 0.0))
-  final val InvalidDepartureFlightMessage = FlightMessage.copy(departure = DepartureJson(Some(""), ""))
-  final val InvalidArrivalFlightMessage   = FlightMessage.copy(arrival = ArrivalJson(Some(""), ""))
+  final val InvalidDepartureFlightMessage = FlightMessage.copy(departure = DepartureJson("", ""))
+  final val InvalidArrivalFlightMessage   = FlightMessage.copy(arrival = ArrivalJson("", ""))
 
 }

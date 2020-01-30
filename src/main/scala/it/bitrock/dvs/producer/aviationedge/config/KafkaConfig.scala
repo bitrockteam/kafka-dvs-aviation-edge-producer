@@ -9,5 +9,6 @@ final case class KafkaConfig(
     airportRawTopic: String,
     airlineRawTopic: String,
     cityRawTopic: String,
+    parserErrorTopic: String,
     enableInterceptors: Boolean
 )

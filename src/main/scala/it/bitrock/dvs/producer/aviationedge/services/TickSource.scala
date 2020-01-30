@@ -19,4 +19,5 @@ class TickSource(start: Int, interval: Int, config: TickSourceConfig) {
     val isExcludedDay = config.pollExcludedDays.contains(now.getDayOfWeek)
     !isExcludedDay && (config.pollLowerHourLimit to config.pollUpperHourLimit).contains(currentHour)
   }
+
 }
