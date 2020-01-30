@@ -6,9 +6,9 @@ import akka.stream.scaladsl.Source
 import akka.testkit.TestKit
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
 import it.bitrock.dvs.producer.aviationedge.TestValues
-import it.bitrock.kafkacommons.serialization.ImplicitConversions._
 import it.bitrock.dvs.producer.aviationedge.kafka.KafkaTypes.{Error, Key}
 import it.bitrock.dvs.producer.aviationedge.model.ErrorMessageJson
+import it.bitrock.kafkacommons.serialization.ImplicitConversions._
 import it.bitrock.testcommons.{FixtureLoanerAnyResult, Suite}
 import net.manub.embeddedkafka.schemaregistry._
 import org.apache.kafka.common.serialization.{Serde, Serdes}

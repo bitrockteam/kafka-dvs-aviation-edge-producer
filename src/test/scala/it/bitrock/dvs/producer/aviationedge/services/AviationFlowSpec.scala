@@ -8,11 +8,11 @@ import akka.stream.testkit.scaladsl.TestSink
 import akka.testkit.TestKit
 import it.bitrock.dvs.producer.aviationedge.model._
 import it.bitrock.testcommons.{FixtureLoanerAnyResult, Suite}
-
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatest.EitherValues
+import org.scalatest.wordspec.AnyWordSpecLike
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class AviationFlowSpec extends TestKit(ActorSystem("AviationFlowSpec")) with Suite with AnyWordSpecLike with EitherValues {
 

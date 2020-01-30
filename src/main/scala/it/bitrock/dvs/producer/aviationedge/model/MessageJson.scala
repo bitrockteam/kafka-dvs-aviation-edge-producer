@@ -75,17 +75,17 @@ final case class SpeedJson(
 )
 
 final case class DepartureJson(
-    iataCode: Option[String],
+    iataCode: String,
     icaoCode: String
 )
 
 final case class ArrivalJson(
-    iataCode: Option[String],
+    iataCode: String,
     icaoCode: String
 )
 
 final case class AirlineJson(
-    iataCode: Option[String],
+    iataCode: String,
     icaoCode: String
 )
 
@@ -97,7 +97,7 @@ final case class AircraftJson(
 )
 
 final case class FlightJson(
-    iataNumber: Option[String],
+    iataNumber: String,
     icaoNumber: String,
     number: String
 )

@@ -13,11 +13,11 @@ trait TestValues {
   final val FlightMessage = FlightMessageJson(
     GeographyJson(49.2655, -1.9623, 9753.6, 282.76),
     SpeedJson(805.14, 0),
-    DepartureJson(Some("ZRH"), "LSZH"),
-    ArrivalJson(Some("ORD"), "KORD"),
+    DepartureJson("ZRH", "LSZH"),
+    ArrivalJson("ORD", "KORD"),
     AircraftJson("HBJHA", "A333", "", "A333"),
-    AirlineJson(Some("LX"), "SWR"),
-    FlightJson(Some("LX6U"), IcaoNumber, "6U"),
+    AirlineJson("LX", "SWR"),
+    FlightJson("LX6U", IcaoNumber, "6U"),
     SystemJson(1567415880),
     "en-route"
   )
@@ -45,7 +45,7 @@ trait TestValues {
   final val UnknownFlightMessage          = FlightMessage.copy(status = "unknown")
   final val CrashedFlightMessage          = FlightMessage.copy(status = "crashed")
   final val InvalidSpeedFlightMessage     = FlightMessage.copy(speed = SpeedJson(1300.00, 0.0))
-  final val InvalidDepartureFlightMessage = FlightMessage.copy(departure = DepartureJson(Some(""), ""))
-  final val InvalidArrivalFlightMessage   = FlightMessage.copy(arrival = ArrivalJson(Some(""), ""))
+  final val InvalidDepartureFlightMessage = FlightMessage.copy(departure = DepartureJson("", ""))
+  final val InvalidArrivalFlightMessage   = FlightMessage.copy(arrival = ArrivalJson("", ""))
 
 }
