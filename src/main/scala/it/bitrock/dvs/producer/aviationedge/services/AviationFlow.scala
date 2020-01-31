@@ -17,28 +17,28 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AviationFlow()(implicit system: ActorSystem, ec: ExecutionContext) extends LazyLogging {
 
-  def flow(uri: Uri, apiTimeout: Int): Flow[Tick, List[Either[ErrorMessageJson, MessageJson]], NotUsed] = flow { () =>
-    logger.info(s"Trying to call: $uri")
-    Http().singleRequest(HttpRequest(HttpMethods.GET, uri)).flatMap {
-      case HttpResponse(StatusCodes.OK, _, entity, _) =>
-        entity
-          .toStrict(apiTimeout.seconds)
-          .map(_.data.utf8String)
-      case HttpResponse(statusCodes, _, _, _) =>
-        logger.warn(s"Bad response status code: $statusCodes")
-        Future.successful("")
-    }
-  }
-
-  def flow(apiProvider: () => Future[String]): Flow[Tick, List[Either[ErrorMessageJson, MessageJson]], NotUsed] =
+  def flow(uri: Uri, apiTimeout: Int): Flow[Tick, List[Either[ErrorMessageJson, MessageJson]], NotUsed] =
     Flow
-      .fromFunction((x: Tick) => x)
+      .fromFunction(identity[Tick])
       .mapAsync(1) { _ =>
-        apiProvider().flatMap(response => unmarshal(response))
+        logger.info(s"Trying to call: $uri")
+        Http()
+          .singleRequest(HttpRequest(HttpMethods.GET, uri))
+          .flatMap(response => extractBody(response.entity, response.status, apiTimeout))
+          .flatMap(unmarshalBody)
       }
 
-  private def unmarshal(apiResponseBody: String): Future[List[Either[ErrorMessageJson, MessageJson]]] =
-    Unmarshal(apiResponseBody).to[List[Either[ErrorMessageJson, MessageJson]]].recover {
-      case ex => List(Left(ErrorMessageJson(ex.getMessage, apiResponseBody, Instant.now)))
-    }
+  def extractBody(entity: ResponseEntity, status: StatusCode, timeout: Int): Future[String] = {
+    if (status != StatusCodes.OK)
+      logger.warn(s"Bad response status code: $status")
+    entity.toStrict(timeout.seconds).map(_.data.utf8String)
+  }
+
+  def unmarshalBody(apiResponseBody: String): Future[List[Either[ErrorMessageJson, MessageJson]]] =
+    Unmarshal(apiResponseBody)
+      .to[List[Either[ErrorMessageJson, MessageJson]]]
+      .recover {
+        case ex =>
+          List(Left(ErrorMessageJson(ex.getMessage, apiResponseBody, Instant.now)))
+      }
 }

@@ -7,8 +7,10 @@ import it.bitrock.dvs.producer.aviationedge.model._
 
 trait TestValues {
 
-  final val IcaoNumber = "SWR6U"
-  final val Timestamp  = Instant.now()
+  final val IcaoNumber    = "SWR6U"
+  final val Timestamp     = Instant.now()
+  final val Content       = "a content"
+  final val ErrorResponse = "an error"
 
   final val FlightMessage = FlightMessageJson(
     GeographyJson(49.2655, -1.9623, 9753.6, 282.76),
@@ -47,5 +49,27 @@ trait TestValues {
   final val InvalidSpeedFlightMessage     = FlightMessage.copy(speed = SpeedJson(1300.00, 0.0))
   final val InvalidDepartureFlightMessage = FlightMessage.copy(departure = DepartureJson("", ""))
   final val InvalidArrivalFlightMessage   = FlightMessage.copy(arrival = ArrivalJson("", ""))
+
+  final val incorrectJsonAirline =
+    """
+      |[
+      |  {
+      |    "ageFleet": 10.9,
+      |    "airlineId":1,
+      |    "callsign": "AMERICAN",
+      |    "codeHub": "DFW",
+      |    "codeIataAirline": "AA",
+      |    "codeIcaoAirline": "AAL",
+      |    "codeIso2Country": "US",
+      |    "founding": 1934,
+      |    "iataPrefixAccounting": "1",
+      |    "nameAirline": null,
+      |    "nameCountry": "United States",
+      |    "sizeAirline": 963,
+      |    "statusAirline": "active",
+      |    "type": "scheduled"
+      |  }
+      |]
+      |""".stripMargin
 
 }
