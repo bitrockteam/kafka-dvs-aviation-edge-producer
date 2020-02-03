@@ -12,6 +12,7 @@ case object CityStream     extends AviationStream
 case class Tick()
 
 case class ErrorMessageJson(
+    errorSource: String,
     errorMessage: String,
     failedJson: String,
     timestamp: Instant

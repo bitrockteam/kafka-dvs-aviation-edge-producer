@@ -10,6 +10,7 @@ trait TestValues {
   final val IcaoNumber    = "SWR6U"
   final val Timestamp     = Instant.now()
   final val Content       = "a content"
+  final val Path          = "a path"
   final val ErrorResponse = "an error"
 
   final val FlightMessage = FlightMessageJson(
@@ -36,8 +37,8 @@ trait TestValues {
     "en-route"
   )
 
-  final val ErrorMessage        = ErrorMessageJson("a message", "a failed json", Timestamp)
-  final val ExpectedParserError = ParserError("a message", "a failed json", Timestamp)
+  final val ErrorMessage        = ErrorMessageJson(Path, "a message", "a failed json", Timestamp)
+  final val ExpectedParserError = ParserError(Path, "a message", "a failed json", Timestamp)
 
   final val ValidAirlineMessage           = AirlineMessageJson(0, "", "", "", "", "active", 0, "", "")
   final val InvalidAirlineMessage         = AirlineMessageJson(0, "", "", "", "", "invalid status", 0, "", "")
@@ -50,7 +51,7 @@ trait TestValues {
   final val InvalidDepartureFlightMessage = FlightMessage.copy(departure = DepartureJson("", ""))
   final val InvalidArrivalFlightMessage   = FlightMessage.copy(arrival = ArrivalJson("", ""))
 
-  final val incorrectJsonAirline =
+  final val IncorrectJsonAirline =
     """
       |[
       |  {

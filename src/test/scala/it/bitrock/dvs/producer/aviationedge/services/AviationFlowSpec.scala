@@ -37,7 +37,7 @@ class AviationFlowSpec
 
   "unmarshal method" should {
     "parse a flight JSON message into FlightMessageJson" in {
-      val futureResult = aviationFlow.unmarshalBody(readFixture("flight"))
+      val futureResult = aviationFlow.unmarshalBody(readFixture("flight"), Path)
       whenReady(futureResult) { result =>
         result.size shouldBe 1
         result.head.isRight shouldBe true
@@ -45,7 +45,7 @@ class AviationFlowSpec
       }
     }
     "parse a airplane JSON message into AirplaneMessageJson" in {
-      val futureResult = aviationFlow.unmarshalBody(readFixture("airplaneDatabase"))
+      val futureResult = aviationFlow.unmarshalBody(readFixture("airplaneDatabase"), Path)
       whenReady(futureResult) { result =>
         result.size shouldBe 1
         result.head.isRight shouldBe true
@@ -53,7 +53,7 @@ class AviationFlowSpec
       }
     }
     "parse a airport JSON message into AirportMessageJson" in {
-      val futureResult = aviationFlow.unmarshalBody(readFixture("airportDatabase"))
+      val futureResult = aviationFlow.unmarshalBody(readFixture("airportDatabase"), Path)
       whenReady(futureResult) { result =>
         result.size shouldBe 1
         result.head.isRight shouldBe true
@@ -61,7 +61,7 @@ class AviationFlowSpec
       }
     }
     "parse a airline JSON message into AirlineMessageJson" in {
-      val futureResult = aviationFlow.unmarshalBody(readFixture("airlineDatabase"))
+      val futureResult = aviationFlow.unmarshalBody(readFixture("airlineDatabase"), Path)
       whenReady(futureResult) { result =>
         result.size shouldBe 1
         result.head.isRight shouldBe true
@@ -69,7 +69,7 @@ class AviationFlowSpec
       }
     }
     "parse a city JSON message into CityMessageJson" in {
-      val futureResult = aviationFlow.unmarshalBody(readFixture("cityDatabase"))
+      val futureResult = aviationFlow.unmarshalBody(readFixture("cityDatabase"), Path)
       whenReady(futureResult) { result =>
         result.size shouldBe 1
         result.head.isRight shouldBe true
@@ -77,7 +77,7 @@ class AviationFlowSpec
       }
     }
     "create an ErrorMessageJson with the field failedJson equals to the response body" in {
-      val futureResult = aviationFlow.unmarshalBody(ErrorResponse)
+      val futureResult = aviationFlow.unmarshalBody(ErrorResponse, Path)
       whenReady(futureResult) { result =>
         result.size shouldBe 1
         result.head.isLeft shouldBe true
@@ -85,10 +85,11 @@ class AviationFlowSpec
       }
     }
     "create an ErrorMessageJson if at least one of the fields of the response is incorrect" in {
-      val futureResult = aviationFlow.unmarshalBody(incorrectJsonAirline)
+      val futureResult = aviationFlow.unmarshalBody(IncorrectJsonAirline, Path)
       whenReady(futureResult) { result =>
         result.size shouldBe 1
         result.head.isLeft shouldBe true
+        result.head.left.value.errorSource shouldBe Path
       }
     }
   }

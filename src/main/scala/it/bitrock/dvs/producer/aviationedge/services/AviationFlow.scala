@@ -25,7 +25,7 @@ class AviationFlow()(implicit system: ActorSystem, ec: ExecutionContext) extends
         Http()
           .singleRequest(HttpRequest(HttpMethods.GET, uri))
           .flatMap(response => extractBody(response.entity, response.status, apiTimeout))
-          .flatMap(unmarshalBody)
+          .flatMap(body => unmarshalBody(body, uri.path.toString))
       }
 
   def extractBody(entity: ResponseEntity, status: StatusCode, timeout: Int): Future[String] = {
@@ -34,11 +34,19 @@ class AviationFlow()(implicit system: ActorSystem, ec: ExecutionContext) extends
     entity.toStrict(timeout.seconds).map(_.data.utf8String)
   }
 
-  def unmarshalBody(apiResponseBody: String): Future[List[Either[ErrorMessageJson, MessageJson]]] =
+  def unmarshalBody(apiResponseBody: String, path: String): Future[List[Either[ErrorMessageJson, MessageJson]]] =
     Unmarshal(apiResponseBody)
       .to[List[Either[ErrorMessageJson, MessageJson]]]
+      .map(list => addPathToLeft(list, path))
       .recover {
         case ex =>
-          List(Left(ErrorMessageJson(ex.getMessage, apiResponseBody, Instant.now)))
+          List(Left(ErrorMessageJson(path, ex.getMessage, apiResponseBody, Instant.now)))
       }
+
+  private def addPathToLeft(
+      list: List[Either[ErrorMessageJson, MessageJson]],
+      path: String
+  ): List[Either[ErrorMessageJson, MessageJson]] =
+    list.map(_.left.map(e => ErrorMessageJson(path, e.errorMessage, e.failedJson, e.timestamp)))
+
 }
