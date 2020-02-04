@@ -12,7 +12,8 @@ lazy val compileSettings = Seq(
     )
     .value,
   addCompilerPlugin(scalafixSemanticdb),
-  scalafixDependencies in ThisBuild += "org.scalatest" %% "autofix" % Versions.ScalaTestAutofix,
+  scalafixDependencies in ThisBuild += "org.scalatest"   %% "autofix"      % Versions.ScalaTestAutofix,
+  scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % Versions.ScalafixSortImports,
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding",
@@ -72,7 +73,7 @@ enablePlugins(JavaAppPackaging, DockerPlugin, AshScriptPlugin)
 
 dockerBaseImage := "openjdk:8-jre-alpine"
 dockerRepository := Option(sys.env.getOrElse("DOCKER_REPOSITORY", "local"))
-maintainer in Docker := "Daniele Marenco"
+maintainer in Docker := "Bitrock DVS team dvs@bitrock.it"
 
 // Fix for sbt-native-packager 1.3.19
 daemonUserUid in Docker := None

@@ -13,21 +13,22 @@ object Dependencies {
 
   object Versions {
 
-    lazy val Scala             = "2.12.10"
-    lazy val Akka              = "2.6.1"
-    lazy val AkkaHttp          = "10.1.11"
-    lazy val Alpakka           = "2.0.0"
-    lazy val ConfluentPlatform = "5.4.0"
-    lazy val JakartaWsRs       = "2.1.4"
-    lazy val Kafka             = "2.4.0"
-    lazy val KafkaCommons      = "0.0.8"
-    lazy val KafkaDVS          = "1.0.0"
-    lazy val LogbackClassic    = "1.2.3"
-    lazy val PureConfig        = "0.10.2"
-    lazy val ScalaLogging      = "3.9.2"
-    lazy val ScalaTestAutofix  = "3.1.0.0"
-    lazy val Slf4j             = "1.7.26"
-    lazy val TestCommons       = "0.0.8"
+    lazy val Scala               = "2.12.10"
+    lazy val Akka                = "2.6.1"
+    lazy val AkkaHttp            = "10.1.11"
+    lazy val Alpakka             = "2.0.0"
+    lazy val ConfluentPlatform   = "5.4.0"
+    lazy val JakartaWsRs         = "2.1.4"
+    lazy val Kafka               = "2.4.0"
+    lazy val KafkaCommons        = "0.0.8"
+    lazy val KafkaDVS            = "1.0.3"
+    lazy val LogbackClassic      = "1.2.3"
+    lazy val PureConfig          = "0.10.2"
+    lazy val ScalaLogging        = "3.9.2"
+    lazy val ScalafixSortImports = "0.3.2"
+    lazy val ScalaTestAutofix    = "3.1.0.0"
+    lazy val Slf4j               = "1.7.28"
+    lazy val TestCommons         = "0.0.8"
 
   }
 
@@ -55,6 +56,7 @@ object Dependencies {
     "it.bitrock.dvs"        %% "kafka-dvs-avro-schemas" % Versions.KafkaDVS,
     "it.bitrock"            %% "kafka-commons"          % Versions.KafkaCommons,
     "org.apache.kafka"      % "kafka-clients"           % Versions.Kafka,
+    "io.confluent"          % "monitoring-interceptors" % Versions.ConfluentPlatform exclude ("org.apache.kafka", "kafka-clients"),
     "com.typesafe.akka"     %% "akka-stream-kafka"      % Versions.Alpakka
   ) ++ Logging.prodDeps
 

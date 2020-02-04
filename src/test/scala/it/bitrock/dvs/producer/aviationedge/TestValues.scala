@@ -7,16 +7,20 @@ import it.bitrock.dvs.producer.aviationedge.model._
 
 trait TestValues {
 
-  final val IcaoNumber = "SWR6U"
+  final val IcaoNumber    = "SWR6U"
+  final val Timestamp     = Instant.now()
+  final val Content       = "a content"
+  final val Path          = "a path"
+  final val ErrorResponse = "an error"
 
   final val FlightMessage = FlightMessageJson(
     GeographyJson(49.2655, -1.9623, 9753.6, 282.76),
     SpeedJson(805.14, 0),
-    CommonCodeJson(Some("ZRH"), "LSZH"),
-    CommonCodeJson(Some("ORD"), "KORD"),
+    DepartureJson("ZRH", "LSZH"),
+    ArrivalJson("ORD", "KORD"),
     AircraftJson("HBJHA", "A333", "", "A333"),
-    CommonCodeJson(Some("LX"), "SWR"),
-    FlightJson(Some("LX6U"), IcaoNumber, "6U"),
+    AirlineJson("LX", "SWR"),
+    FlightJson("LX6U", IcaoNumber, "6U"),
     SystemJson(1567415880),
     "en-route"
   )
@@ -24,14 +28,17 @@ trait TestValues {
   final val ExpectedFlightRaw = FlightRaw(
     Geography(49.2655, -1.9623, 9753.6, 282.76),
     Speed(805.14, 0),
-    CommonCode("ZRH", "LSZH"),
-    CommonCode("ORD", "KORD"),
+    Departure("ZRH", "LSZH"),
+    Arrival("ORD", "KORD"),
     Aircraft("HBJHA", "A333", "", "A333"),
-    CommonCode("LX", "SWR"),
+    Airline("LX", "SWR"),
     Flight("LX6U", IcaoNumber, "6U"),
     System(Instant.ofEpochSecond(1567415880)),
     "en-route"
   )
+
+  final val ErrorMessage        = ErrorMessageJson(Path, "a message", "a failed json", Timestamp)
+  final val ExpectedParserError = ParserError(Path, "a message", "a failed json", Timestamp)
 
   final val ValidAirlineMessage           = AirlineMessageJson(0, "", "", "", "", "active", 0, "", "")
   final val InvalidAirlineMessage         = AirlineMessageJson(0, "", "", "", "", "invalid status", 0, "", "")
@@ -41,7 +48,29 @@ trait TestValues {
   final val UnknownFlightMessage          = FlightMessage.copy(status = "unknown")
   final val CrashedFlightMessage          = FlightMessage.copy(status = "crashed")
   final val InvalidSpeedFlightMessage     = FlightMessage.copy(speed = SpeedJson(1300.00, 0.0))
-  final val InvalidDepartureFlightMessage = FlightMessage.copy(departure = CommonCodeJson(Some(""), ""))
-  final val InvalidArrivalFlightMessage   = FlightMessage.copy(arrival = CommonCodeJson(Some(""), ""))
+  final val InvalidDepartureFlightMessage = FlightMessage.copy(departure = DepartureJson("", ""))
+  final val InvalidArrivalFlightMessage   = FlightMessage.copy(arrival = ArrivalJson("", ""))
+
+  final val IncorrectJsonAirline =
+    """
+      |[
+      |  {
+      |    "ageFleet": 10.9,
+      |    "airlineId":1,
+      |    "callsign": "AMERICAN",
+      |    "codeHub": "DFW",
+      |    "codeIataAirline": "AA",
+      |    "codeIcaoAirline": "AAL",
+      |    "codeIso2Country": "US",
+      |    "founding": 1934,
+      |    "iataPrefixAccounting": "1",
+      |    "nameAirline": null,
+      |    "nameCountry": "United States",
+      |    "sizeAirline": 963,
+      |    "statusAirline": "active",
+      |    "type": "scheduled"
+      |  }
+      |]
+      |""".stripMargin
 
 }

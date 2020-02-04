@@ -6,8 +6,8 @@ import akka.stream.scaladsl.Source
 import akka.testkit.TestKit
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
 import it.bitrock.dvs.producer.aviationedge.TestValues
+import it.bitrock.dvs.producer.aviationedge.kafka.KafkaTypes.{Flight, Key}
 import it.bitrock.dvs.producer.aviationedge.model.MessageJson
-import it.bitrock.dvs.producer.aviationedge.kafka.KafkaTypes.{Key, Flight => KafkaTypesFlight}
 import it.bitrock.kafkacommons.serialization.ImplicitConversions._
 import it.bitrock.testcommons.{FixtureLoanerAnyResult, Suite}
 import net.manub.embeddedkafka.schemaregistry._
@@ -32,7 +32,7 @@ class KafkaFlightSinkFactorySpec
         implicit val kSerde: Serde[Key]                  = keySerde
         val result = withRunningKafka {
           Source.single(FlightMessage).runWith(factory.sink)
-          consumeFirstKeyedMessageFrom[Key, KafkaTypesFlight.Value](factory.topic)
+          consumeFirstKeyedMessageFrom[Key, Flight.Value](factory.topic)
         }
         result shouldBe ((IcaoNumber, ExpectedFlightRaw))
     }
@@ -42,19 +42,18 @@ class KafkaFlightSinkFactorySpec
   object ResourceLoaner extends FixtureLoanerAnyResult[Resource] {
     override def withFixture(body: Resource => Any): Any = {
       implicit val embeddedKafkaConfig: EmbeddedKafkaConfig = EmbeddedKafkaConfig()
+      val outputTopic                                       = "output_topic"
+      val keySerde                                          = Serdes.String
+      val valueSerializer                                   = specificAvroValueSerializer[Flight.Value]
 
-      val outputTopic       = "output_topic"
-      val rsvpRawKeySerde   = Serdes.String
-      val rsvpRawSerializer = specificAvroValueSerializer[KafkaTypesFlight.Value]
-
-      val producerSettings = ProducerSettings(system, rsvpRawKeySerde.serializer, rsvpRawSerializer)
+      val producerSettings = ProducerSettings(system, keySerde.serializer, valueSerializer)
         .withBootstrapServers(s"localhost:${embeddedKafkaConfig.kafkaPort}")
         .withProperty(
           AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
           s"http://localhost:${embeddedKafkaConfig.schemaRegistryPort}"
         )
 
-      val factory = new KafkaSinkFactory[MessageJson, Key, KafkaTypesFlight.Value](
+      val factory = new KafkaSinkFactory[MessageJson, Key, Flight.Value](
         outputTopic,
         producerSettings
       )
@@ -62,7 +61,7 @@ class KafkaFlightSinkFactorySpec
       body(
         Resource(
           embeddedKafkaConfig,
-          rsvpRawKeySerde,
+          keySerde,
           factory
         )
       )
@@ -81,7 +80,7 @@ object KafkaFlightSinkFactorySpec {
   final case class Resource(
       embeddedKafkaConfig: EmbeddedKafkaConfig,
       keySerde: Serde[Key],
-      factory: KafkaSinkFactory[MessageJson, Key, KafkaTypesFlight.Value]
+      factory: KafkaSinkFactory[MessageJson, Key, Flight.Value]
   )
 
 }

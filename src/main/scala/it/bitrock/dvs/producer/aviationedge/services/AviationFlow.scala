@@ -1,5 +1,7 @@
 package it.bitrock.dvs.producer.aviationedge.services
 
+import java.time.Instant
+
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
@@ -7,38 +9,44 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.Flow
 import com.typesafe.scalalogging.LazyLogging
-import it.bitrock.dvs.producer.aviationedge.model.{MessageJson, Tick}
-import JsonSupport._
+import it.bitrock.dvs.producer.aviationedge.model.{ErrorMessageJson, MessageJson, Tick}
+import it.bitrock.dvs.producer.aviationedge.services.JsonSupport._
 
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future}
 
 class AviationFlow()(implicit system: ActorSystem, ec: ExecutionContext) extends LazyLogging {
 
-  def flow(uri: Uri, apiTimeout: Int): Flow[Tick, List[MessageJson], NotUsed] = flow { () =>
-    logger.info(s"Trying to call: $uri")
-    Http().singleRequest(HttpRequest(HttpMethods.GET, uri)).flatMap {
-      case HttpResponse(StatusCodes.OK, _, entity, _) =>
-        entity
-          .toStrict(apiTimeout.seconds)
-          .map(_.data.utf8String)
-      case HttpResponse(statusCodes, _, _, _) =>
-        logger.warn(s"Bad response status code: $statusCodes")
-        Future.successful("")
-    }
-  }
-
-  def flow(apiProvider: () => Future[String]): Flow[Tick, List[MessageJson], NotUsed] =
+  def flow(uri: Uri, apiTimeout: Int): Flow[Tick, List[Either[ErrorMessageJson, MessageJson]], NotUsed] =
     Flow
-      .fromFunction((x: Tick) => x)
+      .fromFunction(identity[Tick])
       .mapAsync(1) { _ =>
-        apiProvider().flatMap(response => unmarshal(response))
+        logger.info(s"Trying to call: $uri")
+        Http()
+          .singleRequest(HttpRequest(HttpMethods.GET, uri))
+          .flatMap(response => extractBody(response.entity, response.status, apiTimeout))
+          .flatMap(body => unmarshalBody(body, uri.path.toString))
       }
 
-  private def unmarshal(apiResponseBody: String): Future[List[MessageJson]] =
-    Unmarshal(apiResponseBody).to[List[MessageJson]].recover {
-      case e =>
-        logger.warn(s"Unmarshal error: $e")
-        List[MessageJson]()
-    }
+  def extractBody(entity: ResponseEntity, status: StatusCode, timeout: Int): Future[String] = {
+    if (status != StatusCodes.OK)
+      logger.warn(s"Bad response status code: $status")
+    entity.toStrict(timeout.seconds).map(_.data.utf8String)
+  }
+
+  def unmarshalBody(apiResponseBody: String, path: String): Future[List[Either[ErrorMessageJson, MessageJson]]] =
+    Unmarshal(apiResponseBody)
+      .to[List[Either[ErrorMessageJson, MessageJson]]]
+      .map(list => addPathToLeft(list, path))
+      .recover {
+        case ex =>
+          List(Left(ErrorMessageJson(path, ex.getMessage, apiResponseBody, Instant.now)))
+      }
+
+  private def addPathToLeft(
+      list: List[Either[ErrorMessageJson, MessageJson]],
+      path: String
+  ): List[Either[ErrorMessageJson, MessageJson]] =
+    list.map(_.left.map(e => e.copy(errorSource = path)))
+
 }

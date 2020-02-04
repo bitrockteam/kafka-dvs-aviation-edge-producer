@@ -1,132 +1,100 @@
 package it.bitrock.dvs.producer.aviationedge.services
 
 import akka.actor.ActorSystem
-import akka.stream.scaladsl.{Keep, Sink, Source}
-import akka.stream.testkit.TestSubscriber.Probe
-import akka.stream.testkit.scaladsl.TestSink
+import akka.http.scaladsl.model.{HttpEntity, HttpResponse, StatusCodes}
 import akka.testkit.TestKit
+import it.bitrock.dvs.producer.aviationedge.TestValues
 import it.bitrock.dvs.producer.aviationedge.model._
-import AviationFlowSpec.Resource
-import it.bitrock.testcommons.{FixtureLoanerAnyResult, Suite}
-
-import scala.concurrent.duration._
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import it.bitrock.testcommons.Suite
+import org.scalatest.EitherValues
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.wordspec.AnyWordSpecLike
 
-class AviationFlowSpec extends TestKit(ActorSystem("AviationFlowSpec")) with Suite with AnyWordSpecLike {
+import scala.concurrent.ExecutionContext.Implicits.global
 
-  "flow method" should {
+class AviationFlowSpec
+    extends TestKit(ActorSystem("AviationFlowSpec"))
+    with Suite
+    with AnyWordSpecLike
+    with TestValues
+    with EitherValues
+    with ScalaFutures {
 
-    "parse a flight JSON message into FlightMessageJson" in ResourceLoaner.withFixture {
-      case Resource(aviationFlow, sinkProbe) =>
-        val result = Source
-          .single(Tick())
-          .via(aviationFlow.flow(() => readFixture("flights")))
-          .mapConcat(identity)
-          .toMat(sinkProbe)(Keep.right)
-          .run()
+  private val aviationFlow = new AviationFlow()
 
-        result.requestNext(20.seconds) shouldBe a[FlightMessageJson]
+  "extract method" should {
+    "return the body for any correct response" in {
+      val response     = HttpResponse(status = StatusCodes.OK, entity = HttpEntity(Content))
+      val futureResult = aviationFlow.extractBody(response.entity, response.status, 1)
+      whenReady(futureResult) { _ shouldBe Content }
     }
-
-    "parse a airplane JSON message into AirplaneMessageJson" in ResourceLoaner.withFixture {
-      case Resource(aviationFlow, sinkProbe) =>
-        val result = Source
-          .single(Tick())
-          .via(aviationFlow.flow(() => readFixture("airplaneDatabase")))
-          .mapConcat(identity)
-          .toMat(sinkProbe)(Keep.right)
-          .run()
-
-        result.requestNext(60.seconds) shouldBe a[AirplaneMessageJson]
-    }
-
-    "parse a airport JSON message into AirportMessageJson" in ResourceLoaner.withFixture {
-      case Resource(aviationFlow, sinkProbe) =>
-        val result = Source
-          .single(Tick())
-          .via(aviationFlow.flow(() => readFixture("airportDatabase")))
-          .mapConcat(identity)
-          .toMat(sinkProbe)(Keep.right)
-          .run()
-
-        result.requestNext(20.seconds) shouldBe a[AirportMessageJson]
-    }
-
-    "parse a airline JSON message into AirlineMessageJson" in ResourceLoaner.withFixture {
-      case Resource(aviationFlow, sinkProbe) =>
-        val result = Source
-          .single(Tick())
-          .via(aviationFlow.flow(() => readFixture("airlineDatabase")))
-          .mapConcat(identity)
-          .toMat(sinkProbe)(Keep.right)
-          .run()
-
-        result.requestNext(20.seconds) shouldBe a[AirlineMessageJson]
-    }
-
-    "parse a city JSON message into CityMessageJson" in ResourceLoaner.withFixture {
-      case Resource(aviationFlow, sinkProbe) =>
-        val result = Source
-          .single(Tick())
-          .via(aviationFlow.flow(() => readFixture("cityDatabase")))
-          .mapConcat(identity)
-          .toMat(sinkProbe)(Keep.right)
-          .run()
-
-        result.requestNext(20.seconds) shouldBe a[CityMessageJson]
-    }
-
-    "complete immediately for an incorrect request" in ResourceLoaner.withFixture {
-      case Resource(flightFlow, sinkProbe) =>
-        val result = Source
-          .single(Tick())
-          .via(flightFlow.flow(() => readFixture("invalidApiKey")))
-          .mapConcat(identity)
-          .toMat(sinkProbe)(Keep.right)
-          .run()
-
-        result.expectSubscriptionAndComplete()
-    }
-
-    "complete immediately when the API provides some malformed JSON" in ResourceLoaner.withFixture {
-      case Resource(flightFlow, sinkProbe) =>
-        val result = Source
-          .single(Tick())
-          .via(flightFlow.flow(() => Future("this-is-not-a-JSON-document")))
-          .mapConcat(identity)
-          .toMat(sinkProbe)(Keep.right)
-          .run()
-
-        result.expectSubscriptionAndComplete()
+    "return the body for any incorrect response" in {
+      val response     = HttpResponse(status = StatusCodes.BadRequest, entity = HttpEntity(Content))
+      val futureResult = aviationFlow.extractBody(response.entity, response.status, 1)
+      whenReady(futureResult) { _ shouldBe Content }
     }
   }
 
-  object ResourceLoaner extends FixtureLoanerAnyResult[Resource] {
-    override def withFixture(body: Resource => Any): Any = {
-      val aviationFlow = new AviationFlow()
-      val sinkProbe    = TestSink.probe[MessageJson]
-
-      body(
-        Resource(
-          aviationFlow,
-          sinkProbe
-        )
-      )
+  "unmarshal method" should {
+    "parse a flight JSON message into FlightMessageJson" in {
+      val futureResult = aviationFlow.unmarshalBody(readFixture("flight"), Path)
+      whenReady(futureResult) { result =>
+        result.size shouldBe 1
+        result.head.isRight shouldBe true
+        result.head.right.value shouldBe a[FlightMessageJson]
+      }
+    }
+    "parse a airplane JSON message into AirplaneMessageJson" in {
+      val futureResult = aviationFlow.unmarshalBody(readFixture("airplaneDatabase"), Path)
+      whenReady(futureResult) { result =>
+        result.size shouldBe 1
+        result.head.isRight shouldBe true
+        result.head.right.value shouldBe a[AirplaneMessageJson]
+      }
+    }
+    "parse a airport JSON message into AirportMessageJson" in {
+      val futureResult = aviationFlow.unmarshalBody(readFixture("airportDatabase"), Path)
+      whenReady(futureResult) { result =>
+        result.size shouldBe 1
+        result.head.isRight shouldBe true
+        result.head.right.value shouldBe a[AirportMessageJson]
+      }
+    }
+    "parse a airline JSON message into AirlineMessageJson" in {
+      val futureResult = aviationFlow.unmarshalBody(readFixture("airlineDatabase"), Path)
+      whenReady(futureResult) { result =>
+        result.size shouldBe 1
+        result.head.isRight shouldBe true
+        result.head.right.value shouldBe a[AirlineMessageJson]
+      }
+    }
+    "parse a city JSON message into CityMessageJson" in {
+      val futureResult = aviationFlow.unmarshalBody(readFixture("cityDatabase"), Path)
+      whenReady(futureResult) { result =>
+        result.size shouldBe 1
+        result.head.isRight shouldBe true
+        result.head.right.value shouldBe a[CityMessageJson]
+      }
+    }
+    "create an ErrorMessageJson with the field failedJson equals to the response body" in {
+      val futureResult = aviationFlow.unmarshalBody(ErrorResponse, Path)
+      whenReady(futureResult) { result =>
+        result.size shouldBe 1
+        result.head.isLeft shouldBe true
+        result.head.left.value.failedJson shouldBe ErrorResponse
+      }
+    }
+    "create an ErrorMessageJson if at least one of the fields of the response is incorrect" in {
+      val futureResult = aviationFlow.unmarshalBody(IncorrectJsonAirline, Path)
+      whenReady(futureResult) { result =>
+        result.size shouldBe 1
+        result.head.isLeft shouldBe true
+        result.head.left.value.errorSource shouldBe Path
+      }
     }
   }
 
-  private def readFixture(fixtureName: String): Future[String] = Future {
-    scala.io.Source
-      .fromResource(s"fixtures/aviation-edge-api/$fixtureName.json", this.getClass.getClassLoader)
-      .mkString
-  }
-}
+  private def readFixture(fixtureName: String): String =
+    scala.io.Source.fromResource(s"fixtures/aviation-edge-api/$fixtureName.json").mkString
 
-object AviationFlowSpec {
-  final case class Resource(
-      aviationFlow: AviationFlow,
-      sinkProbe: Sink[MessageJson, Probe[MessageJson]]
-  )
 }

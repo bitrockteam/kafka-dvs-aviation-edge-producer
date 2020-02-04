@@ -1,0 +1,43 @@
+[
+    {
+        "aircraft": {
+            "iataCode": "A332",
+            "icao24": "A40CFC",
+            "icaoCode": "A332",
+            "regNumber": "N360HA"
+        },
+        "airline": {
+            "iataCode": "HA",
+            "icaoCode": "HAL"
+        },
+        "arrival": {
+            "iataCode": "LAS",
+            "icaoCode": "KLAS"
+        },
+        "departure": {
+            "iataCode": "HNL",
+            "icaoCode": "PHNL"
+        },
+        "flight": {
+            "iataNumber": "HA8",
+            "icaoNumber": "HAL8",
+            "number": "8"
+        },
+        "geography": {
+            "altitude": 11887.2,
+            "direction": 79.0,
+            "latitude": 22.26,
+            "longitude": -152.37
+        },
+        "speed": {
+            "horizontal": 500.0,
+            "isGround": 0.0,
+            "vspeed": 0.0
+        },
+        "status": "en-route",
+        "system": {
+            "squawk": null,
+            "updated": 1579168286
+        }
+    }
+]

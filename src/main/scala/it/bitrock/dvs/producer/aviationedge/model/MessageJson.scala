@@ -5,10 +5,10 @@ sealed trait MessageJson extends Product
 final case class FlightMessageJson(
     geography: GeographyJson,
     speed: SpeedJson,
-    departure: CommonCodeJson,
-    arrival: CommonCodeJson,
+    departure: DepartureJson,
+    arrival: ArrivalJson,
     aircraft: AircraftJson,
-    airline: CommonCodeJson,
+    airline: AirlineJson,
     flight: FlightJson,
     system: SystemJson,
     status: String
@@ -74,8 +74,18 @@ final case class SpeedJson(
     vspeed: Double
 )
 
-final case class CommonCodeJson(
-    iataCode: Option[String],
+final case class DepartureJson(
+    iataCode: String,
+    icaoCode: String
+)
+
+final case class ArrivalJson(
+    iataCode: String,
+    icaoCode: String
+)
+
+final case class AirlineJson(
+    iataCode: String,
     icaoCode: String
 )
 
@@ -87,7 +97,7 @@ final case class AircraftJson(
 )
 
 final case class FlightJson(
-    iataNumber: Option[String],
+    iataNumber: String,
     icaoNumber: String,
     number: String
 )
