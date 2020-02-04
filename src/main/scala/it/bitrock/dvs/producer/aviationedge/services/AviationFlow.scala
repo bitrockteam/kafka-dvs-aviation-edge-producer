@@ -47,6 +47,6 @@ class AviationFlow()(implicit system: ActorSystem, ec: ExecutionContext) extends
       list: List[Either[ErrorMessageJson, MessageJson]],
       path: String
   ): List[Either[ErrorMessageJson, MessageJson]] =
-    list.map(_.left.map(e => ErrorMessageJson(path, e.errorMessage, e.failedJson, e.timestamp)))
+    list.map(_.left.map(e => e.copy(errorSource = path)))
 
 }
