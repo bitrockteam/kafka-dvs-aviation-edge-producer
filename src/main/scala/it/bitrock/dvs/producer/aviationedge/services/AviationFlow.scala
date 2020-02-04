@@ -2,7 +2,6 @@ package it.bitrock.dvs.producer.aviationedge.services
 
 import java.time.Instant
 
-import JsonSupport._
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
@@ -11,6 +10,7 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.Flow
 import com.typesafe.scalalogging.LazyLogging
 import it.bitrock.dvs.producer.aviationedge.model.{ErrorMessageJson, MessageJson, Tick}
+import it.bitrock.dvs.producer.aviationedge.services.JsonSupport._
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
