@@ -1,16 +1,18 @@
 package it.bitrock.dvs.producer.aviationedge.services
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.{HttpEntity, HttpResponse, StatusCodes}
+import akka.http.scaladsl.model.{HttpEntity, HttpResponse, StatusCodes, Uri}
+import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.testkit.TestKit
 import it.bitrock.dvs.producer.aviationedge.TestValues
 import it.bitrock.dvs.producer.aviationedge.model._
 import it.bitrock.testcommons.Suite
 import org.scalatest.EitherValues
-import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.wordspec.AnyWordSpecLike
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 class AviationFlowSpec
     extends TestKit(ActorSystem("AviationFlowSpec"))
@@ -18,9 +20,19 @@ class AviationFlowSpec
     with AnyWordSpecLike
     with TestValues
     with EitherValues
-    with ScalaFutures {
+    with ScalaFutures
+    with IntegrationPatience {
 
   private val aviationFlow = new AviationFlow()
+
+  "flow method" should {
+    "recover http request failure" in {
+      val flow = aviationFlow.flow(Uri("invalid-url"), 1)
+      whenReady(Source.tick(0.seconds, 1.second, Tick()).via(flow).take(1).toMat(Sink.head)(Keep.right).run()) { x =>
+        x.head.left.value shouldBe an[ErrorMessageJson]
+      }
+    }
+  }
 
   "extract method" should {
     "return the body for any correct response" in {
