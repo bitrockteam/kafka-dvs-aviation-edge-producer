@@ -3,11 +3,10 @@ package it.bitrock.dvs.producer.aviationedge.services
 import akka.Done
 import akka.actor.{ActorSystem, Cancellable}
 import akka.http.scaladsl.Http
-import akka.stream.ClosedShape
-import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, RunnableGraph, Sink, Source}
 import it.bitrock.dvs.producer.aviationedge.config.{AppConfig, AviationConfig, KafkaConfig, ServerConfig}
 import it.bitrock.dvs.producer.aviationedge.model._
 import it.bitrock.dvs.producer.aviationedge.routes.Routes
+import it.bitrock.dvs.producer.aviationedge.services.Graphs._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -31,37 +30,17 @@ object MainFunctions {
 
     val config = AviationStreamContext[A].config(aviationConfig)
 
-    val tickSource   = new TickSource(config.pollingStart, config.pollingInterval, aviationConfig.tickSource).source
-    val aviationFlow = new AviationFlow().flow(aviationConfig.getAviationUri(config.path), aviationConfig.apiTimeout)
+    val tickSource     = new TickSource(config.pollingStart, config.pollingInterval, aviationConfig.tickSource).source
+    val aviationFlow   = new AviationFlow().flow(aviationConfig.getAviationUri(config.path), aviationConfig.apiTimeout)
+    val rawSink        = AviationStreamContext[A].sink(kafkaConfig)
+    val errorSink      = SideStreamContext.errorSink(kafkaConfig)
+    val monitoringSink = SideStreamContext.monitoringSink(kafkaConfig)
 
-    val jsonSource = tickSource.via(aviationFlow).mapConcat(identity)
-    val rawSink    = AviationStreamContext[A].sink(kafkaConfig)
-    val errorSink  = ErrorStreamContext.sink(kafkaConfig)
+    val jsonSource = tickSource.via(aviationFlow).via(monitoringGraph(monitoringSink)).mapConcat(identity)
 
-    buildGraph(jsonSource, rawSink, errorSink).run()
+    mainGraph(jsonSource, rawSink, errorSink).run()
 
   }
-
-  def buildGraph[SourceMat, SinkMat](
-      jsonSource: Source[Either[ErrorMessageJson, MessageJson], SourceMat],
-      rawSink: Sink[MessageJson, SinkMat],
-      errorSink: Sink[ErrorMessageJson, SinkMat]
-  ): RunnableGraph[(SourceMat, SinkMat, SinkMat)] = RunnableGraph.fromGraph(
-    GraphDSL.create(jsonSource, rawSink, errorSink)((x, y, z) => (x, y, z)) { implicit builder => (source, rightSink, leftSink) =>
-      import GraphDSL.Implicits._
-
-      val broadcast             = builder.add(Broadcast[Either[ErrorMessageJson, MessageJson]](2))
-      val collectRight          = builder.add(Flow[Either[ErrorMessageJson, MessageJson]].collect { case Right(x) => x })
-      val collectLeft           = builder.add(Flow[Either[ErrorMessageJson, MessageJson]].collect { case Left(x) => x })
-      val filterInvalidMessages = builder.add(Flow[MessageJson].filter(filterFunction))
-
-      source ~> broadcast
-      broadcast.out(0) ~> collectRight ~> filterInvalidMessages ~> rightSink
-      broadcast.out(1) ~> collectLeft ~> leftSink
-
-      ClosedShape
-    }
-  )
 
   def filterFunction: MessageJson => Boolean = {
     case msg: AirlineMessageJson => filterAirline(msg)
@@ -69,9 +48,9 @@ object MainFunctions {
     case _                       => true
   }
 
-  private def filterAirline(airline: AirlineMessageJson): Boolean = airline.statusAirline == "active"
+  def filterAirline(airline: AirlineMessageJson): Boolean = airline.statusAirline == "active"
 
-  private def filterFlight(flight: FlightMessageJson): Boolean =
+  def filterFlight(flight: FlightMessageJson): Boolean =
     validFlightStatus(flight.status) &&
       validFlightSpeed(flight.speed.horizontal) &&
       validFlightJourney(flight.departure.iataCode, flight.arrival.iataCode)
