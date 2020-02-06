@@ -15,6 +15,6 @@ object InvalidFlightStreamContext extends AviationStreamContext[FlightStream.typ
 
   override def sink(kafkaConfig: KafkaConfig)(implicit system: ActorSystem): Sink[MessageJson, Future[Done]] =  {
     val producerSettings = ProducerSettingsFactory.from[Flight.Value](kafkaConfig)
-    new KafkaSinkFactory[MessageJson, Key, Flight.Value](kafkaConfig.invalidFlightTopic, producerSettings).sink
+    new KafkaSinkFactory[MessageJson, Key, Flight.Value](kafkaConfig.invalidFlightRawTopic, producerSettings).sink
   }
 }
