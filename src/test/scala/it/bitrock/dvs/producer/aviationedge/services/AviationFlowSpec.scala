@@ -28,8 +28,8 @@ class AviationFlowSpec
   "flow method" should {
     "recover http request failure" in {
       val flow = aviationFlow.flow(Uri("invalid-url"), 1)
-      whenReady(Source.tick(0.seconds, 1.second, Tick()).via(flow).take(1).toMat(Sink.head)(Keep.right).run()) { x =>
-        x.head.left.value shouldBe an[ErrorMessageJson]
+      whenReady(Source.tick(0.seconds, 1.second, Tick()).via(flow).take(1).toMat(Sink.head)(Keep.right).run()) { result =>
+        result.head.left.value.errorSource shouldBe "invalid-url"
       }
     }
   }

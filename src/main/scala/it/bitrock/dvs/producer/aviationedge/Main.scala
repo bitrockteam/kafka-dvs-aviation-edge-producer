@@ -28,7 +28,10 @@ object Main extends App with LazyLogging {
   val (cancellableCity, cityCompletion, _)         = runStream[CityStream.type]()
 
   val streamsCompletion = List(flightCompletion, airplaneCompletion, airportCompletion, airlineCompletion, cityCompletion)
-  Future.firstCompletedOf(streamsCompletion).foreach(_ => sys.exit(1))
+  Future.firstCompletedOf(streamsCompletion).foreach { _ =>
+    logger.error("An unexpected error caused a stream completion. Terminating the application...")
+    sys.exit(1)
+  }
 
   sys.addShutdownHook {
     logger.info("Shutting down")
