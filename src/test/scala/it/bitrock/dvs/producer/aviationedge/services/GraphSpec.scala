@@ -28,7 +28,7 @@ class GraphSpec
 
     "routes error messages and correct messages to different sinks" in {
 
-      val source            = Source(List(Right(FlightMessage), Left(ErrorMessage)))
+      val source            = Source(List(Right(FlightMessage), Left(ErrorMessage), Right(UnknownFlightMessage)))
       val flightSink        = Sink.fold[List[MessageJson], MessageJson](Nil)(_ :+ _)
       val errorSink         = Sink.fold[List[ErrorMessageJson], ErrorMessageJson](Nil)(_ :+ _)
       val invalidFlightSink = Sink.fold[List[MessageJson], MessageJson](Nil)(_ :+ _)
@@ -44,7 +44,8 @@ class GraphSpec
         e.head shouldBe ErrorMessage
       }
       whenReady(futureInvalidFlight) { e =>
-        e.size shouldBe 0
+        e.size shouldBe 1
+        e.head shouldBe UnknownFlightMessage
       }
     }
   }
