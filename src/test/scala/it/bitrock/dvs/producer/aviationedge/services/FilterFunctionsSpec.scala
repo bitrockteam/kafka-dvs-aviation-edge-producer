@@ -6,37 +6,38 @@ import it.bitrock.testcommons.Suite
 import org.scalatest.wordspec.AnyWordSpecLike
 
 class FilterFunctionsSpec extends Suite with AnyWordSpecLike with TestValues {
-
-  import MainFunctions.filterFunction
-
-  "filter function" should {
+  "function filter" should {
+    import MainFunctions.filterFunction
 
     "exclude airlines with status not equal to active" in {
       val messages: List[MessageJson] = List(ValidAirlineMessage, InvalidAirlineMessage)
       messages.count(filterFunction) shouldBe 1
     }
-
-    "exclude flights with status not equal to en-route" in {
-      val messages: List[MessageJson] = List(
-        StartedFlightMessage,
-        EnRouteFlightMessage,
-        LandedFlightMessage,
-        UnknownFlightMessage,
-        CrashedFlightMessage
-      )
-      messages.count(filterFunction) shouldBe 1
-    }
-
-    "exclude flights with invalid speed" in {
-      val messages: List[MessageJson] = List(FlightMessage, InvalidSpeedFlightMessage)
-      messages.count(filterFunction) shouldBe 1
-    }
-
-    "exclude flights with invalid departure or arrival airport" in {
-      val messages: List[MessageJson] = List(FlightMessage, InvalidDepartureFlightMessage, InvalidArrivalFlightMessage)
-      messages.count(filterFunction) shouldBe 1
-    }
-
   }
 
+  "function partitionMessages" should {
+    import MainFunctions.partitionMessages
+
+    "return 0 with an ErrorMessageJson" in {
+      partitionMessages(Left(ErrorMessage)) shouldBe 0
+    }
+
+    "return 1 with a valid flight event" in {
+      partitionMessages(Right(EnRouteFlightMessage)) shouldBe 1
+    }
+
+    "return 2 with an invalid flight event" in {
+      partitionMessages(Right(StartedFlightMessage)) shouldBe 2
+      partitionMessages(Right(LandedFlightMessage)) shouldBe 2
+      partitionMessages(Right(UnknownFlightMessage)) shouldBe 2
+      partitionMessages(Right(CrashedFlightMessage)) shouldBe 2
+      partitionMessages(Right(InvalidSpeedFlightMessage)) shouldBe 2
+      partitionMessages(Right(InvalidDepartureFlightMessage)) shouldBe 2
+      partitionMessages(Right(InvalidArrivalFlightMessage)) shouldBe 2
+    }
+
+    "return 1 with a valid airline event" in {
+      partitionMessages(Right(ValidAirlineMessage)) shouldBe 1
+    }
+  }
 }

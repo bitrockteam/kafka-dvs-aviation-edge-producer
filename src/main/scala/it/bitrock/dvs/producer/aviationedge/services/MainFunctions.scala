@@ -37,7 +37,7 @@ object MainFunctions {
     val jsonSource        = tickSource.via(aviationFlow).mapConcat(identity)
     val rawSink           = AviationStreamContext[A].sink(kafkaConfig)
     val errorSink         = ErrorStreamContext.sink(kafkaConfig)
-    val invalidFlightSink = AviationStreamContext[A].sink(kafkaConfig)
+    val invalidFlightSink = InvalidFlightStreamContext.sink(kafkaConfig)
 
     buildGraph(jsonSource, rawSink, errorSink, invalidFlightSink).run()
   }
@@ -68,7 +68,7 @@ object MainFunctions {
     case _                           => true
   }
 
-  private def partitionMessages(message: Either[ErrorMessageJson, MessageJson]): Int = message match {
+  def partitionMessages(message: Either[ErrorMessageJson, MessageJson]): Int = message match {
     case Left(_)                        => 0
     case Right(msg: FlightMessageJson)  => if (filterFlight(msg)) 1 else 2
     case Right(_)                       => 1
