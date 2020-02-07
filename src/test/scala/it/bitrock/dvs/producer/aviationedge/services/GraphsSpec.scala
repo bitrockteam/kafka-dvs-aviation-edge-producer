@@ -12,8 +12,10 @@ import it.bitrock.dvs.producer.aviationedge.services.Graphs._
 import it.bitrock.testcommons.Suite
 import net.manub.embeddedkafka.schemaregistry._
 import org.scalatest.BeforeAndAfterAll
+import org.scalatest.concurrent.PatienceConfiguration.Timeout
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.wordspec.AnyWordSpecLike
+import scala.concurrent.duration._
 
 import scala.concurrent.Future
 
@@ -27,6 +29,8 @@ class GraphsSpec
     with ScalaFutures
     with LazyLogging {
 
+  val timeout = Timeout(3.seconds)
+
   "graphs" should {
 
     "routes error messages and correct messages to different sinks" in {
@@ -36,11 +40,11 @@ class GraphsSpec
 
       val (_, futureFlight, futureError) = mainGraph(source, flightSink, errorSink).run()
 
-      whenReady(futureFlight) { f =>
+      whenReady(futureFlight, timeout) { f =>
         f.size shouldBe 1
         f.head shouldBe FlightMessage
       }
-      whenReady(futureError) { e =>
+      whenReady(futureError, timeout) { e =>
         e.size shouldBe 1
         e.head shouldBe ErrorMessage
       }
@@ -64,7 +68,7 @@ class GraphsSpec
 
       val futureMonitoring = source.viaMat(monitoringGraph(monitoringSink))(Keep.right).to(Sink.ignore).run()
 
-      whenReady(futureMonitoring) { m =>
+      whenReady(futureMonitoring, timeout) { m =>
         m.size shouldBe 1
         m.head.minUpdated shouldBe Instant.ofEpochSecond(MinUpdated)
         m.head.maxUpdated shouldBe Instant.ofEpochSecond(MaxUpdated)

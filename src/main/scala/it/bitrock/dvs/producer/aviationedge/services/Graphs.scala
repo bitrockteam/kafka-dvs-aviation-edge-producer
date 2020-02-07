@@ -5,8 +5,8 @@ import java.time.Instant
 import akka.NotUsed
 import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, RunnableGraph, Sink, Source}
 import akka.stream.{ClosedShape, FlowShape}
-import it.bitrock.dvs.producer.aviationedge.model.{ErrorMessageJson, FlightMessageJson, MessageJson, MonitoringMessageJson}
-import it.bitrock.dvs.producer.aviationedge.services.MainFunctions.{aviationConfig, filterFlight, filterFunction}
+import it.bitrock.dvs.producer.aviationedge.model._
+import it.bitrock.dvs.producer.aviationedge.services.MainFunctions.aviationConfig
 
 object Graphs {
 
@@ -71,5 +71,23 @@ object Graphs {
         numInvalid
       )
     }
+
+  def filterFunction: MessageJson => Boolean = {
+    case msg: AirlineMessageJson => filterAirline(msg)
+    case msg: FlightMessageJson  => filterFlight(msg)
+    case _                       => true
+  }
+
+  private def filterAirline(airline: AirlineMessageJson): Boolean = airline.statusAirline == "active"
+
+  private def filterFlight(flight: FlightMessageJson): Boolean =
+    validFlightStatus(flight.status) &&
+      validFlightSpeed(flight.speed.horizontal) &&
+      validFlightJourney(flight.departure.iataCode, flight.arrival.iataCode)
+
+  private def validFlightStatus(status: String): Boolean = status == "en-route"
+  private def validFlightSpeed(speed: Double): Boolean   = speed < aviationConfig.flightSpeedLimit
+  private def validFlightJourney(departureCode: String, arrivalCode: String): Boolean =
+    departureCode.nonEmpty && arrivalCode.nonEmpty
 
 }

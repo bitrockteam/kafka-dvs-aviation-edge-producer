@@ -4,7 +4,6 @@ import akka.Done
 import akka.actor.{ActorSystem, Cancellable}
 import akka.http.scaladsl.Http
 import it.bitrock.dvs.producer.aviationedge.config.{AppConfig, AviationConfig, KafkaConfig, ServerConfig}
-import it.bitrock.dvs.producer.aviationedge.model._
 import it.bitrock.dvs.producer.aviationedge.routes.Routes
 import it.bitrock.dvs.producer.aviationedge.services.Graphs._
 
@@ -41,23 +40,5 @@ object MainFunctions {
     mainGraph(jsonSource, rawSink, errorSink).run()
 
   }
-
-  def filterFunction: MessageJson => Boolean = {
-    case msg: AirlineMessageJson => filterAirline(msg)
-    case msg: FlightMessageJson  => filterFlight(msg)
-    case _                       => true
-  }
-
-  def filterAirline(airline: AirlineMessageJson): Boolean = airline.statusAirline == "active"
-
-  def filterFlight(flight: FlightMessageJson): Boolean =
-    validFlightStatus(flight.status) &&
-      validFlightSpeed(flight.speed.horizontal) &&
-      validFlightJourney(flight.departure.iataCode, flight.arrival.iataCode)
-
-  private def validFlightStatus(status: String): Boolean = status == "en-route"
-  private def validFlightSpeed(speed: Double): Boolean   = speed < aviationConfig.flightSpeedLimit
-  private def validFlightJourney(departureCode: String, arrivalCode: String): Boolean =
-    departureCode.nonEmpty && arrivalCode.nonEmpty
 
 }

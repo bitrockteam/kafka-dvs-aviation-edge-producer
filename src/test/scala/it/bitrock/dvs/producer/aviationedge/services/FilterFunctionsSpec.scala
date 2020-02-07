@@ -7,7 +7,7 @@ import org.scalatest.wordspec.AnyWordSpecLike
 
 class FilterFunctionsSpec extends Suite with AnyWordSpecLike with TestValues {
 
-  import MainFunctions.filterFunction
+  import Graphs.filterFunction
 
   "filter function" should {
 
