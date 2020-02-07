@@ -6,7 +6,7 @@ import it.bitrock.dvs.producer.aviationedge.model._
 import it.bitrock.dvs.producer.aviationedge.services.MainFunctions._
 
 import scala.concurrent.duration._
-import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 object Main extends App with LazyLogging {
 
@@ -21,11 +21,17 @@ object Main extends App with LazyLogging {
     logger.info(s"Exposing to ${serverBinding.localAddress}")
   }
 
-  val (cancellableFlight, _, _)   = runStream[FlightStream.type]()
-  val (cancellableAirplane, _, _) = runStream[AirplaneStream.type]()
-  val (cancellableAirport, _, _)  = runStream[AirportStream.type]()
-  val (cancellableAirline, _, _)  = runStream[AirlineStream.type]()
-  val (cancellableCity, _, _)     = runStream[CityStream.type]()
+  val (cancellableFlight, flightCompletion, _)     = runStream[FlightStream.type]()
+  val (cancellableAirplane, airplaneCompletion, _) = runStream[AirplaneStream.type]()
+  val (cancellableAirport, airportCompletion, _)   = runStream[AirportStream.type]()
+  val (cancellableAirline, airlineCompletion, _)   = runStream[AirlineStream.type]()
+  val (cancellableCity, cityCompletion, _)         = runStream[CityStream.type]()
+
+  val streamsCompletion = List(flightCompletion, airplaneCompletion, airportCompletion, airlineCompletion, cityCompletion)
+  Future.firstCompletedOf(streamsCompletion).foreach { _ =>
+    logger.error("An unexpected error caused a stream completion. Terminating the application...")
+    sys.exit(1)
+  }
 
   sys.addShutdownHook {
     logger.info("Shutting down")
