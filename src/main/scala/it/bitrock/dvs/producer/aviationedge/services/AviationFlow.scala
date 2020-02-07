@@ -14,6 +14,7 @@ import it.bitrock.dvs.producer.aviationedge.services.JsonSupport._
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.NonFatal
 
 class AviationFlow()(implicit system: ActorSystem, ec: ExecutionContext) extends LazyLogging {
 
@@ -26,6 +27,10 @@ class AviationFlow()(implicit system: ActorSystem, ec: ExecutionContext) extends
           .singleRequest(HttpRequest(HttpMethods.GET, uri))
           .flatMap(response => extractBody(response.entity, response.status, apiTimeout))
           .flatMap(body => unmarshalBody(body, uri.path.toString))
+          .recover {
+            case NonFatal(ex) =>
+              List(Left(ErrorMessageJson(uri.path.toString, ex.getMessage, "", Instant.now)))
+          }
       }
 
   def extractBody(entity: ResponseEntity, status: StatusCode, timeout: Int): Future[String] = {
