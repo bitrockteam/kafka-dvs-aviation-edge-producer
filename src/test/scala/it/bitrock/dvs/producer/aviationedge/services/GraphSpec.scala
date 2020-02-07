@@ -28,11 +28,12 @@ class GraphSpec
 
     "routes error messages and correct messages to different sinks" in {
 
-      val source     = Source(List(Right(FlightMessage), Left(ErrorMessage)))
-      val flightSink = Sink.fold[List[MessageJson], MessageJson](Nil)(_ :+ _)
-      val errorSink  = Sink.fold[List[ErrorMessageJson], ErrorMessageJson](Nil)(_ :+ _)
+      val source            = Source(List(Right(FlightMessage), Left(ErrorMessage), Right(UnknownFlightMessage)))
+      val flightSink        = Sink.fold[List[MessageJson], MessageJson](Nil)(_ :+ _)
+      val errorSink         = Sink.fold[List[ErrorMessageJson], ErrorMessageJson](Nil)(_ :+ _)
+      val invalidFlightSink = Sink.fold[List[MessageJson], MessageJson](Nil)(_ :+ _)
 
-      val (_, futureFlight, futureError) = buildGraph(source, flightSink, errorSink).run()
+      val (_, futureFlight, futureError, futureInvalidFlight) = buildGraph(source, flightSink, errorSink, invalidFlightSink).run()
 
       whenReady(futureFlight) { f =>
         f.size shouldBe 1
@@ -42,9 +43,10 @@ class GraphSpec
         e.size shouldBe 1
         e.head shouldBe ErrorMessage
       }
-
+      whenReady(futureInvalidFlight) { e =>
+        e.size shouldBe 1
+        e.head shouldBe UnknownFlightMessage
+      }
     }
-
   }
-
 }
