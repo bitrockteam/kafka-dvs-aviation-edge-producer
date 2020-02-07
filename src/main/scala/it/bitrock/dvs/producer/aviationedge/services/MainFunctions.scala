@@ -4,7 +4,7 @@ import akka.Done
 import akka.actor.{ActorSystem, Cancellable}
 import akka.http.scaladsl.Http
 import akka.stream.ClosedShape
-import akka.stream.scaladsl.{GraphDSL, Partition, RunnableGraph, Sink, Source}
+import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Partition, RunnableGraph, Sink, Source}
 import it.bitrock.dvs.producer.aviationedge.config.{AppConfig, AviationConfig, KafkaConfig, ServerConfig}
 import it.bitrock.dvs.producer.aviationedge.model._
 import it.bitrock.dvs.producer.aviationedge.routes.Routes
@@ -51,13 +51,19 @@ object MainFunctions {
     GraphDSL.create(jsonSource, rawSink, errorSink, invalidFlightSink)((a, b, c, d) => (a, b, c, d)) { implicit builder => (source, raw, error, invalidFlight) =>
       import GraphDSL.Implicits._
 
-      val partition = builder.add(Partition[Either[ErrorMessageJson, MessageJson]](3, partitionMessages))
+      val broadcast    = builder.add(Broadcast[Either[ErrorMessageJson, MessageJson]](2))
+      val collectRight = builder.add(Flow[Either[ErrorMessageJson, MessageJson]].collect { case Right(x) => x })
+      val collectLeft  = builder.add(Flow[Either[ErrorMessageJson, MessageJson]].collect { case Left(x) => x })
+      val partition    = builder.add(Partition[MessageJson](2, partitionMessages))
 
-      source ~> partition.in
+      source ~> broadcast
 
-      partition.out(0).collect { case Left(x) => x } ~> error
-      partition.out(1).collect { case Right(x) => x }.filter(filterFunction) ~> raw
-      partition.out(2).collect { case Right(x) => x } ~> invalidFlight
+      broadcast.out(0) ~> collectRight ~> partition.in
+
+      partition.out(0).filter(filterFunction) ~> raw
+      partition.out(1) ~> invalidFlight
+
+      broadcast.out(1) ~> collectLeft ~> error
 
       ClosedShape
     }
@@ -68,10 +74,9 @@ object MainFunctions {
     case _                           => true
   }
 
-  def partitionMessages(message: Either[ErrorMessageJson, MessageJson]): Int = message match {
-    case Left(_)                        => 0
-    case Right(msg: FlightMessageJson)  => if (filterFlight(msg)) 1 else 2
-    case Right(_)                       => 1
+  def partitionMessages(message: MessageJson): Int = message match {
+    case msg: FlightMessageJson  => if (filterFlight(msg)) 0 else 1
+    case _                       => 0
   }
 
   private def filterFlight(flight: FlightMessageJson): Boolean =

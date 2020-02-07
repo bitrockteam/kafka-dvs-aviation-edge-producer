@@ -18,26 +18,22 @@ class FilterFunctionsSpec extends Suite with AnyWordSpecLike with TestValues {
   "function partitionMessages" should {
     import MainFunctions.partitionMessages
 
-    "return 0 with an ErrorMessageJson" in {
-      partitionMessages(Left(ErrorMessage)) shouldBe 0
+    "return 0 with a valid flight event" in {
+      partitionMessages(EnRouteFlightMessage) shouldBe 0
     }
 
-    "return 1 with a valid flight event" in {
-      partitionMessages(Right(EnRouteFlightMessage)) shouldBe 1
+    "return 1 with an invalid flight event" in {
+      partitionMessages(StartedFlightMessage) shouldBe 1
+      partitionMessages(LandedFlightMessage) shouldBe 1
+      partitionMessages(UnknownFlightMessage) shouldBe 1
+      partitionMessages(CrashedFlightMessage) shouldBe 1
+      partitionMessages(InvalidSpeedFlightMessage) shouldBe 1
+      partitionMessages(InvalidDepartureFlightMessage) shouldBe 1
+      partitionMessages(InvalidArrivalFlightMessage) shouldBe 1
     }
 
-    "return 2 with an invalid flight event" in {
-      partitionMessages(Right(StartedFlightMessage)) shouldBe 2
-      partitionMessages(Right(LandedFlightMessage)) shouldBe 2
-      partitionMessages(Right(UnknownFlightMessage)) shouldBe 2
-      partitionMessages(Right(CrashedFlightMessage)) shouldBe 2
-      partitionMessages(Right(InvalidSpeedFlightMessage)) shouldBe 2
-      partitionMessages(Right(InvalidDepartureFlightMessage)) shouldBe 2
-      partitionMessages(Right(InvalidArrivalFlightMessage)) shouldBe 2
-    }
-
-    "return 1 with a valid airline event" in {
-      partitionMessages(Right(ValidAirlineMessage)) shouldBe 1
+    "return 0 with a valid airline event" in {
+      partitionMessages(ValidAirlineMessage) shouldBe 0
     }
   }
 }
