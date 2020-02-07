@@ -55,9 +55,9 @@ object MainFunctions {
 
       source ~> partition.in
 
-      partition.out(0).map(_.left.get) ~> error
-      partition.out(1).map(_.right.get).filter(filterFunction) ~> raw
-      partition.out(2).map(_.right.get) ~> invalidFlight
+      partition.out(0).collect { case Left(x) => x } ~> error
+      partition.out(1).collect { case Right(x) => x }.filter(filterFunction) ~> raw
+      partition.out(2).collect { case Right(x) => x } ~> invalidFlight
 
       ClosedShape
     }
