@@ -21,11 +21,11 @@ object Main extends App with LazyLogging {
     logger.info(s"Exposing to ${serverBinding.localAddress}")
   }
 
-  val (cancellableFlight, flightCompletion, _)     = runStream[FlightStream.type]()
-  val (cancellableAirplane, airplaneCompletion, _) = runStream[AirplaneStream.type]()
-  val (cancellableAirport, airportCompletion, _)   = runStream[AirportStream.type]()
-  val (cancellableAirline, airlineCompletion, _)   = runStream[AirlineStream.type]()
-  val (cancellableCity, cityCompletion, _)         = runStream[CityStream.type]()
+  val (cancellableFlight, flightCompletion, _, _)     = runStream[FlightStream.type]()
+  val (cancellableAirplane, airplaneCompletion, _, _) = runStream[AirplaneStream.type]()
+  val (cancellableAirport, airportCompletion, _, _)   = runStream[AirportStream.type]()
+  val (cancellableAirline, airlineCompletion, _, _)   = runStream[AirlineStream.type]()
+  val (cancellableCity, cityCompletion, _, _)         = runStream[CityStream.type]()
 
   val streamsCompletion = List(flightCompletion, airplaneCompletion, airportCompletion, airlineCompletion, cityCompletion)
   Future.firstCompletedOf(streamsCompletion).foreach { _ =>
