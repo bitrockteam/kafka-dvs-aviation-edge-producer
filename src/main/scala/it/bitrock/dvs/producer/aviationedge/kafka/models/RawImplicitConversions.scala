@@ -3,6 +3,7 @@ package it.bitrock.dvs.producer.aviationedge.kafka.models
 import java.time.Instant
 
 import it.bitrock.dvs.model.avro._
+import it.bitrock.dvs.model.avro.monitoring.FlightRequestComputationStatus
 import it.bitrock.dvs.producer.aviationedge.model._
 
 object RawImplicitConversions {
@@ -122,6 +123,18 @@ object RawImplicitConversions {
         mrse.errorMessage,
         mrse.failedJson,
         mrse.timestamp
+      )
+  }
+
+  implicit class FlightRequestMetricsStreamEventOps(mrse: MonitoringMessageJson) {
+    def toFlightRequestMetrics: FlightRequestComputationStatus =
+      FlightRequestComputationStatus(
+        mrse.messageReceivedOn,
+        mrse.minUpdated,
+        mrse.maxUpdated,
+        mrse.numErrors,
+        mrse.numValid,
+        mrse.numInvalid
       )
   }
 

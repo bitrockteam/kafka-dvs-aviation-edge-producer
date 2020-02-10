@@ -2,38 +2,39 @@ package it.bitrock.dvs.producer.aviationedge.services
 
 import it.bitrock.dvs.producer.aviationedge.TestValues
 import it.bitrock.dvs.producer.aviationedge.model.MessageJson
+import it.bitrock.dvs.producer.aviationedge.model.PartitionPorts._
 import it.bitrock.testcommons.Suite
 import org.scalatest.wordspec.AnyWordSpecLike
 
 class FilterFunctionsSpec extends Suite with AnyWordSpecLike with TestValues {
-  "function filter" should {
-    import MainFunctions.filterFunction
 
+  import Graphs._
+
+  "filter function" should {
     "exclude airlines with status not equal to active" in {
       val messages: List[MessageJson] = List(ValidAirlineMessage, InvalidAirlineMessage)
       messages.count(filterFunction) shouldBe 1
     }
   }
 
-  "function partitionMessages" should {
-    import MainFunctions.partitionMessages
-
-    "return 0 with a valid flight event" in {
-      partitionMessages(EnRouteFlightMessage) shouldBe 0
+  "partitionMessages" should {
+    "return ErrorPort with an error event" in {
+      partitionMessages(Left(ErrorMessage)) shouldBe ErrorPort
     }
-
-    "return 1 with an invalid flight event" in {
-      partitionMessages(StartedFlightMessage) shouldBe 1
-      partitionMessages(LandedFlightMessage) shouldBe 1
-      partitionMessages(UnknownFlightMessage) shouldBe 1
-      partitionMessages(CrashedFlightMessage) shouldBe 1
-      partitionMessages(InvalidSpeedFlightMessage) shouldBe 1
-      partitionMessages(InvalidDepartureFlightMessage) shouldBe 1
-      partitionMessages(InvalidArrivalFlightMessage) shouldBe 1
+    "return RawPort with a valid flight event" in {
+      partitionMessages(Right(EnRouteFlightMessage)) shouldBe RawPort
     }
-
-    "return 0 with a valid airline event" in {
-      partitionMessages(ValidAirlineMessage) shouldBe 0
+    "return RawPort with a valid airline event" in {
+      partitionMessages(Right(ValidAirlineMessage)) shouldBe RawPort
+    }
+    "return InvalidPort with an invalid flight event" in {
+      partitionMessages(Right(StartedFlightMessage)) shouldBe InvalidPort
+      partitionMessages(Right(LandedFlightMessage)) shouldBe InvalidPort
+      partitionMessages(Right(UnknownFlightMessage)) shouldBe InvalidPort
+      partitionMessages(Right(CrashedFlightMessage)) shouldBe InvalidPort
+      partitionMessages(Right(InvalidSpeedFlightMessage)) shouldBe InvalidPort
+      partitionMessages(Right(InvalidDepartureFlightMessage)) shouldBe InvalidPort
+      partitionMessages(Right(InvalidArrivalFlightMessage)) shouldBe InvalidPort
     }
   }
 }
