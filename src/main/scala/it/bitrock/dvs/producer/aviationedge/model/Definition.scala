@@ -26,3 +26,9 @@ case class MonitoringMessageJson(
     numValid: Int,
     numInvalid: Int
 )
+
+object PartitionPorts {
+  final val RawPort     = 0
+  final val ErrorPort   = 1
+  final val InvalidPort = 2
+}

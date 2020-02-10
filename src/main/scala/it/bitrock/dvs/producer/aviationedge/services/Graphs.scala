@@ -3,8 +3,9 @@ package it.bitrock.dvs.producer.aviationedge.services
 import java.time.Instant
 
 import akka.NotUsed
-import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, RunnableGraph, Sink, Source}
+import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Partition, RunnableGraph, Sink, Source}
 import akka.stream.{ClosedShape, FlowShape}
+import it.bitrock.dvs.producer.aviationedge.model.PartitionPorts._
 import it.bitrock.dvs.producer.aviationedge.model._
 import it.bitrock.dvs.producer.aviationedge.services.MainFunctions.aviationConfig
 
@@ -13,21 +14,25 @@ object Graphs {
   def mainGraph[SourceMat, SinkMat](
       jsonSource: Source[Either[ErrorMessageJson, MessageJson], SourceMat],
       rawSink: Sink[MessageJson, SinkMat],
-      errorSink: Sink[ErrorMessageJson, SinkMat]
-  ): RunnableGraph[(SourceMat, SinkMat, SinkMat)] = RunnableGraph.fromGraph(
-    GraphDSL.create(jsonSource, rawSink, errorSink)((x, y, z) => (x, y, z)) { implicit builder => (source, rightSink, leftSink) =>
-      import GraphDSL.Implicits._
+      errorSink: Sink[ErrorMessageJson, SinkMat],
+      invalidFlightSink: Sink[MessageJson, SinkMat]
+  ): RunnableGraph[(SourceMat, SinkMat, SinkMat, SinkMat)] = RunnableGraph.fromGraph(
+    GraphDSL.create(jsonSource, rawSink, errorSink, invalidFlightSink)((a, b, c, d) => (a, b, c, d)) {
+      implicit builder => (source, raw, error, invalidFlight) =>
+        import GraphDSL.Implicits._
 
-      val broadcast             = builder.add(Broadcast[Either[ErrorMessageJson, MessageJson]](2))
-      val collectRight          = builder.add(Flow[Either[ErrorMessageJson, MessageJson]].collect { case Right(x) => x })
-      val collectLeft           = builder.add(Flow[Either[ErrorMessageJson, MessageJson]].collect { case Left(x) => x })
-      val filterInvalidMessages = builder.add(Flow[MessageJson].filter(filterFunction))
+        val partition     = builder.add(Partition[Either[ErrorMessageJson, MessageJson]](3, partitionMessages))
+        val collectErrors = builder.add(Flow[Either[ErrorMessageJson, MessageJson]].collect { case Left(x) => x })
+        val collectRaws =
+          builder.add(Flow[Either[ErrorMessageJson, MessageJson]].collect { case Right(x) => x }.filter(filterFunction))
+        val collectInvalid = builder.add(Flow[Either[ErrorMessageJson, MessageJson]].collect { case Right(x) => x })
 
-      source ~> broadcast
-      broadcast.out(0) ~> collectRight ~> filterInvalidMessages ~> rightSink
-      broadcast.out(1) ~> collectLeft ~> leftSink
+        source ~> partition
+        partition.out(ErrorPort) ~> collectErrors ~> error
+        partition.out(RawPort) ~> collectRaws ~> raw
+        partition.out(InvalidPort) ~> collectInvalid ~> invalidFlight
 
-      ClosedShape
+        ClosedShape
     }
   )
 
@@ -53,7 +58,7 @@ object Graphs {
         case Left(e) if e.errorSource.contains(aviationConfig.flightStream.path) => Left(e)
       }
       val validFlights = flightMessages.collect {
-        case Right(msg) if filterFlight(msg) => msg
+        case Right(msg) if validFlight(msg) => msg
       }
 
       val minUpdated = validFlights.minBy(_.system.updated).system.updated
@@ -72,15 +77,18 @@ object Graphs {
       )
     }
 
-  def filterFunction: MessageJson => Boolean = {
-    case msg: AirlineMessageJson => filterAirline(msg)
-    case msg: FlightMessageJson  => filterFlight(msg)
-    case _                       => true
+  def filterFunction(message: MessageJson): Boolean = message match {
+    case airline: AirlineMessageJson => airline.statusAirline == "active"
+    case _                           => true
   }
 
-  private def filterAirline(airline: AirlineMessageJson): Boolean = airline.statusAirline == "active"
+  def partitionMessages(message: Either[ErrorMessageJson, MessageJson]): Int = message match {
+    case Left(_)                                            => ErrorPort
+    case Right(msg: FlightMessageJson) if !validFlight(msg) => InvalidPort
+    case Right(_)                                           => RawPort
+  }
 
-  private def filterFlight(flight: FlightMessageJson): Boolean =
+  private def validFlight(flight: FlightMessageJson): Boolean =
     validFlightStatus(flight.status) &&
       validFlightSpeed(flight.speed.horizontal) &&
       validFlightJourney(flight.departure.iataCode, flight.arrival.iataCode)
