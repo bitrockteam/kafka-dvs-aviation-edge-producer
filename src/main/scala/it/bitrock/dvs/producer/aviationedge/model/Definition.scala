@@ -17,3 +17,18 @@ case class ErrorMessageJson(
     failedJson: String,
     timestamp: Instant
 )
+
+case class MonitoringMessageJson(
+    messageReceivedOn: Instant,
+    minUpdated: Instant,
+    maxUpdated: Instant,
+    numErrors: Int,
+    numValid: Int,
+    numInvalid: Int
+)
+
+object PartitionPorts {
+  final val RawPort     = 0
+  final val ErrorPort   = 1
+  final val InvalidPort = 2
+}
