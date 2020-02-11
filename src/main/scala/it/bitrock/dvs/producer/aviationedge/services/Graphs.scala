@@ -61,19 +61,23 @@ object Graphs {
         case Right(msg) if validFlight(msg) => msg
       }
 
-      val minUpdated = validFlights.minBy(_.system.updated).system.updated
-      val maxUpdated = validFlights.maxBy(_.system.updated).system.updated
-      val numErrors  = flightMessages.count(_.isLeft)
-      val numValid   = validFlights.size
-      val numInvalid = flightMessages.size - numValid - numErrors
+      val numValid       = validFlights.size
+      val minUpdated     = validFlights.minBy(_.system.updated).system.updated
+      val averageUpdated = validFlights.view.map(_.system.updated).sum / numValid
+      val maxUpdated     = validFlights.maxBy(_.system.updated).system.updated
+      val numErrors      = flightMessages.count(_.isLeft)
+      val total          = flightMessages.size
+      val numInvalid     = total - numValid - numErrors
 
       MonitoringMessageJson(
-        Instant.now,
-        Instant.ofEpochSecond(minUpdated),
-        Instant.ofEpochSecond(maxUpdated),
-        numErrors,
-        numValid,
-        numInvalid
+        messageReceivedOn = Instant.now,
+        minUpdated = Instant.ofEpochSecond(minUpdated),
+        maxUpdated = Instant.ofEpochSecond(maxUpdated),
+        averageUpdated = Instant.ofEpochSecond(averageUpdated),
+        numErrors = numErrors,
+        numValid = numValid,
+        numInvalid = numInvalid,
+        total = total
       )
     }
 
