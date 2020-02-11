@@ -77,9 +77,11 @@ class GraphsSpec
         m.size shouldBe 1
         m.head.minUpdated shouldBe Instant.ofEpochSecond(MinUpdated)
         m.head.maxUpdated shouldBe Instant.ofEpochSecond(MaxUpdated)
+        m.head.averageUpdated shouldBe Instant.ofEpochSecond((MinUpdated + MaxUpdated + Updated) / 3)
         m.head.numErrors shouldBe 1
         m.head.numValid shouldBe 3
         m.head.numInvalid shouldBe 2
+        m.head.total shouldBe 6
       }
     }
 

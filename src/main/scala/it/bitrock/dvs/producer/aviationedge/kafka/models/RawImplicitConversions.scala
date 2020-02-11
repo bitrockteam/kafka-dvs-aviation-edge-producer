@@ -132,9 +132,11 @@ object RawImplicitConversions {
         mrse.messageReceivedOn,
         mrse.minUpdated,
         mrse.maxUpdated,
+        mrse.averageUpdated,
         mrse.numErrors,
         mrse.numValid,
-        mrse.numInvalid
+        mrse.numInvalid,
+        mrse.total
       )
   }
 
