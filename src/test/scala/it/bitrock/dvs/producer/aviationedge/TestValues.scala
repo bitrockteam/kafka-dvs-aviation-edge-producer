@@ -13,9 +13,9 @@ trait TestValues {
   final val Content       = "a content"
   final val Path          = "a path"
   final val ErrorResponse = "an error"
-  final val MinUpdated    = 1567414880
-  final val Updated       = 1567415880
-  final val MaxUpdated    = 1567416880
+  final val MinUpdated    = 1567414880L
+  final val Updated       = 1567415880L
+  final val MaxUpdated    = 1567416880L
 
   final val FlightMessage = FlightMessageJson(
     GeographyJson(49.2655, -1.9623, 9753.6, 282.76),
@@ -43,8 +43,8 @@ trait TestValues {
   final val ErrorMessage        = ErrorMessageJson(Path, "a message", "a failed json", Timestamp)
   final val ExpectedParserError = ParserError(Path, "a message", "a failed json", Timestamp)
 
-  final val MonitoringMessage         = MonitoringMessageJson(Timestamp, Timestamp, Timestamp, 0, 0, 0)
-  final val ExpectedMonitoringMessage = FlightRequestComputationStatus(Timestamp, Timestamp, Timestamp, 0, 0, 0)
+  final val MonitoringMessage         = MonitoringMessageJson(Timestamp, Timestamp, Timestamp, Timestamp, 0, 0, 0, 0)
+  final val ExpectedMonitoringMessage = FlightRequestComputationStatus(Timestamp, Timestamp, Timestamp, Timestamp, 0, 0, 0, 0)
 
   final val ValidAirlineMessage           = AirlineMessageJson(0, "", "", "", "", "active", 0, "", "")
   final val InvalidAirlineMessage         = AirlineMessageJson(0, "", "", "", "", "invalid status", 0, "", "")

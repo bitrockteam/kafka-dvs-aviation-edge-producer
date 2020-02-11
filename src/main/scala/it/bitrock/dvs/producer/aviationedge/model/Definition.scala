@@ -22,9 +22,11 @@ case class MonitoringMessageJson(
     messageReceivedOn: Instant,
     minUpdated: Instant,
     maxUpdated: Instant,
+    averageUpdated: Instant,
     numErrors: Int,
     numValid: Int,
-    numInvalid: Int
+    numInvalid: Int,
+    total: Int
 )
 
 object PartitionPorts {
