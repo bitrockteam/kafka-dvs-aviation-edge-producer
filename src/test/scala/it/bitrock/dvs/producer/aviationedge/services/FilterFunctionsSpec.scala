@@ -21,17 +21,17 @@ class FilterFunctionsSpec extends Suite with AnyWordSpecLike with TestValues {
     "return ErrorPort with an error event" in {
       partitionMessages(Left(ErrorMessage)) shouldBe ErrorPort
     }
-    "return RawPort with a valid flight event" in {
+    "return RawPort whatever the flight status is" in {
+      partitionMessages(Right(CrashedFlightMessage)) shouldBe RawPort
       partitionMessages(Right(EnRouteFlightMessage)) shouldBe RawPort
+      partitionMessages(Right(LandedFlightMessage)) shouldBe RawPort
+      partitionMessages(Right(StartedFlightMessage)) shouldBe RawPort
+      partitionMessages(Right(UnknownFlightMessage)) shouldBe RawPort
     }
     "return RawPort with a valid airline event" in {
       partitionMessages(Right(ValidAirlineMessage)) shouldBe RawPort
     }
     "return InvalidPort with an invalid flight event" in {
-      partitionMessages(Right(StartedFlightMessage)) shouldBe InvalidPort
-      partitionMessages(Right(LandedFlightMessage)) shouldBe InvalidPort
-      partitionMessages(Right(UnknownFlightMessage)) shouldBe InvalidPort
-      partitionMessages(Right(CrashedFlightMessage)) shouldBe InvalidPort
       partitionMessages(Right(InvalidSpeedFlightMessage)) shouldBe InvalidPort
       partitionMessages(Right(InvalidDepartureFlightMessage)) shouldBe InvalidPort
       partitionMessages(Right(InvalidArrivalFlightMessage)) shouldBe InvalidPort
