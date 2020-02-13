@@ -29,12 +29,13 @@ class GraphsSpec
     with ScalaFutures
     with LazyLogging {
 
-  val timeout = Timeout(3.seconds)
+  private val timeout = Timeout(3.seconds)
 
   "graphs" should {
 
-    "routes error, valid and invalid messages to different sinks" in {
-      val source            = Source(List(Right(FlightMessage), Left(ErrorMessage), Right(UnknownFlightMessage)))
+    "route error, valid and invalid messages to different sinks" in {
+      val source =
+        Source(List(Right(FlightMessage), Left(ErrorMessage), Right(UnknownFlightMessage), Right(InvalidSpeedFlightMessage)))
       val flightSink        = Sink.fold[List[MessageJson], MessageJson](Nil)(_ :+ _)
       val errorSink         = Sink.fold[List[ErrorMessageJson], ErrorMessageJson](Nil)(_ :+ _)
       val invalidFlightSink = Sink.fold[List[MessageJson], MessageJson](Nil)(_ :+ _)
@@ -42,8 +43,8 @@ class GraphsSpec
       val (_, futureFlight, futureError, futureInvalidFlight) = mainGraph(source, flightSink, errorSink, invalidFlightSink).run()
 
       whenReady(futureFlight, timeout) { f =>
-        f.size shouldBe 1
-        f.head shouldBe FlightMessage
+        f.size shouldBe 2
+        f should contain theSameElementsAs List(FlightMessage, UnknownFlightMessage)
       }
       whenReady(futureError, timeout) { e =>
         e.size shouldBe 1
@@ -51,7 +52,7 @@ class GraphsSpec
       }
       whenReady(futureInvalidFlight, timeout) { e =>
         e.size shouldBe 1
-        e.head shouldBe UnknownFlightMessage
+        e.head shouldBe InvalidSpeedFlightMessage
       }
     }
 
@@ -79,8 +80,8 @@ class GraphsSpec
         m.head.maxUpdated shouldBe Instant.ofEpochSecond(MaxUpdated)
         m.head.averageUpdated shouldBe Instant.ofEpochSecond((MinUpdated + MaxUpdated + Updated) / 3)
         m.head.numErrors shouldBe 1
-        m.head.numValid shouldBe 3
-        m.head.numInvalid shouldBe 2
+        m.head.numValid shouldBe 4
+        m.head.numInvalid shouldBe 1
         m.head.total shouldBe 6
       }
     }
