@@ -25,7 +25,6 @@ class KafkaFlightSinkFactorySpec
   import KafkaFlightSinkFactorySpec._
 
   "sink method" should {
-
     "convert a domain model to Kafka model and push it to a topic" in ResourceLoaner.withFixture {
       case Resource(embeddedKafkaConfig, keySerde, factory) =>
         implicit val embKafkaConfig: EmbeddedKafkaConfig = embeddedKafkaConfig
@@ -36,7 +35,6 @@ class KafkaFlightSinkFactorySpec
         }
         result shouldBe ((IcaoNumber, ExpectedFlightRaw))
     }
-
   }
 
   object ResourceLoaner extends FixtureLoanerAnyResult[Resource] {
@@ -72,15 +70,12 @@ class KafkaFlightSinkFactorySpec
     shutdown()
     super.afterAll()
   }
-
 }
 
 object KafkaFlightSinkFactorySpec {
-
   final case class Resource(
       embeddedKafkaConfig: EmbeddedKafkaConfig,
       keySerde: Serde[Key],
       factory: KafkaSinkFactory[MessageJson, Key, Flight.Value]
   )
-
 }

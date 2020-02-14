@@ -11,7 +11,6 @@ import it.bitrock.dvs.producer.aviationedge.model.{ErrorMessageJson, MessageJson
 import scala.concurrent.Future
 
 object SideStreamContext {
-
   def errorSink(kafkaConfig: KafkaConfig)(implicit system: ActorSystem): Sink[ErrorMessageJson, Future[Done]] = {
     val producerSettings = ProducerSettingsFactory.from[Error.Value](kafkaConfig)
     new KafkaSinkFactory[ErrorMessageJson, Key, Error.Value](kafkaConfig.parserErrorTopic, producerSettings).sink
@@ -26,5 +25,4 @@ object SideStreamContext {
     val producerSettings = ProducerSettingsFactory.from[Flight.Value](kafkaConfig)
     new KafkaSinkFactory[MessageJson, Key, Flight.Value](kafkaConfig.invalidFlightRawTopic, producerSettings).sink
   }
-
 }

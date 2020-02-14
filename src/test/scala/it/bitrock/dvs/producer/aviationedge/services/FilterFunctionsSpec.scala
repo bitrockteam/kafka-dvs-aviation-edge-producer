@@ -7,7 +7,6 @@ import it.bitrock.testcommons.Suite
 import org.scalatest.wordspec.AnyWordSpecLike
 
 class FilterFunctionsSpec extends Suite with AnyWordSpecLike with TestValues {
-
   import Graphs._
 
   "filter function" should {

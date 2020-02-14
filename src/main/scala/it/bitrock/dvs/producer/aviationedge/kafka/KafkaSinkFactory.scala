@@ -12,7 +12,6 @@ class KafkaSinkFactory[J, K, V](
     val topic: String,
     producerSettings: ProducerSettings[K, V]
 )(implicit toValuePair: ToValuePair[J, K, V]) {
-
   def sink: Sink[J, Future[Done]] =
     Flow
       .fromFunction(
@@ -23,5 +22,4 @@ class KafkaSinkFactory[J, K, V](
           new ProducerRecord[K, V](topic, k, v)
       }
       .toMat(Producer.plainSink(producerSettings))(Keep.right)
-
 }

@@ -4,7 +4,6 @@ import it.bitrock.dvs.model.avro.monitoring.FlightRequestComputationStatus
 import it.bitrock.dvs.model.avro.{AirlineRaw, AirplaneRaw, AirportRaw, CityRaw, FlightRaw, ParserError}
 
 object KafkaTypes {
-
   type Key = String
 
   object Flight {
@@ -28,5 +27,4 @@ object KafkaTypes {
   object Monitoring {
     type Value = FlightRequestComputationStatus
   }
-
 }

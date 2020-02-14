@@ -7,7 +7,6 @@ import it.bitrock.dvs.model.avro.monitoring.FlightRequestComputationStatus
 import it.bitrock.dvs.producer.aviationedge.model._
 
 trait TestValues {
-
   final val IcaoNumber    = "SWR6U"
   final val Timestamp     = Instant.now()
   final val Content       = "a content"
@@ -80,5 +79,4 @@ trait TestValues {
       |  }
       |]
       |""".stripMargin
-
 }

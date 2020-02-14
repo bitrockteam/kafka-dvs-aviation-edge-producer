@@ -35,7 +35,5 @@ final case class AviationStreamConfig(
 final case class TickSourceConfig(pollLowerHourLimit: Int, pollUpperHourLimit: Int, pollExcludedDays: List[DayOfWeek])
 
 object AviationConfig {
-
   def load: AviationConfig = pureconfig.loadConfigOrThrow[AviationConfig]("aviation")
-
 }

@@ -22,11 +22,9 @@ class KafkaErrorSinkFactorySpec
     with BeforeAndAfterAll
     with EmbeddedKafka
     with TestValues {
-
   import KafkaErrorSinkFactorySpec._
 
   "sink method" should {
-
     "convert a domain model to Kafka model and push it to a topic" in ResourceLoaner.withFixture {
       case Resource(embeddedKafkaConfig, keySerde, factory) =>
         implicit val embKafkaConfig: EmbeddedKafkaConfig = embeddedKafkaConfig
@@ -37,7 +35,6 @@ class KafkaErrorSinkFactorySpec
         }
         result shouldBe ExpectedParserError
     }
-
   }
 
   object ResourceLoaner extends FixtureLoanerAnyResult[Resource] {
@@ -73,15 +70,12 @@ class KafkaErrorSinkFactorySpec
     shutdown()
     super.afterAll()
   }
-
 }
 
 object KafkaErrorSinkFactorySpec {
-
   final case class Resource(
       embeddedKafkaConfig: EmbeddedKafkaConfig,
       keySerde: Serde[Key],
       factory: KafkaSinkFactory[ErrorMessageJson, Key, Error.Value]
   )
-
 }
