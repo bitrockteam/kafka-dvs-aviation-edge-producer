@@ -22,7 +22,6 @@ class AviationFlowSpec
     with EitherValues
     with ScalaFutures
     with IntegrationPatience {
-
   private val aviationFlow = new AviationFlow()
 
   "flow method" should {
@@ -108,5 +107,4 @@ class AviationFlowSpec
 
   private def readFixture(fixtureName: String): String =
     scala.io.Source.fromResource(s"fixtures/aviation-edge-api/$fixtureName.json").mkString
-
 }

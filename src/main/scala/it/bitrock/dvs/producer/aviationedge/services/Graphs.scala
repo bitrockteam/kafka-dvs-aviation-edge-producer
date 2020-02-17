@@ -10,7 +10,6 @@ import it.bitrock.dvs.producer.aviationedge.model._
 import it.bitrock.dvs.producer.aviationedge.services.MainFunctions.aviationConfig
 
 object Graphs {
-
   def mainGraph[SourceMat, SinkMat](
       jsonSource: Source[Either[ErrorMessageJson, MessageJson], SourceMat],
       rawSink: Sink[MessageJson, SinkMat],
@@ -99,5 +98,4 @@ object Graphs {
   private def validFlightSpeed(speed: Double): Boolean = speed < aviationConfig.flightSpeedLimit
   private def validFlightJourney(departureCode: String, arrivalCode: String): Boolean =
     departureCode.nonEmpty && arrivalCode.nonEmpty
-
 }

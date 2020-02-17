@@ -9,7 +9,6 @@ import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.Serdes
 
 object ProducerSettingsFactory {
-
   final private val InterceptorSettingKey   = ProducerConfig.INTERCEPTOR_CLASSES_CONFIG
   final private val InterceptorSettingValue = "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
 
@@ -24,5 +23,4 @@ object ProducerSettingsFactory {
     else
       producerSettings
   }
-
 }

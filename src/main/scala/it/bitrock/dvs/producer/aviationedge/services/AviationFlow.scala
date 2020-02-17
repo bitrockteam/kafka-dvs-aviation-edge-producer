@@ -17,7 +17,6 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class AviationFlow()(implicit system: ActorSystem, ec: ExecutionContext) extends LazyLogging {
-
   def flow(uri: Uri, apiTimeout: Int): Flow[Tick, List[Either[ErrorMessageJson, MessageJson]], NotUsed] =
     Flow
       .fromFunction(identity[Tick])
@@ -53,5 +52,4 @@ class AviationFlow()(implicit system: ActorSystem, ec: ExecutionContext) extends
       path: String
   ): List[Either[ErrorMessageJson, MessageJson]] =
     list.map(_.left.map(_.copy(errorSource = path)))
-
 }

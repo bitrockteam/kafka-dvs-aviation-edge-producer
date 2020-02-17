@@ -7,7 +7,6 @@ import it.bitrock.dvs.model.avro.monitoring.FlightRequestComputationStatus
 import it.bitrock.dvs.producer.aviationedge.model._
 
 trait TestValues {
-
   final val IcaoNumber    = "SWR6U"
   final val Timestamp     = Instant.now()
   final val Content       = "a content"
@@ -20,10 +19,10 @@ trait TestValues {
   final val FlightMessage = FlightMessageJson(
     GeographyJson(49.2655, -1.9623, 9753.6, 282.76),
     SpeedJson(805.14, 0),
-    DepartureJson("ZRH", "LSZH"),
-    ArrivalJson("ORD", "KORD"),
+    DepartureJson("ZRH", Some("LSZH")),
+    ArrivalJson("ORD", Some("KORD")),
     AircraftJson("HBJHA", "A333", "", "A333"),
-    AirlineJson("LX", "SWR"),
+    AirlineJson(Some("LX"), "SWR"),
     FlightJson("LX6U", IcaoNumber, "6U"),
     SystemJson(Updated),
     "en-route"
@@ -31,10 +30,10 @@ trait TestValues {
   final val ExpectedFlightRaw = FlightRaw(
     Geography(49.2655, -1.9623, 9753.6, 282.76),
     Speed(805.14, 0),
-    Departure("ZRH", "LSZH"),
-    Arrival("ORD", "KORD"),
+    Departure("ZRH", Some("LSZH")),
+    Arrival("ORD", Some("KORD")),
     Aircraft("HBJHA", "A333", "", "A333"),
-    Airline("LX", "SWR"),
+    Airline(Some("LX"), "SWR"),
     Flight("LX6U", IcaoNumber, "6U"),
     System(Instant.ofEpochSecond(Updated)),
     "en-route"
@@ -54,8 +53,8 @@ trait TestValues {
   final val UnknownFlightMessage          = FlightMessage.copy(status = "unknown")
   final val CrashedFlightMessage          = FlightMessage.copy(status = "crashed")
   final val InvalidSpeedFlightMessage     = FlightMessage.copy(speed = SpeedJson(1300.00, 0.0))
-  final val InvalidDepartureFlightMessage = FlightMessage.copy(departure = DepartureJson("", ""))
-  final val InvalidArrivalFlightMessage   = FlightMessage.copy(arrival = ArrivalJson("", ""))
+  final val InvalidDepartureFlightMessage = FlightMessage.copy(departure = DepartureJson("", Some("")))
+  final val InvalidArrivalFlightMessage   = FlightMessage.copy(arrival = ArrivalJson("", Some("")))
   final val MinUpdatedFlightMessage       = FlightMessage.copy(system = SystemJson(MinUpdated))
   final val MaxUpdatedFlightMessage       = FlightMessage.copy(system = SystemJson(MaxUpdated))
 
@@ -80,5 +79,4 @@ trait TestValues {
       |  }
       |]
       |""".stripMargin
-
 }
