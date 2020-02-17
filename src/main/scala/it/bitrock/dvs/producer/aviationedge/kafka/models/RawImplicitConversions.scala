@@ -7,7 +7,6 @@ import it.bitrock.dvs.model.avro.monitoring.FlightRequestComputationStatus
 import it.bitrock.dvs.producer.aviationedge.model._
 
 object RawImplicitConversions {
-
   implicit private class GeographyOps(gj: GeographyJson) {
     def toGeography =
       new Geography(gj.latitude, gj.longitude, gj.altitude, gj.direction)
@@ -139,5 +138,4 @@ object RawImplicitConversions {
         mrse.total
       )
   }
-
 }

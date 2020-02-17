@@ -9,7 +9,6 @@ import spray.json._
 import scala.util.Try
 
 object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
-
   implicit val departureJsonFormat: RootJsonFormat[DepartureJson]             = jsonFormat2(DepartureJson.apply)
   implicit val arrivalJsonFormat: RootJsonFormat[ArrivalJson]                 = jsonFormat2(ArrivalJson.apply)
   implicit val airportJsonFormat: RootJsonFormat[AirlineJson]                 = jsonFormat2(AirlineJson.apply)
@@ -36,9 +35,6 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
             case j: JsObject if j.getFields("airlineId") != Seq()  => json.convertTo[AirlineMessageJson]
             case j: JsObject if j.getFields("cityId") != Seq()     => json.convertTo[CityMessageJson]
           }
-        ).toEither.left.map { ex =>
-          ErrorMessageJson("", ex.getMessage, json.compactPrint, Instant.now)
-        }
+        ).toEither.left.map(ex => ErrorMessageJson("", ex.getMessage, json.compactPrint, Instant.now))
     }
-
 }

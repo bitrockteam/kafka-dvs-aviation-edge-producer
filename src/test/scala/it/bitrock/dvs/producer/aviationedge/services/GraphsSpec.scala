@@ -28,11 +28,9 @@ class GraphsSpec
     with TestValues
     with ScalaFutures
     with LazyLogging {
-
   private val timeout = Timeout(3.seconds)
 
   "graphs" should {
-
     "route error, valid and invalid messages to different sinks" in {
       val source =
         Source(List(Right(FlightMessage), Left(ErrorMessage), Right(UnknownFlightMessage), Right(InvalidSpeedFlightMessage)))
@@ -85,7 +83,5 @@ class GraphsSpec
         m.head.total shouldBe 6
       }
     }
-
   }
-
 }

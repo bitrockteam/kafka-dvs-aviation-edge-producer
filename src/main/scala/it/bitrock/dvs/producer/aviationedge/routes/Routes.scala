@@ -7,13 +7,11 @@ import akka.http.scaladsl.server.directives.RouteDirectives.complete
 import it.bitrock.dvs.producer.aviationedge.config.ServerConfig
 
 class Routes(serverConfig: ServerConfig) {
-
   val routes: Route = health
 
   private def health: Route = get {
     path(serverConfig.rest.healthPath) {
-      complete { StatusCodes.OK }
+      complete(StatusCodes.OK)
     }
   }
-
 }

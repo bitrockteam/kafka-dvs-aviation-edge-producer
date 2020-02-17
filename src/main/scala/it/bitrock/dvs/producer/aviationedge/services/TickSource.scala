@@ -10,7 +10,6 @@ import it.bitrock.dvs.producer.aviationedge.model.Tick
 import scala.concurrent.duration._
 
 class TickSource(start: Int, interval: Int, config: TickSourceConfig) {
-
   def source: Source[Tick, Cancellable] = Source.tick(start.seconds, interval.seconds, Tick()).filter(_ => isItTimeToPoll)
 
   private def isItTimeToPoll: Boolean = {
@@ -19,5 +18,4 @@ class TickSource(start: Int, interval: Int, config: TickSourceConfig) {
     val isExcludedDay = config.pollExcludedDays.contains(now.getDayOfWeek)
     !isExcludedDay && (config.pollLowerHourLimit to config.pollUpperHourLimit).contains(currentHour)
   }
-
 }

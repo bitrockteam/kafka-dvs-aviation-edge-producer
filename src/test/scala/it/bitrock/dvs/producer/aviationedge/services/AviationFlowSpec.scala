@@ -22,7 +22,6 @@ class AviationFlowSpec
     with EitherValues
     with ScalaFutures
     with IntegrationPatience {
-
   private val aviationFlow = new AviationFlow()
 
   "flow method" should {
@@ -38,12 +37,12 @@ class AviationFlowSpec
     "return the body for any correct response" in {
       val response     = HttpResponse(status = StatusCodes.OK, entity = HttpEntity(Content))
       val futureResult = aviationFlow.extractBody(response.entity, response.status, 1)
-      whenReady(futureResult) { _ shouldBe Content }
+      whenReady(futureResult)(_ shouldBe Content)
     }
     "return the body for any incorrect response" in {
       val response     = HttpResponse(status = StatusCodes.BadRequest, entity = HttpEntity(Content))
       val futureResult = aviationFlow.extractBody(response.entity, response.status, 1)
-      whenReady(futureResult) { _ shouldBe Content }
+      whenReady(futureResult)(_ shouldBe Content)
     }
   }
 
@@ -108,5 +107,4 @@ class AviationFlowSpec
 
   private def readFixture(fixtureName: String): String =
     scala.io.Source.fromResource(s"fixtures/aviation-edge-api/$fixtureName.json").mkString
-
 }

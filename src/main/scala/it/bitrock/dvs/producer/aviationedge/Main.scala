@@ -9,7 +9,6 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 object Main extends App with LazyLogging {
-
   implicit val system: ActorSystem  = ActorSystem("KafkaDVSAviationEdgeProducer")
   implicit val ec: ExecutionContext = system.dispatcher
 
@@ -17,9 +16,7 @@ object Main extends App with LazyLogging {
 
   val bindingFuture = bindRoutes()
 
-  bindingFuture.map { serverBinding =>
-    logger.info(s"Exposing to ${serverBinding.localAddress}")
-  }
+  bindingFuture.map(serverBinding => logger.info(s"Exposing to ${serverBinding.localAddress}"))
 
   val (cancellableFlight, flightCompletion, _, _)     = runStream[FlightStream.type]()
   val (cancellableAirplane, airplaneCompletion, _, _) = runStream[AirplaneStream.type]()
@@ -47,5 +44,4 @@ object Main extends App with LazyLogging {
     } yield ()
     Await.result(resourcesClosed, 10.seconds)
   }
-
 }
