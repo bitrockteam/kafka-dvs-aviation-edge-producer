@@ -1,5 +1,6 @@
 package it.bitrock.dvs.producer.aviationedge.config
 
+import pureconfig.ConfigSource
 import pureconfig.generic.auto._
 
 final case class AppConfig(
@@ -9,7 +10,7 @@ final case class AppConfig(
 )
 
 object AppConfig {
-  val config: AppConfig = pureconfig.loadConfigOrThrow[AppConfig]
+  val config: AppConfig = ConfigSource.default.loadOrThrow[AppConfig]
 
   def server: ServerConfig     = config.server
   def aviation: AviationConfig = config.aviation

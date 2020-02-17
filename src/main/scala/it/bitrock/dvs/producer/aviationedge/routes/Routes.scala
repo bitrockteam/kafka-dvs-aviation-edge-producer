@@ -11,7 +11,7 @@ class Routes(serverConfig: ServerConfig) {
 
   private def health: Route = get {
     path(serverConfig.rest.healthPath) {
-      complete { StatusCodes.OK }
+      complete(StatusCodes.OK)
     }
   }
 }

@@ -37,12 +37,12 @@ class AviationFlowSpec
     "return the body for any correct response" in {
       val response     = HttpResponse(status = StatusCodes.OK, entity = HttpEntity(Content))
       val futureResult = aviationFlow.extractBody(response.entity, response.status, 1)
-      whenReady(futureResult) { _ shouldBe Content }
+      whenReady(futureResult)(_ shouldBe Content)
     }
     "return the body for any incorrect response" in {
       val response     = HttpResponse(status = StatusCodes.BadRequest, entity = HttpEntity(Content))
       val futureResult = aviationFlow.extractBody(response.entity, response.status, 1)
-      whenReady(futureResult) { _ shouldBe Content }
+      whenReady(futureResult)(_ shouldBe Content)
     }
   }
 

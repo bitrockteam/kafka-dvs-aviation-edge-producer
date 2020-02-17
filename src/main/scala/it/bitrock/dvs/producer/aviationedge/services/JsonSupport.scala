@@ -35,8 +35,6 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
             case j: JsObject if j.getFields("airlineId") != Seq()  => json.convertTo[AirlineMessageJson]
             case j: JsObject if j.getFields("cityId") != Seq()     => json.convertTo[CityMessageJson]
           }
-        ).toEither.left.map { ex =>
-          ErrorMessageJson("", ex.getMessage, json.compactPrint, Instant.now)
-        }
+        ).toEither.left.map(ex => ErrorMessageJson("", ex.getMessage, json.compactPrint, Instant.now))
     }
 }

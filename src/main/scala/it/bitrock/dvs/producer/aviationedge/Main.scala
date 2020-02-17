@@ -16,9 +16,7 @@ object Main extends App with LazyLogging {
 
   val bindingFuture = bindRoutes()
 
-  bindingFuture.map { serverBinding =>
-    logger.info(s"Exposing to ${serverBinding.localAddress}")
-  }
+  bindingFuture.map(serverBinding => logger.info(s"Exposing to ${serverBinding.localAddress}"))
 
   val (cancellableFlight, flightCompletion, _, _)     = runStream[FlightStream.type]()
   val (cancellableAirplane, airplaneCompletion, _, _) = runStream[AirplaneStream.type]()
