@@ -11,10 +11,10 @@ import it.bitrock.dvs.producer.aviationedge.model.{ErrorMessageJson, MessageJson
 import it.bitrock.dvs.producer.aviationedge.services.Graphs._
 import it.bitrock.testcommons.Suite
 import net.manub.embeddedkafka.schemaregistry._
-import org.scalatest.{BeforeAndAfterAll, OptionValues}
 import org.scalatest.concurrent.PatienceConfiguration.Timeout
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.wordspec.AnyWordSpecLike
+import org.scalatest.{BeforeAndAfterAll, OptionValues}
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -55,7 +55,7 @@ class GraphsSpec
       }
     }
 
-    "produce monitoring messages to monitoring sink" in {
+    "produce monitoring messages to monitoring sink when there are valid messages" in {
       val source = Source.single(
         List(
           Right(FlightMessage),
@@ -82,6 +82,29 @@ class GraphsSpec
         m.head.numValid shouldBe 4
         m.head.numInvalid shouldBe 1
         m.head.total shouldBe 6
+      }
+    }
+
+    "produce monitoring messages to monitoring sink when there are no valid messages" in {
+      val source = Source.single(
+        List(
+          Left(ErrorMessage.copy(errorSource = "/v2/public/flights"))
+        )
+      )
+      val monitoringSink: Sink[MonitoringMessageJson, Future[List[MonitoringMessageJson]]] =
+        Sink.fold[List[MonitoringMessageJson], MonitoringMessageJson](Nil)(_ :+ _)
+
+      val futureMonitoring = source.viaMat(monitoringGraph(monitoringSink))(Keep.right).to(Sink.ignore).run()
+
+      whenReady(futureMonitoring, timeout) { m =>
+        m.size shouldBe 1
+        m.head.minUpdated shouldBe empty
+        m.head.maxUpdated shouldBe empty
+        m.head.averageUpdated shouldBe empty
+        m.head.numErrors shouldBe 1
+        m.head.numValid shouldBe 0
+        m.head.numInvalid shouldBe 0
+        m.head.total shouldBe 1
       }
     }
   }
