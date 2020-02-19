@@ -42,8 +42,9 @@ trait TestValues {
   final val ErrorMessage        = ErrorMessageJson(Path, "a message", "a failed json", Timestamp)
   final val ExpectedParserError = ParserError(Path, "a message", "a failed json", Timestamp)
 
-  final val MonitoringMessage         = MonitoringMessageJson(Timestamp, Timestamp, Timestamp, Timestamp, 0, 0, 0, 0)
-  final val ExpectedMonitoringMessage = FlightRequestComputationStatus(Timestamp, Timestamp, Timestamp, Timestamp, 0, 0, 0, 0)
+  final val MonitoringMessage = MonitoringMessageJson(Timestamp, Some(Timestamp), Some(Timestamp), Some(Timestamp), 0, 0, 0, 0)
+  final val ExpectedMonitoringMessage =
+    FlightRequestComputationStatus(Timestamp, Some(Timestamp), Some(Timestamp), Some(Timestamp), 0, 0, 0, 0)
 
   final val ValidAirlineMessage           = AirlineMessageJson(0, "", "", "", "", "active", 0, "", "")
   final val InvalidAirlineMessage         = AirlineMessageJson(0, "", "", "", "", "invalid status", 0, "", "")
