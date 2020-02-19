@@ -28,6 +28,7 @@ class AviationFlow()(implicit system: ActorSystem, ec: ExecutionContext) extends
           .flatMap(body => unmarshalBody(body, uri.path.toString))
           .recover {
             case NonFatal(ex) =>
+              logger.warn(s"Error on call: $uri, $ex")
               List(Left(ErrorMessageJson(uri.path.toString, ex.getMessage, "", Instant.now)))
           }
       }

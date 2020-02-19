@@ -20,9 +20,9 @@ case class ErrorMessageJson(
 
 case class MonitoringMessageJson(
     messageReceivedOn: Instant,
-    minUpdated: Instant,
-    maxUpdated: Instant,
-    averageUpdated: Instant,
+    minUpdated: Option[Instant],
+    maxUpdated: Option[Instant],
+    averageUpdated: Option[Instant],
     numErrors: Int,
     numValid: Int,
     numInvalid: Int,
