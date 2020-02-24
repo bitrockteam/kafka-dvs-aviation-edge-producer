@@ -9,6 +9,7 @@ import it.bitrock.dvs.producer.aviationedge.model.{
   CityMessageJson,
   ErrorMessageJson,
   FlightMessageJson,
+  FlightStateJson,
   MessageJson,
   MonitoringMessageJson
 }
@@ -32,4 +33,7 @@ object ToValuePair {
   implicit val parserErrorValuePair: ToValuePair[ErrorMessageJson, Key, Error.Value] = j => (null, j.toParserError)
   implicit val monitoringErrorValuePair: ToValuePair[MonitoringMessageJson, Key, Monitoring.Value] = j =>
     (null, j.toFlightRequestMetrics)
+  implicit val flightStateValuePair: ToValuePair[MessageJson, Key, FlightState.Value] = j =>
+    (j.asInstanceOf[FlightStateJson].callsign, j.asInstanceOf[FlightStateJson].toFlightStateRaw)
+
 }

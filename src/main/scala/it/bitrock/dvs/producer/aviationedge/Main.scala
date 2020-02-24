@@ -4,6 +4,8 @@ import akka.actor.ActorSystem
 import com.typesafe.scalalogging.LazyLogging
 import it.bitrock.dvs.producer.aviationedge.model._
 import it.bitrock.dvs.producer.aviationedge.services.MainFunctions._
+import it.bitrock.dvs.producer.aviationedge.services.context.AviationStreamContext._
+import it.bitrock.dvs.producer.aviationedge.services.context.OpenSkyStreamContext._
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -18,13 +20,15 @@ object Main extends App with LazyLogging {
 
   bindingFuture.map(serverBinding => logger.info(s"Exposing to ${serverBinding.localAddress}"))
 
-  val (cancellableFlight, flightCompletion, _, _)     = runStream[FlightStream.type]()
-  val (cancellableAirplane, airplaneCompletion, _, _) = runStream[AirplaneStream.type]()
-  val (cancellableAirport, airportCompletion, _, _)   = runStream[AirportStream.type]()
-  val (cancellableAirline, airlineCompletion, _, _)   = runStream[AirlineStream.type]()
-  val (cancellableCity, cityCompletion, _, _)         = runStream[CityStream.type]()
+  val (cancellableFlight, flightCompletion, _, _)     = runAviationEdgeStream[FlightStream.type]()
+  val (cancellableAirplane, airplaneCompletion, _, _) = runAviationEdgeStream[AirplaneStream.type]()
+  val (cancellableAirport, airportCompletion, _, _)   = runAviationEdgeStream[AirportStream.type]()
+  val (cancellableAirline, airlineCompletion, _, _)   = runAviationEdgeStream[AirlineStream.type]()
+  val (cancellableCity, cityCompletion, _, _)         = runAviationEdgeStream[CityStream.type]()
+  val (cancellableFlightState, flightStateCompletion) = runOpenSkyStream[FlightStateStream.type]()
 
-  val streamsCompletion = List(flightCompletion, airplaneCompletion, airportCompletion, airlineCompletion, cityCompletion)
+  val streamsCompletion =
+    List(flightCompletion, airplaneCompletion, airportCompletion, airlineCompletion, cityCompletion, flightStateCompletion)
   Future.firstCompletedOf(streamsCompletion).foreach { _ =>
     logger.error("An unexpected error caused a stream completion. Terminating the application...")
     sys.exit(1)
@@ -37,6 +41,7 @@ object Main extends App with LazyLogging {
     cancellableAirport.cancel()
     cancellableAirline.cancel()
     cancellableCity.cancel()
+    cancellableFlightState.cancel()
     val resourcesClosed = for {
       binding <- bindingFuture
       _       <- binding.terminate(hardDeadline = 3.seconds)
