@@ -55,19 +55,6 @@ class GraphsSpec
       }
     }
 
-    "produce valid messages to the sinks" in {
-      val source =
-        Source(List(Right(FlightStateMessage), Left(ErrorMessage)))
-      val flightSink = Sink.fold[List[MessageJson], MessageJson](Nil)(_ :+ _)
-
-      val (_, futureFlight) = simpleGraph(source, flightSink).run()
-
-      whenReady(futureFlight, timeout) { f =>
-        f.size shouldBe 1
-        f should contain theSameElementsAs List(FlightStateMessage)
-      }
-    }
-
     "produce monitoring messages to monitoring sink when there are valid messages" in {
       val source = Source.single(
         List(

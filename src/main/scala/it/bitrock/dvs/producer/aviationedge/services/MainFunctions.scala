@@ -3,6 +3,7 @@ package it.bitrock.dvs.producer.aviationedge.services
 import akka.Done
 import akka.actor.{ActorSystem, Cancellable}
 import akka.http.scaladsl.Http
+import akka.stream.scaladsl.Keep
 import it.bitrock.dvs.producer.aviationedge.config.{
   ApiProviderConfig,
   AppConfig,
@@ -63,9 +64,6 @@ object MainFunctions {
     val openSkyFlow = new ApiProviderFlow().flow(openSkyConfig.getOpenSkyUri(config.path), openSkyConfig.apiTimeout)
     val rawSink     = AviationStreamContext[A].sink(kafkaConfig)
 
-    val jsonSource = tickSource.via(openSkyFlow).mapConcat(identity)
-
-    simpleGraph(jsonSource, rawSink).run()
-
+    tickSource.via(openSkyFlow).mapConcat(_.collect { case Right(v) => v }).toMat(rawSink)(Keep.both).run()
   }
 }

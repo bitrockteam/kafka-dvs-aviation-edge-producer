@@ -35,21 +35,6 @@ object Graphs {
     }
   )
 
-  def simpleGraph[SourceMat, SinkMat](
-      jsonSource: Source[Either[ErrorMessageJson, MessageJson], SourceMat],
-      rawSink: Sink[MessageJson, SinkMat]
-  ): RunnableGraph[(SourceMat, SinkMat)] = RunnableGraph.fromGraph(
-    GraphDSL.create(jsonSource, rawSink)((a, b) => (a, b)) { implicit builder => (source, raw) =>
-      import GraphDSL.Implicits._
-
-      val collectRaws = builder.add(Flow[Either[ErrorMessageJson, MessageJson]].collect { case Right(x) => x })
-
-      source ~> collectRaws ~> raw
-
-      ClosedShape
-    }
-  )
-
   def monitoringGraph[SinkMat](
       rawSink: Sink[MonitoringMessageJson, SinkMat]
   ): Flow[List[Either[ErrorMessageJson, MessageJson]], List[Either[ErrorMessageJson, MessageJson]], SinkMat] = Flow.fromGraph(

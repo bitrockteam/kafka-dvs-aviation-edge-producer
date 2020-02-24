@@ -29,39 +29,45 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
       def write(obj: List[Either[ErrorMessageJson, MessageJson]]): JsValue = JsNull
       def read(json: JsValue): List[Either[ErrorMessageJson, MessageJson]] =
         json match {
-          case _: JsObject =>
-            Try(json.convertTo[FlightStatesJson]) match {
-              case Failure(ex) => List(Left(ErrorMessageJson("", ex.getMessage, json.compactPrint, Instant.now)))
-              case Success(flightStates) =>
-                flightStates.states.map { state =>
-                  Try(
-                    FlightStateJson(
-                      state(1).convertTo[String],
-                      state(3).convertTo[Long],
-                      state(5).convertTo[Double],
-                      state(6).convertTo[Double],
-                      state(9).convertTo[Double],
-                      state(10).convertTo[Double],
-                      state(13).convertTo[Double]
-                    )
-                  ).toEither.left.map(ex => ErrorMessageJson("", ex.getMessage, json.compactPrint, Instant.now))
-                }
-            }
-          case JsArray(elements) =>
-            elements
-              .map(json =>
-                Try(
-                  json.asJsObject match {
-                    case j: JsObject if j.getFields("flight") != Seq()     => json.convertTo[FlightMessageJson]
-                    case j: JsObject if j.getFields("airplaneId") != Seq() => json.convertTo[AirplaneMessageJson]
-                    case j: JsObject if j.getFields("airportId") != Seq()  => json.convertTo[AirportMessageJson]
-                    case j: JsObject if j.getFields("airlineId") != Seq()  => json.convertTo[AirlineMessageJson]
-                    case j: JsObject if j.getFields("cityId") != Seq()     => json.convertTo[CityMessageJson]
-                  }
-                ).toEither.left.map(ex => ErrorMessageJson("", ex.getMessage, json.compactPrint, Instant.now))
-              )
-              .toList
-          case _ => List(Left(ErrorMessageJson("", "", json.compactPrint, Instant.now)))
+          case jsObject: JsObject => jsObjectToResponsePayload(jsObject)
+          case jsArray: JsArray   => jsArrayToResponsePayload(jsArray)
+          case _                  => List(Left(ErrorMessageJson("", "", json.compactPrint, Instant.now)))
         }
     }
+
+  private def jsObjectToResponsePayload(json: JsObject): List[Either[ErrorMessageJson, FlightStateJson]] =
+    Try(json.convertTo[FlightStatesJson]) match {
+      case Failure(ex) => List(Left(ErrorMessageJson("", ex.getMessage, json.compactPrint, Instant.now)))
+      case Success(flightStates) =>
+        flightStates.states.map { state =>
+          Try(
+            FlightStateJson(
+              state(1).convertTo[String],
+              state(3).convertTo[Long],
+              state(5).convertTo[Double],
+              state(6).convertTo[Double],
+              state(9).convertTo[Double],
+              state(10).convertTo[Double],
+              state(13).convertTo[Double]
+            )
+          ).toEither.left.map(ex => ErrorMessageJson("", ex.getMessage, json.compactPrint, Instant.now))
+        }
+    }
+
+  private def jsArrayToResponsePayload(json: JsArray): List[Either[ErrorMessageJson, MessageJson]] =
+    json
+      .asInstanceOf[JsArray]
+      .elements
+      .map(json =>
+        Try(
+          json.asJsObject match {
+            case j: JsObject if j.getFields("flight") != Seq()     => json.convertTo[FlightMessageJson]
+            case j: JsObject if j.getFields("airplaneId") != Seq() => json.convertTo[AirplaneMessageJson]
+            case j: JsObject if j.getFields("airportId") != Seq()  => json.convertTo[AirportMessageJson]
+            case j: JsObject if j.getFields("airlineId") != Seq()  => json.convertTo[AirlineMessageJson]
+            case j: JsObject if j.getFields("cityId") != Seq()     => json.convertTo[CityMessageJson]
+          }
+        ).toEither.left.map(ex => ErrorMessageJson("", ex.getMessage, json.compactPrint, Instant.now))
+      )
+      .toList
 }
