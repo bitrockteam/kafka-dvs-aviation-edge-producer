@@ -2,10 +2,10 @@ package it.bitrock.dvs.producer.aviationedge.config
 
 import java.net.URI
 import java.time.DayOfWeek
-import pureconfig.ConfigSource
-import pureconfig.generic.auto._
 
 import akka.http.scaladsl.model.Uri
+import pureconfig.ConfigSource
+import pureconfig.generic.auto._
 
 final case class ApiProviderConfig(aviationEdge: AviationConfig, openSky: OpenSkyConfig)
 
