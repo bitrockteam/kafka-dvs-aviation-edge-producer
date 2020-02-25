@@ -3,7 +3,7 @@ package it.bitrock.dvs.producer.aviationedge.services
 import java.time.Instant
 
 import akka.NotUsed
-import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Partition, RunnableGraph, Sink, Source}
+import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Keep, Partition, RunnableGraph, Sink, Source}
 import akka.stream.{ClosedShape, FlowShape}
 import it.bitrock.dvs.producer.aviationedge.model.PartitionPorts._
 import it.bitrock.dvs.producer.aviationedge.model._
@@ -34,6 +34,12 @@ object Graphs {
         ClosedShape
     }
   )
+
+  def collectRightMessagesGraph[SourceMat, SinkMat](
+      jsonSource: Source[Either[ErrorMessageJson, MessageJson], SourceMat],
+      rawSink: Sink[MessageJson, SinkMat]
+  ): RunnableGraph[(SourceMat, SinkMat)] =
+    jsonSource.collect { case Right(v) => v }.toMat(rawSink)(Keep.both)
 
   def monitoringGraph[SinkMat](
       rawSink: Sink[MonitoringMessageJson, SinkMat]
