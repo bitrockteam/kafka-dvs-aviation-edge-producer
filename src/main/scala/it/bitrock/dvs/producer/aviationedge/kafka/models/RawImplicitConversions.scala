@@ -138,4 +138,19 @@ object RawImplicitConversions {
         mrse.total
       )
   }
+
+  implicit class FlightStateStreamEventOps(flightStateJson: FlightStateJson) {
+    def toFlightStateRaw: FlightStateRaw =
+      FlightStateRaw(
+        flightStateJson.callsign,
+        Instant.ofEpochSecond(flightStateJson.time_position),
+        Geography(
+          flightStateJson.latitude,
+          flightStateJson.longitude,
+          flightStateJson.geo_altitude,
+          flightStateJson.true_track
+        ),
+        flightStateJson.velocity
+      )
+  }
 }

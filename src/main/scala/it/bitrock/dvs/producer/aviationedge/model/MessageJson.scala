@@ -1,5 +1,7 @@
 package it.bitrock.dvs.producer.aviationedge.model
 
+import spray.json.JsValue
+
 sealed trait MessageJson extends Product
 
 final case class FlightMessageJson(
@@ -105,3 +107,15 @@ final case class FlightJson(
 final case class SystemJson(
     updated: Long
 )
+
+final case class FlightStatesJson(time: Long, states: List[List[JsValue]])
+
+final case class FlightStateJson(
+    callsign: String,
+    time_position: Long,
+    longitude: Double,
+    latitude: Double,
+    velocity: Double,
+    true_track: Double,
+    geo_altitude: Double
+) extends MessageJson
