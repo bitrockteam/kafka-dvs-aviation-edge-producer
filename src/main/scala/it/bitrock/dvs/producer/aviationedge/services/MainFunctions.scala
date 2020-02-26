@@ -44,7 +44,9 @@ object MainFunctions {
 
     val tickSource = new TickSource(config.pollingStart, config.pollingInterval, aviationConfig.tickSource).source
     val aviationFlow =
-      new ApiProviderFlow().flow(aviationConfig.getAviationUri(config.path), aviationConfig.apiTimeout)(responsePayloadJsonFormat)
+      new ApiProviderFlow().flow(aviationConfig.getAviationUri(config.path), aviationConfig.apiTimeout)(
+        aviationEdgePayloadJsonReader
+      )
     val rawSink           = AviationStreamContext[A].sink(kafkaConfig)
     val errorSink         = SideStreamContext.errorSink(kafkaConfig)
     val invalidFlightSink = SideStreamContext.invalidSink(kafkaConfig)

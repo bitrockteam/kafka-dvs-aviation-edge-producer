@@ -26,7 +26,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val cityMessageJsonFormat: RootJsonFormat[CityMessageJson]         = jsonFormat6(CityMessageJson.apply)
   implicit val flightStatesJsonFormat: RootJsonFormat[FlightStatesJson]       = jsonFormat2(FlightStatesJson.apply)
 
-  implicit val responsePayloadJsonFormat: RootJsonReader[List[Either[ErrorMessageJson, MessageJson]]] = {
+  implicit val aviationEdgePayloadJsonReader: RootJsonReader[List[Either[ErrorMessageJson, MessageJson]]] = {
     case jsArray: JsArray => jsArrayToResponsePayload(jsArray)
     case json             => List(Left(ErrorMessageJson("", "", json.compactPrint, Instant.now)))
   }
@@ -36,9 +36,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
     case json               => List(Left(ErrorMessageJson("", "", json.compactPrint, Instant.now)))
   }
 
-  implicit def unmarshallerFrom[A](
-      rf: RootJsonReader[A]
-  ): Unmarshaller[String, A] =
+  implicit def unmarshallerFrom[A](rf: RootJsonReader[A]): Unmarshaller[String, A] =
     _fromStringUnmarshallerFromByteStringUnmarshaller(sprayJsonByteStringUnmarshaller(rf))
 
   private def jsObjectToResponsePayload(json: JsObject): List[Either[ErrorMessageJson, FlightStateJson]] =
