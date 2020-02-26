@@ -16,7 +16,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
-class AviationFlow()(implicit system: ActorSystem, ec: ExecutionContext) extends LazyLogging {
+class ApiProviderFlow()(implicit system: ActorSystem, ec: ExecutionContext) extends LazyLogging {
   def flow(uri: Uri, apiTimeout: Int): Flow[Tick, List[Either[ErrorMessageJson, MessageJson]], NotUsed] =
     Flow
       .fromFunction(identity[Tick])

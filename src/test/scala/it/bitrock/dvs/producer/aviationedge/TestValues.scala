@@ -80,4 +80,20 @@ trait TestValues {
       |  }
       |]
       |""".stripMargin
+
+  final val FlightStateMessage = FlightStateJson(
+    IcaoNumber,
+    Updated,
+    -1.9623,
+    49.2655,
+    805.14,
+    282.76,
+    9753.6
+  )
+  final val ExpectedFlightStateRaw = FlightStateRaw(
+    IcaoNumber,
+    Instant.ofEpochSecond(Updated),
+    Geography(49.2655, -1.9623, 9753.6, 282.76),
+    805.14
+  )
 }
