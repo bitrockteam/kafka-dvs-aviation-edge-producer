@@ -3,6 +3,8 @@ package it.bitrock.dvs.producer.aviationedge.services
 import java.time.Instant
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import akka.http.scaladsl.unmarshalling.PredefinedFromStringUnmarshallers._fromStringUnmarshallerFromByteStringUnmarshaller
+import akka.http.scaladsl.unmarshalling.Unmarshaller
 import it.bitrock.dvs.producer.aviationedge.model._
 import spray.json._
 
@@ -24,16 +26,18 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val cityMessageJsonFormat: RootJsonFormat[CityMessageJson]         = jsonFormat6(CityMessageJson.apply)
   implicit val flightStatesJsonFormat: RootJsonFormat[FlightStatesJson]       = jsonFormat2(FlightStatesJson.apply)
 
-  implicit val responsePayloadJsonFormat: RootJsonFormat[List[Either[ErrorMessageJson, MessageJson]]] =
-    new RootJsonFormat[List[Either[ErrorMessageJson, MessageJson]]] {
-      def write(obj: List[Either[ErrorMessageJson, MessageJson]]): JsValue = JsNull
-      def read(json: JsValue): List[Either[ErrorMessageJson, MessageJson]] =
-        json match {
-          case jsObject: JsObject => jsObjectToResponsePayload(jsObject)
-          case jsArray: JsArray   => jsArrayToResponsePayload(jsArray)
-          case _                  => List(Left(ErrorMessageJson("", "", json.compactPrint, Instant.now)))
-        }
-    }
+  val aviationEdgePayloadJsonReader: RootJsonReader[List[Either[ErrorMessageJson, MessageJson]]] = {
+    case jsArray: JsArray => jsArrayToResponsePayload(jsArray)
+    case json             => List(Left(ErrorMessageJson("", "", json.compactPrint, Instant.now)))
+  }
+
+  val openSkyResponsePayloadJsonFormat: RootJsonReader[List[Either[ErrorMessageJson, MessageJson]]] = {
+    case jsObject: JsObject => jsObjectToResponsePayload(jsObject)
+    case json               => List(Left(ErrorMessageJson("", "", json.compactPrint, Instant.now)))
+  }
+
+  implicit def unmarshallerFrom[A](rf: RootJsonReader[A]): Unmarshaller[String, A] =
+    _fromStringUnmarshallerFromByteStringUnmarshaller(sprayJsonByteStringUnmarshaller(rf))
 
   private def jsObjectToResponsePayload(json: JsObject): List[Either[ErrorMessageJson, FlightStateJson]] =
     Try(json.convertTo[FlightStatesJson]) match {
@@ -42,13 +46,13 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         flightStates.states.map { state =>
           Try(
             FlightStateJson(
-              state(1).convertTo[String],
-              state(3).convertTo[Long],
-              state(5).convertTo[Double],
-              state(6).convertTo[Double],
-              state(9).convertTo[Double],
-              state(10).convertTo[Double],
-              state(13).convertTo[Double]
+              callsign = state(1).convertTo[String].trim.toUpperCase,
+              time_position = state(3).convertTo[Long],
+              longitude = state(5).convertTo[Double],
+              latitude = state(6).convertTo[Double],
+              velocity = state(9).convertTo[Double],
+              true_track = state(10).convertTo[Double],
+              geo_altitude = state(13).convertTo[Double]
             )
           ).toEither.left.map(ex => ErrorMessageJson("", ex.getMessage, json.compactPrint, Instant.now))
         }

@@ -6,18 +6,19 @@ import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.unmarshalling.Unmarshal
+import akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import akka.stream.scaladsl.Flow
 import com.typesafe.scalalogging.LazyLogging
 import it.bitrock.dvs.producer.aviationedge.model.{ErrorMessageJson, MessageJson, Tick}
-import it.bitrock.dvs.producer.aviationedge.services.JsonSupport._
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class ApiProviderFlow()(implicit system: ActorSystem, ec: ExecutionContext) extends LazyLogging {
-  def flow(uri: Uri, apiTimeout: Int): Flow[Tick, List[Either[ErrorMessageJson, MessageJson]], NotUsed] =
+  def flow(uri: Uri, apiTimeout: Int)(
+      implicit um: Unmarshaller[String, List[Either[ErrorMessageJson, MessageJson]]]
+  ): Flow[Tick, List[Either[ErrorMessageJson, MessageJson]], NotUsed] =
     Flow
       .fromFunction(identity[Tick])
       .mapAsync(1) { _ =>
@@ -39,7 +40,9 @@ class ApiProviderFlow()(implicit system: ActorSystem, ec: ExecutionContext) exte
     entity.toStrict(timeout.seconds).map(_.data.utf8String)
   }
 
-  def unmarshalBody(apiResponseBody: String, path: String): Future[List[Either[ErrorMessageJson, MessageJson]]] =
+  def unmarshalBody(apiResponseBody: String, path: String)(
+      implicit um: Unmarshaller[String, List[Either[ErrorMessageJson, MessageJson]]]
+  ): Future[List[Either[ErrorMessageJson, MessageJson]]] =
     Unmarshal(apiResponseBody)
       .to[List[Either[ErrorMessageJson, MessageJson]]]
       .map(list => addPathToLeft(list, path))
