@@ -115,12 +115,22 @@ class ApiProviderFlowSpec
         }
       }
     }
-    "create an ErrorMessageJson if at least one of the fields of the response is incorrect" in {
-      val futureResult = apiProviderFlow.unmarshalBody(IncorrectJsonAirline, Path)(aviationEdgePayloadJsonReader)
-      whenReady(futureResult) { result =>
-        result.size shouldBe 1
-        result.head.isLeft shouldBe true
-        result.head.left.value.errorSource shouldBe Path
+    "create an ErrorMessageJson if at least one of the fields of the response is incorrect" when {
+      "the provider is aviation-edge" in {
+        val futureResult = apiProviderFlow.unmarshalBody(IncorrectJsonAirline, Path)(aviationEdgePayloadJsonReader)
+        whenReady(futureResult) { result =>
+          result.size shouldBe 1
+          result.head.isLeft shouldBe true
+          result.head.left.value.errorSource shouldBe Path
+        }
+      }
+      "the provider is open-sky" in {
+        val futureResult = apiProviderFlow.unmarshalBody(IncorrectJsonAirline, Path)(openSkyResponsePayloadJsonFormat)
+        whenReady(futureResult) { result =>
+          result.size shouldBe 1
+          result.head.isLeft shouldBe true
+          result.head.left.value.errorSource shouldBe Path
+        }
       }
     }
   }
