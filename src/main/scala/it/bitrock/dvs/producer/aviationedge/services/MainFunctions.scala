@@ -13,6 +13,7 @@ import it.bitrock.dvs.producer.aviationedge.config.{
 }
 import it.bitrock.dvs.producer.aviationedge.routes.Routes
 import it.bitrock.dvs.producer.aviationedge.services.Graphs._
+import it.bitrock.dvs.producer.aviationedge.services.JsonSupport._
 import it.bitrock.dvs.producer.aviationedge.services.context.{
   ApiProviderStreamContext,
   AviationStreamContext,
@@ -41,8 +42,9 @@ object MainFunctions {
   ): (Cancellable, Future[Done], Future[Done], Future[Done]) = {
     val config = AviationStreamContext[A].config(apiProviderConfig)
 
-    val tickSource        = new TickSource(config.pollingStart, config.pollingInterval, aviationConfig.tickSource).source
-    val aviationFlow      = new ApiProviderFlow().flow(aviationConfig.getAviationUri(config.path), aviationConfig.apiTimeout)
+    val tickSource = new TickSource(config.pollingStart, config.pollingInterval, aviationConfig.tickSource).source
+    val aviationFlow =
+      new ApiProviderFlow().flow(aviationConfig.getAviationUri(config.path), aviationConfig.apiTimeout)(responsePayloadJsonFormat)
     val rawSink           = AviationStreamContext[A].sink(kafkaConfig)
     val errorSink         = SideStreamContext.errorSink(kafkaConfig)
     val invalidFlightSink = SideStreamContext.invalidSink(kafkaConfig)
@@ -59,9 +61,11 @@ object MainFunctions {
   ): (Cancellable, Future[Done]) = {
     val config = OpenSkyStreamContext[A].config(apiProviderConfig)
 
-    val tickSource  = new TickSource(config.pollingStart, config.pollingInterval, openSkyConfig.tickSource).source
-    val openSkyFlow = new ApiProviderFlow().flow(openSkyConfig.getOpenSkyUri(config.path), openSkyConfig.apiTimeout)
-    val rawSink     = AviationStreamContext[A].sink(kafkaConfig)
+    val tickSource = new TickSource(config.pollingStart, config.pollingInterval, openSkyConfig.tickSource).source
+    val openSkyFlow = new ApiProviderFlow().flow(openSkyConfig.getOpenSkyUri(config.path), openSkyConfig.apiTimeout)(
+      openSkyResponsePayloadJsonFormat
+    )
+    val rawSink = AviationStreamContext[A].sink(kafkaConfig)
 
     val jsonSource = tickSource.via(openSkyFlow).mapConcat(identity)
 

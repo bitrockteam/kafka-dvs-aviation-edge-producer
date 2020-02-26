@@ -6,6 +6,7 @@ import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.testkit.TestKit
 import it.bitrock.dvs.producer.aviationedge.TestValues
 import it.bitrock.dvs.producer.aviationedge.model._
+import it.bitrock.dvs.producer.aviationedge.services.JsonSupport._
 import it.bitrock.testcommons.Suite
 import org.scalatest.EitherValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -26,7 +27,7 @@ class ApiProviderFlowSpec
 
   "flow method" should {
     "recover http request failure" in {
-      val flow = apiProviderFlow.flow(Uri("invalid-url"), 1)
+      val flow = apiProviderFlow.flow(Uri("invalid-url"), 1)(responsePayloadJsonFormat)
       whenReady(Source.tick(0.seconds, 1.second, Tick()).via(flow).take(1).toMat(Sink.head)(Keep.right).run()) { result =>
         result.head.left.value.errorSource shouldBe "invalid-url"
       }
@@ -48,7 +49,7 @@ class ApiProviderFlowSpec
 
   "unmarshal method" should {
     "parse a flight JSON message into FlightMessageJson" in {
-      val futureResult = apiProviderFlow.unmarshalBody(readFixture("flight"), Path)
+      val futureResult = apiProviderFlow.unmarshalBody(readFixture("flight"), Path)(responsePayloadJsonFormat)
       whenReady(futureResult) { result =>
         result.size shouldBe 1
         result.head.isRight shouldBe true
@@ -56,7 +57,7 @@ class ApiProviderFlowSpec
       }
     }
     "parse a airplane JSON message into AirplaneMessageJson" in {
-      val futureResult = apiProviderFlow.unmarshalBody(readFixture("airplaneDatabase"), Path)
+      val futureResult = apiProviderFlow.unmarshalBody(readFixture("airplaneDatabase"), Path)(responsePayloadJsonFormat)
       whenReady(futureResult) { result =>
         result.size shouldBe 1
         result.head.isRight shouldBe true
@@ -64,7 +65,7 @@ class ApiProviderFlowSpec
       }
     }
     "parse a airport JSON message into AirportMessageJson" in {
-      val futureResult = apiProviderFlow.unmarshalBody(readFixture("airportDatabase"), Path)
+      val futureResult = apiProviderFlow.unmarshalBody(readFixture("airportDatabase"), Path)(responsePayloadJsonFormat)
       whenReady(futureResult) { result =>
         result.size shouldBe 1
         result.head.isRight shouldBe true
@@ -72,7 +73,7 @@ class ApiProviderFlowSpec
       }
     }
     "parse a airline JSON message into AirlineMessageJson" in {
-      val futureResult = apiProviderFlow.unmarshalBody(readFixture("airlineDatabase"), Path)
+      val futureResult = apiProviderFlow.unmarshalBody(readFixture("airlineDatabase"), Path)(responsePayloadJsonFormat)
       whenReady(futureResult) { result =>
         result.size shouldBe 1
         result.head.isRight shouldBe true
@@ -80,7 +81,7 @@ class ApiProviderFlowSpec
       }
     }
     "parse a city JSON message into CityMessageJson" in {
-      val futureResult = apiProviderFlow.unmarshalBody(readFixture("cityDatabase"), Path)
+      val futureResult = apiProviderFlow.unmarshalBody(readFixture("cityDatabase"), Path)(responsePayloadJsonFormat)
       whenReady(futureResult) { result =>
         result.size shouldBe 1
         result.head.isRight shouldBe true
@@ -88,23 +89,34 @@ class ApiProviderFlowSpec
       }
     }
     "parse a flight states JSON message into FlightStateJson" in {
-      val futureResult = apiProviderFlow.unmarshalBody(readFixture("flightStatesDatabase"), Path)
+      val futureResult =
+        apiProviderFlow.unmarshalBody(readFixture("flightStatesDatabase"), Path)(openSkyResponsePayloadJsonFormat)
       whenReady(futureResult) { result =>
         result.size shouldBe 1
         result.head.isRight shouldBe true
         result.head.right.value shouldBe a[FlightStateJson]
       }
     }
-    "create an ErrorMessageJson with the field failedJson equals to the response body" in {
-      val futureResult = apiProviderFlow.unmarshalBody(ErrorResponse, Path)
-      whenReady(futureResult) { result =>
-        result.size shouldBe 1
-        result.head.isLeft shouldBe true
-        result.head.left.value.failedJson shouldBe ErrorResponse
+    "create an ErrorMessageJson with the field failedJson equals to the response body" when {
+      "the provider is aviation-edge" in {
+        val futureResult = apiProviderFlow.unmarshalBody(ErrorResponse, Path)(responsePayloadJsonFormat)
+        whenReady(futureResult) { result =>
+          result.size shouldBe 1
+          result.head.isLeft shouldBe true
+          result.head.left.value.failedJson shouldBe ErrorResponse
+        }
+      }
+      "the provider is open-sky" in {
+        val futureResult = apiProviderFlow.unmarshalBody(ErrorResponse, Path)(openSkyResponsePayloadJsonFormat)
+        whenReady(futureResult) { result =>
+          result.size shouldBe 1
+          result.head.isLeft shouldBe true
+          result.head.left.value.failedJson shouldBe ErrorResponse
+        }
       }
     }
     "create an ErrorMessageJson if at least one of the fields of the response is incorrect" in {
-      val futureResult = apiProviderFlow.unmarshalBody(IncorrectJsonAirline, Path)
+      val futureResult = apiProviderFlow.unmarshalBody(IncorrectJsonAirline, Path)(responsePayloadJsonFormat)
       whenReady(futureResult) { result =>
         result.size shouldBe 1
         result.head.isLeft shouldBe true
