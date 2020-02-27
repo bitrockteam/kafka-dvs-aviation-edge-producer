@@ -94,6 +94,6 @@ trait TestValues {
     IcaoNumber,
     Instant.ofEpochSecond(Updated),
     Geography(49.2655, -1.9623, 9753.6, 282.76),
-    805.14
+    2898.504
   )
 }

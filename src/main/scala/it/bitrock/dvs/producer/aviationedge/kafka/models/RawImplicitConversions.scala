@@ -150,7 +150,9 @@ object RawImplicitConversions {
           flightStateJson.geo_altitude,
           flightStateJson.true_track
         ),
-        flightStateJson.velocity
+        msToKmh(flightStateJson.velocity)
       )
   }
+
+  private def msToKmh(ms: Double): Double = ms * 3.6
 }
