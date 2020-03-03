@@ -3,14 +3,7 @@ package it.bitrock.dvs.producer.aviationedge.services
 import akka.Done
 import akka.actor.{ActorSystem, Cancellable}
 import akka.http.scaladsl.Http
-import it.bitrock.dvs.producer.aviationedge.config.{
-  ApiProviderConfig,
-  AppConfig,
-  AviationConfig,
-  KafkaConfig,
-  OpenSkyConfig,
-  ServerConfig
-}
+import it.bitrock.dvs.producer.aviationedge.config._
 import it.bitrock.dvs.producer.aviationedge.routes.Routes
 import it.bitrock.dvs.producer.aviationedge.services.Graphs._
 import it.bitrock.dvs.producer.aviationedge.services.JsonSupport._
@@ -42,10 +35,11 @@ object MainFunctions {
   ): (Cancellable, Future[Done], Future[Done], Future[Done]) = {
     val config = AviationStreamContext[A].config(apiProviderConfig)
 
-    val tickSource = new TickSource(config.pollingStart, config.pollingInterval, aviationConfig.tickSource).source
+    val tickSource =
+      new TickSource(config.pollingStart, config.pollingInterval, aviationConfig.tickSource).source
     val aviationFlow =
       new ApiProviderFlow().flow(aviationConfig.getAviationUri(config.path), aviationConfig.apiTimeout)(
-        aviationEdgePayloadJsonReader
+        aviationEdgePayloadJsonReader[A]
       )
     val rawSink           = AviationStreamContext[A].sink(kafkaConfig)
     val errorSink         = SideStreamContext.errorSink(kafkaConfig)
@@ -65,7 +59,7 @@ object MainFunctions {
 
     val tickSource = new TickSource(config.pollingStart, config.pollingInterval, openSkyConfig.tickSource).source
     val openSkyFlow = new ApiProviderFlow().flow(openSkyConfig.getOpenSkyUri(config.path), openSkyConfig.apiTimeout)(
-      openSkyResponsePayloadJsonFormat
+      openSkyResponsePayloadJsonFormat[A]
     )
     val rawSink = AviationStreamContext[A].sink(kafkaConfig)
 

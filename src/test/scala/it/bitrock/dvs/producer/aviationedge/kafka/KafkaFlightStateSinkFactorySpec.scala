@@ -7,7 +7,7 @@ import akka.testkit.TestKit
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
 import it.bitrock.dvs.producer.aviationedge.TestValues
 import it.bitrock.dvs.producer.aviationedge.kafka.KafkaTypes.{FlightState, Key}
-import it.bitrock.dvs.producer.aviationedge.model.MessageJson
+import it.bitrock.dvs.producer.aviationedge.model.FlightStateJson
 import it.bitrock.kafkacommons.serialization.ImplicitConversions._
 import it.bitrock.testcommons.{FixtureLoanerAnyResult, Suite}
 import net.manub.embeddedkafka.schemaregistry._
@@ -51,7 +51,7 @@ class KafkaFlightStateSinkFactorySpec
           s"http://localhost:${embeddedKafkaConfig.schemaRegistryPort}"
         )
 
-      val factory = new KafkaSinkFactory[MessageJson, Key, FlightState.Value](
+      val factory = new KafkaSinkFactory[FlightStateJson, Key, FlightState.Value](
         outputTopic,
         producerSettings
       )
@@ -76,6 +76,6 @@ object KafkaFlightStateSinkFactorySpec {
   final case class Resource(
       embeddedKafkaConfig: EmbeddedKafkaConfig,
       keySerde: Serde[Key],
-      factory: KafkaSinkFactory[MessageJson, Key, FlightState.Value]
+      factory: KafkaSinkFactory[FlightStateJson, Key, FlightState.Value]
   )
 }

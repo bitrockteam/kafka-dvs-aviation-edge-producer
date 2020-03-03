@@ -9,16 +9,16 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.{Unmarshal, Unmarshaller}
 import akka.stream.scaladsl.Flow
 import com.typesafe.scalalogging.LazyLogging
-import it.bitrock.dvs.producer.aviationedge.model.{ErrorMessageJson, MessageJson, Tick}
+import it.bitrock.dvs.producer.aviationedge.model.{ErrorMessageJson, Tick}
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class ApiProviderFlow()(implicit system: ActorSystem, ec: ExecutionContext) extends LazyLogging {
-  def flow(uri: Uri, apiTimeout: Int)(
-      implicit um: Unmarshaller[String, List[Either[ErrorMessageJson, MessageJson]]]
-  ): Flow[Tick, List[Either[ErrorMessageJson, MessageJson]], NotUsed] =
+  def flow[A](uri: Uri, apiTimeout: Int)(
+      implicit um: Unmarshaller[String, List[Either[ErrorMessageJson, A]]]
+  ): Flow[Tick, List[Either[ErrorMessageJson, A]], NotUsed] =
     Flow
       .fromFunction(identity[Tick])
       .mapAsync(1) { _ =>
@@ -40,20 +40,20 @@ class ApiProviderFlow()(implicit system: ActorSystem, ec: ExecutionContext) exte
     entity.toStrict(timeout.seconds).map(_.data.utf8String)
   }
 
-  def unmarshalBody(apiResponseBody: String, path: String)(
-      implicit um: Unmarshaller[String, List[Either[ErrorMessageJson, MessageJson]]]
-  ): Future[List[Either[ErrorMessageJson, MessageJson]]] =
+  def unmarshalBody[A](apiResponseBody: String, path: String)(
+      implicit um: Unmarshaller[String, List[Either[ErrorMessageJson, A]]]
+  ): Future[List[Either[ErrorMessageJson, A]]] =
     Unmarshal(apiResponseBody)
-      .to[List[Either[ErrorMessageJson, MessageJson]]]
+      .to[List[Either[ErrorMessageJson, A]]]
       .map(list => addPathToLeft(list, path))
       .recover {
         case ex =>
           List(Left(ErrorMessageJson(path, ex.getMessage, apiResponseBody, Instant.now)))
       }
 
-  private def addPathToLeft(
-      list: List[Either[ErrorMessageJson, MessageJson]],
+  private def addPathToLeft[A](
+      list: List[Either[ErrorMessageJson, A]],
       path: String
-  ): List[Either[ErrorMessageJson, MessageJson]] =
+  ): List[Either[ErrorMessageJson, A]] =
     list.map(_.left.map(_.copy(errorSource = path)))
 }
