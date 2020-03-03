@@ -6,7 +6,7 @@ import akka.stream.scaladsl.Sink
 import it.bitrock.dvs.producer.aviationedge.config.KafkaConfig
 import it.bitrock.dvs.producer.aviationedge.kafka.KafkaTypes.{Error, Flight, Key, Monitoring}
 import it.bitrock.dvs.producer.aviationedge.kafka.{KafkaSinkFactory, ProducerSettingsFactory}
-import it.bitrock.dvs.producer.aviationedge.model.{ErrorMessageJson, MessageJson, MonitoringMessageJson}
+import it.bitrock.dvs.producer.aviationedge.model.{ErrorMessageJson, MonitoringMessageJson}
 
 import scala.concurrent.Future
 
@@ -21,8 +21,8 @@ object SideStreamContext {
     new KafkaSinkFactory[MonitoringMessageJson, Key, Monitoring.Value](kafkaConfig.monitoringTopic, producerSettings).sink
   }
 
-  def invalidSink(kafkaConfig: KafkaConfig)(implicit system: ActorSystem): Sink[MessageJson, Future[Done]] = {
+  def invalidSink[A](kafkaConfig: KafkaConfig)(implicit system: ActorSystem): Sink[A, Future[Done]] = {
     val producerSettings = ProducerSettingsFactory.from[Flight.Value](kafkaConfig)
-    new KafkaSinkFactory[MessageJson, Key, Flight.Value](kafkaConfig.invalidFlightRawTopic, producerSettings).sink
+    new KafkaSinkFactory[A, Key, Flight.Value](kafkaConfig.invalidFlightRawTopic, producerSettings).sink
   }
 }
