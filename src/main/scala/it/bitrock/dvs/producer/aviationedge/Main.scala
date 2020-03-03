@@ -6,6 +6,7 @@ import it.bitrock.dvs.producer.aviationedge.model._
 import it.bitrock.dvs.producer.aviationedge.services.MainFunctions._
 import it.bitrock.dvs.producer.aviationedge.services.context.AviationStreamContext._
 import it.bitrock.dvs.producer.aviationedge.services.context.OpenSkyStreamContext._
+import it.bitrock.dvs.producer.aviationedge.services.JsonSupport._
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}

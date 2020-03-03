@@ -19,8 +19,6 @@ trait ToValuePair[J, K, V] {
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 object ToValuePair {
-  implicit def messageJsonValuePair[A]: ToValuePair[A, Key, Flight.Value] =
-    j => (j.asInstanceOf[FlightMessageJson].flight.icaoNumber, j.asInstanceOf[FlightMessageJson].toFlightRaw)
   implicit val flightValuePair: ToValuePair[FlightMessageJson, Key, Flight.Value] = j => (j.flight.icaoNumber, j.toFlightRaw)
   implicit val airplaneValuePair: ToValuePair[AirplaneMessageJson, Key, Airplane.Value] = j =>
     (j.numberRegistration, j.toAirplaneRaw)

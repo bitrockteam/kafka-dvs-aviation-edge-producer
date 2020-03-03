@@ -12,6 +12,7 @@ import it.bitrock.dvs.producer.aviationedge.services.context.{
   AviationStreamContext,
   OpenSkyStreamContext
 }
+import spray.json.JsonReader
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -29,7 +30,7 @@ object MainFunctions {
     Http().bindAndHandle(routes.routes, host, port)
   }
 
-  def runAviationEdgeStream[A: ApiProviderStreamContext]()(
+  def runAviationEdgeStream[A: ApiProviderStreamContext: JsonReader]()(
       implicit system: ActorSystem,
       ec: ExecutionContext
   ): (Cancellable, Future[Done], Future[Done], Future[Done]) = {
@@ -43,7 +44,7 @@ object MainFunctions {
       )
     val rawSink           = AviationStreamContext[A].sink(kafkaConfig)
     val errorSink         = SideStreamContext.errorSink(kafkaConfig)
-    val invalidFlightSink = SideStreamContext.invalidSink(kafkaConfig)
+    val invalidFlightSink = SideStreamContext.invalidFlightSink(kafkaConfig)
     val monitoringSink    = SideStreamContext.monitoringSink(kafkaConfig)
 
     val jsonSource = tickSource.via(aviationFlow).via(monitoringGraph(monitoringSink)).mapConcat(identity)
@@ -51,7 +52,7 @@ object MainFunctions {
     mainGraph(jsonSource, rawSink, errorSink, invalidFlightSink).run()
   }
 
-  def runOpenSkyStream[A: ApiProviderStreamContext]()(
+  def runOpenSkyStream[A: ApiProviderStreamContext: JsonReader]()(
       implicit system: ActorSystem,
       ec: ExecutionContext
   ): (Cancellable, Future[Done]) = {
