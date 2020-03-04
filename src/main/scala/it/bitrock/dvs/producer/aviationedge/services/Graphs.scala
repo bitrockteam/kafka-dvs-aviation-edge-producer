@@ -14,7 +14,7 @@ object Graphs {
       jsonSource: Source[Either[ErrorMessageJson, Message], SourceMat],
       rawSink: Sink[Message, SinkMat],
       errorSink: Sink[ErrorMessageJson, SinkMat],
-      invalidFlightSink: Sink[Message, SinkMat]
+      invalidFlightSink: Sink[FlightMessageJson, SinkMat]
   ): RunnableGraph[(SourceMat, SinkMat, SinkMat, SinkMat)] = RunnableGraph.fromGraph(
     GraphDSL.create(jsonSource, rawSink, errorSink, invalidFlightSink)((a, b, c, d) => (a, b, c, d)) {
       implicit builder => (source, raw, error, invalidFlight) =>
@@ -24,12 +24,19 @@ object Graphs {
         val collectErrors = builder.add(Flow[Either[ErrorMessageJson, Message]].collect { case Left(x) => x })
         val collectRaws =
           builder.add(Flow[Either[ErrorMessageJson, Message]].collect { case Right(x) => x }.filter(filterFunction))
-        val collectInvalid = builder.add(Flow[Either[ErrorMessageJson, Message]].collect { case Right(x) => x })
+        val collectInvalidFlight = builder.add(
+          Flow
+            .fromFunction[Either[ErrorMessageJson, Message], Option[FlightMessageJson]] {
+              case Right(x: FlightMessageJson) => Some(x)
+              case _                           => None
+            }
+            .collect { case Some(x) => x }
+        )
 
         source ~> partition
         partition.out(ErrorPort) ~> collectErrors ~> error
         partition.out(RawPort) ~> collectRaws ~> raw
-        partition.out(InvalidPort) ~> collectInvalid ~> invalidFlight
+        partition.out(InvalidPort) ~> collectInvalidFlight ~> invalidFlight
 
         ClosedShape
     }

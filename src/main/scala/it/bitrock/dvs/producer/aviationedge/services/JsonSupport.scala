@@ -26,52 +26,55 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val cityMessageJsonFormat: RootJsonFormat[CityMessageJson]         = jsonFormat6(CityMessageJson.apply)
   implicit val flightStatesJsonFormat: RootJsonFormat[FlightStatesJson]       = jsonFormat2(FlightStatesJson.apply)
 
-  def aviationEdgePayloadJsonReader[A]: RootJsonReader[List[Either[ErrorMessageJson, A]]] = {
-    case jsArray: JsArray => jsArrayToResponsePayload(jsArray)
+  implicit val flightStatesJsonReader: JsonReader[FlightStateJson] = new JsonReader[FlightStateJson] {
+    override def read(json: JsValue): FlightStateJson =
+      json match {
+        case jsArray: JsArray =>
+          Try(
+            FlightStateJson(
+              callsign = jsArray.elements(1).convertTo[String].trim.toUpperCase,
+              time_position = jsArray.elements(3).convertTo[Long],
+              longitude = jsArray.elements(5).convertTo[Double],
+              latitude = jsArray.elements(6).convertTo[Double],
+              velocity = jsArray.elements(9).convertTo[Double],
+              true_track = jsArray.elements(10).convertTo[Double],
+              geo_altitude = jsArray.elements(13).convertTo[Double]
+            )
+          ).getOrElse(deserializationError("Invalid JsArray for FlightStateJson, got " + jsArray))
+        case jsValue => deserializationError("Expected FlightStateJson as JsArray, but got " + jsValue)
+      }
+  }
+
+  def aviationEdgePayloadJsonReader[A: JsonReader]: RootJsonReader[List[Either[ErrorMessageJson, A]]] = {
+    case jsArray: JsArray => jsArrayToResponsePayload[A](jsArray)
     case json             => List(Left(ErrorMessageJson("", "", json.compactPrint, Instant.now)))
   }
 
-  def openSkyResponsePayloadJsonFormat[A]: RootJsonReader[List[Either[ErrorMessageJson, A]]] = {
-    case jsObject: JsObject => jsObjectToResponsePayload(jsObject)
+  def openSkyResponsePayloadJsonFormat[A: JsonReader]: RootJsonReader[List[Either[ErrorMessageJson, A]]] = {
+    case jsObject: JsObject => jsObjectToResponsePayload[A](jsObject)
     case json               => List(Left(ErrorMessageJson("", "", json.compactPrint, Instant.now)))
   }
 
   implicit def unmarshallerFrom[A](rf: RootJsonReader[A]): Unmarshaller[String, A] =
     _fromStringUnmarshallerFromByteStringUnmarshaller(sprayJsonByteStringUnmarshaller(rf))
 
-  private def jsObjectToResponsePayload[A <: FlightStateJson](json: JsObject): List[Either[ErrorMessageJson, A]] =
+  private def jsObjectToResponsePayload[A: JsonReader](json: JsObject): List[Either[ErrorMessageJson, A]] =
     Try(json.convertTo[FlightStatesJson]) match {
       case Failure(ex) => List(Left(ErrorMessageJson("", ex.getMessage, json.compactPrint, Instant.now)))
       case Success(flightStates) =>
         flightStates.states.map { state =>
           Try(
-            FlightStateJson(
-              callsign = state(1).convertTo[String].trim.toUpperCase,
-              time_position = state(3).convertTo[Long],
-              longitude = state(5).convertTo[Double],
-              latitude = state(6).convertTo[Double],
-              velocity = state(9).convertTo[Double],
-              true_track = state(10).convertTo[Double],
-              geo_altitude = state(13).convertTo[Double]
-            ).asInstanceOf[A]
+            JsArray(state.toVector).convertTo[A]
           ).toEither.left.map(ex => ErrorMessageJson("", ex.getMessage, json.compactPrint, Instant.now))
         }
     }
 
-  private def jsArrayToResponsePayload[A <: MessageJson](json: JsArray): List[Either[ErrorMessageJson, A]] =
+  private def jsArrayToResponsePayload[A: JsonReader](json: JsArray): List[Either[ErrorMessageJson, A]] =
     json
       .asInstanceOf[JsArray]
       .elements
       .map(json =>
-        Try(
-          json.asJsObject match {
-            case j: JsObject if j.getFields("flight") != Seq()     => json.convertTo[FlightMessageJson].asInstanceOf[A]
-            case j: JsObject if j.getFields("airplaneId") != Seq() => json.convertTo[AirplaneMessageJson].asInstanceOf[A]
-            case j: JsObject if j.getFields("airportId") != Seq()  => json.convertTo[AirportMessageJson].asInstanceOf[A]
-            case j: JsObject if j.getFields("airlineId") != Seq()  => json.convertTo[AirlineMessageJson].asInstanceOf[A]
-            case j: JsObject if j.getFields("cityId") != Seq()     => json.convertTo[CityMessageJson].asInstanceOf[A]
-          }
-        ).toEither.left.map(ex => ErrorMessageJson("", ex.getMessage, json.compactPrint, Instant.now))
+        Try(json.convertTo[A]).toEither.left.map(ex => ErrorMessageJson("", ex.getMessage, json.compactPrint, Instant.now))
       )
       .toList
 }

@@ -3,6 +3,7 @@ package it.bitrock.dvs.producer.aviationedge
 import akka.actor.ActorSystem
 import com.typesafe.scalalogging.LazyLogging
 import it.bitrock.dvs.producer.aviationedge.model._
+import it.bitrock.dvs.producer.aviationedge.services.JsonSupport._
 import it.bitrock.dvs.producer.aviationedge.services.MainFunctions._
 import it.bitrock.dvs.producer.aviationedge.services.context.AviationStreamContext._
 import it.bitrock.dvs.producer.aviationedge.services.context.OpenSkyStreamContext._
