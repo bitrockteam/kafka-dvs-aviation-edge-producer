@@ -1,13 +1,13 @@
 package it.bitrock.dvs.producer.aviationedge.services
 
-import it.bitrock.dvs.producer.aviationedge.TestValues
+import it.bitrock.dvs.producer.aviationedge.TestValues._
 import it.bitrock.dvs.producer.aviationedge.model.MessageJson
 import it.bitrock.dvs.producer.aviationedge.model.PartitionPorts._
+import it.bitrock.dvs.producer.aviationedge.services.Graphs._
 import it.bitrock.testcommons.Suite
 import org.scalatest.wordspec.AnyWordSpecLike
 
-class FilterFunctionsSpec extends Suite with AnyWordSpecLike with TestValues {
-  import Graphs._
+class FilterFunctionsSpec extends Suite with AnyWordSpecLike {
 
   "filter function" should {
     "exclude airlines with status not equal to active" in {

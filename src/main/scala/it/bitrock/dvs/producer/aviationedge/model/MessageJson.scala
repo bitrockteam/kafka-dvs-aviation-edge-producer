@@ -112,10 +112,10 @@ final case class FlightStatesJson(time: Long, states: List[List[JsValue]])
 
 final case class FlightStateJson(
     callsign: String,
-    time_position: Long,
+    timePosition: Long,
     longitude: Double,
     latitude: Double,
     velocity: Double,
-    true_track: Double,
-    geo_altitude: Double
+    trueTrack: Double,
+    geoAltitude: Double
 ) extends MessageJson

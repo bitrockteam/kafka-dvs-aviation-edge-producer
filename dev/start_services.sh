@@ -11,7 +11,7 @@ docker_cmd_status=$?
 if [[ $docker_cmd_status == 0 ]]; then
   # the command has succeeded
   echo -e "\nContainers had been successfully started. " \
-    'Use `docker-compose logs -f <service-name>` to check the logs.' >&2
+    "Use 'docker-compose logs -f <service-name>' to check the logs." >&2
 fi
 
 exit $docker_cmd_status

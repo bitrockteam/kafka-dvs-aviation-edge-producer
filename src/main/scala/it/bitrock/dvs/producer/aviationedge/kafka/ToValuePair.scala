@@ -2,17 +2,7 @@ package it.bitrock.dvs.producer.aviationedge.kafka
 
 import KafkaTypes._
 import it.bitrock.dvs.producer.aviationedge.kafka.models.RawImplicitConversions._
-import it.bitrock.dvs.producer.aviationedge.model.{
-  AirlineMessageJson,
-  AirplaneMessageJson,
-  AirportMessageJson,
-  CityMessageJson,
-  ErrorMessageJson,
-  FlightMessageJson,
-  FlightStateJson,
-  MessageJson,
-  MonitoringMessageJson
-}
+import it.bitrock.dvs.producer.aviationedge.model._
 
 trait ToValuePair[J, K, V] {
   def toValuePair(j: J): (K, V)

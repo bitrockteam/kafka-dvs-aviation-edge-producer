@@ -143,12 +143,12 @@ object RawImplicitConversions {
     def toFlightStateRaw: FlightStateRaw =
       FlightStateRaw(
         flightStateJson.callsign,
-        Instant.ofEpochSecond(flightStateJson.time_position),
+        Instant.ofEpochSecond(flightStateJson.timePosition),
         Geography(
           flightStateJson.latitude,
           flightStateJson.longitude,
-          flightStateJson.geo_altitude,
-          flightStateJson.true_track
+          flightStateJson.geoAltitude,
+          flightStateJson.trueTrack
         ),
         msToKmh(flightStateJson.velocity)
       )
