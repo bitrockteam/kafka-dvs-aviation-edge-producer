@@ -1,7 +1,7 @@
 package it.bitrock.dvs.producer.aviationedge.kafka
 
+import it.bitrock.dvs.model.avro._
 import it.bitrock.dvs.model.avro.monitoring.FlightRequestComputationStatus
-import it.bitrock.dvs.model.avro.{AirlineRaw, AirplaneRaw, AirportRaw, CityRaw, FlightRaw, FlightStateRaw, ParserError}
 
 object KafkaTypes {
   type Key = String

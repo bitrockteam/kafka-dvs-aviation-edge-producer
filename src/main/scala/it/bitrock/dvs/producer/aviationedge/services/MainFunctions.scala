@@ -44,7 +44,7 @@ object MainFunctions {
 
     val tickSource = new TickSource(config.pollingStart, config.pollingInterval, aviationConfig.tickSource).source
     val aviationFlow =
-      new ApiProviderFlow().flow(aviationConfig.getAviationUri(config.path), aviationConfig.apiTimeout)(
+      new ApiProviderFlow().flow(aviationConfig.aviationUri(config.path), aviationConfig.apiTimeout)(
         aviationEdgePayloadJsonReader
       )
     val rawSink           = AviationStreamContext[A].sink(kafkaConfig)
@@ -64,7 +64,7 @@ object MainFunctions {
     val config = OpenSkyStreamContext[A].config(apiProviderConfig)
 
     val tickSource = new TickSource(config.pollingStart, config.pollingInterval, openSkyConfig.tickSource).source
-    val openSkyFlow = new ApiProviderFlow().flow(openSkyConfig.getOpenSkyUri(config.path), openSkyConfig.apiTimeout)(
+    val openSkyFlow = new ApiProviderFlow().flow(openSkyConfig.openSkyUri(config.path), openSkyConfig.apiTimeout)(
       openSkyResponsePayloadJsonFormat
     )
     val rawSink = AviationStreamContext[A].sink(kafkaConfig)
