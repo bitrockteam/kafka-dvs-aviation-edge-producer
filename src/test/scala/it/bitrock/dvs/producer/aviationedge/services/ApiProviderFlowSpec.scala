@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse, StatusCodes, Uri}
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.testkit.TestKit
-import it.bitrock.dvs.producer.aviationedge.TestValues
+import it.bitrock.dvs.producer.aviationedge.TestValues._
 import it.bitrock.dvs.producer.aviationedge.model._
 import it.bitrock.dvs.producer.aviationedge.services.JsonSupport._
 import it.bitrock.testcommons.Suite
@@ -19,7 +19,6 @@ class ApiProviderFlowSpec
     extends TestKit(ActorSystem("AviationFlowSpec"))
     with Suite
     with AnyWordSpecLike
-    with TestValues
     with EitherValues
     with ScalaFutures
     with IntegrationPatience {

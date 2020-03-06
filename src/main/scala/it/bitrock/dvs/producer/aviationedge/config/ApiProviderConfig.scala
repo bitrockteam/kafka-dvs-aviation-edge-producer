@@ -21,7 +21,7 @@ final case class AviationConfig(
     airlineStream: ApiProviderStreamConfig,
     cityStream: ApiProviderStreamConfig
 ) {
-  def getAviationUri(path: String): String = {
+  def aviationUri(path: String): String = {
     val query = Uri.Query("key" -> key)
     Uri(host.resolve(path).toString)
       .withQuery(query)
@@ -39,7 +39,7 @@ final case class OpenSkyConfig(
     tickSource: TickSourceConfig,
     flightStateStream: ApiProviderStreamConfig
 ) {
-  def getOpenSkyUri(path: String): String =
+  def openSkyUri(path: String): String =
     host.resolve(path).toString
 }
 

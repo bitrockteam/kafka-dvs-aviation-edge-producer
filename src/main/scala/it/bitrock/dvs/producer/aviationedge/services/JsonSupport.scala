@@ -47,12 +47,12 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
           Try(
             FlightStateJson(
               callsign = state(1).convertTo[String].trim.toUpperCase,
-              time_position = state(3).convertTo[Long],
+              timePosition = state(3).convertTo[Long],
               longitude = state(5).convertTo[Double],
               latitude = state(6).convertTo[Double],
               velocity = state(9).convertTo[Double],
-              true_track = state(10).convertTo[Double],
-              geo_altitude = state(13).convertTo[Double]
+              trueTrack = state(10).convertTo[Double],
+              geoAltitude = state(13).convertTo[Double]
             )
           ).toEither.left.map(ex => ErrorMessageJson("", ex.getMessage, json.compactPrint, Instant.now))
         }

@@ -6,11 +6,10 @@ import akka.actor.ActorSystem
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.testkit.TestKit
 import com.typesafe.scalalogging.LazyLogging
-import it.bitrock.dvs.producer.aviationedge.TestValues
+import it.bitrock.dvs.producer.aviationedge.TestValues._
 import it.bitrock.dvs.producer.aviationedge.model.{ErrorMessageJson, MessageJson, MonitoringMessageJson}
 import it.bitrock.dvs.producer.aviationedge.services.Graphs._
 import it.bitrock.testcommons.Suite
-import net.manub.embeddedkafka.schemaregistry._
 import org.scalatest.concurrent.PatienceConfiguration.Timeout
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -24,8 +23,6 @@ class GraphsSpec
     with Suite
     with AnyWordSpecLike
     with BeforeAndAfterAll
-    with EmbeddedKafka
-    with TestValues
     with ScalaFutures
     with LazyLogging
     with OptionValues {

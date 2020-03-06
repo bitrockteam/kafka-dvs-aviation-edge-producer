@@ -1,11 +1,12 @@
 package it.bitrock.dvs.producer.aviationedge.kafka
 
+import KafkaFlightStateSinkFactorySpec._
 import akka.actor.ActorSystem
 import akka.kafka.ProducerSettings
 import akka.stream.scaladsl.Source
 import akka.testkit.TestKit
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
-import it.bitrock.dvs.producer.aviationedge.TestValues
+import it.bitrock.dvs.producer.aviationedge.TestValues._
 import it.bitrock.dvs.producer.aviationedge.kafka.KafkaTypes.{FlightState, Key}
 import it.bitrock.dvs.producer.aviationedge.model.MessageJson
 import it.bitrock.kafkacommons.serialization.ImplicitConversions._
@@ -20,9 +21,7 @@ class KafkaFlightStateSinkFactorySpec
     with Suite
     with AnyWordSpecLike
     with BeforeAndAfterAll
-    with EmbeddedKafka
-    with TestValues {
-  import KafkaFlightStateSinkFactorySpec._
+    with EmbeddedKafka {
 
   "sink method" should {
     "convert a domain model to Kafka model and push it to a topic" in ResourceLoaner.withFixture {

@@ -47,7 +47,7 @@ class ApiProviderFlow()(implicit system: ActorSystem, ec: ExecutionContext) exte
       .to[List[Either[ErrorMessageJson, MessageJson]]]
       .map(list => addPathToLeft(list, path))
       .recover {
-        case ex =>
+        case NonFatal(ex) =>
           List(Left(ErrorMessageJson(path, ex.getMessage, apiResponseBody, Instant.now)))
       }
 
