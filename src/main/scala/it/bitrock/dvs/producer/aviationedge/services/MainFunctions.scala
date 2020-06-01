@@ -39,7 +39,7 @@ object MainFunctions {
   def runAviationEdgeStream[A: ApiProviderStreamContext]()(
       implicit system: ActorSystem,
       ec: ExecutionContext
-  ): (Cancellable, Future[Done], Future[Done], Future[Done]) = {
+  ): (Cancellable, Future[Done]) = {
     val config = AviationStreamContext[A].config(apiProviderConfig)
 
     val tickSource = new TickSource(config.pollingStart, config.pollingInterval, aviationConfig.tickSource).source
@@ -54,7 +54,7 @@ object MainFunctions {
 
     val jsonSource = tickSource.via(aviationFlow).via(monitoringGraph(monitoringSink)).mapConcat(identity)
 
-    mainGraph(jsonSource, rawSink, errorSink, invalidFlightSink).run()
+    mainGraph(jsonSource, rawSink, errorSink, invalidFlightSink).mapMaterializedValue(combineCompletionValue).run()
   }
 
   def runOpenSkyStream[A: ApiProviderStreamContext]()(
@@ -73,4 +73,9 @@ object MainFunctions {
 
     collectRightMessagesGraph(jsonSource, rawSink).run()
   }
+
+  private def combineCompletionValue[T](value: (Cancellable, Future[T], Future[T], Future[T]))(implicit ec: ExecutionContext) =
+    value match {
+      case (cancel, one, two, three) => (cancel, Future.firstCompletedOf(List(one, two, three)))
+    }
 }
