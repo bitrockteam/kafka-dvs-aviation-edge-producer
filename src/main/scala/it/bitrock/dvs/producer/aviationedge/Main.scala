@@ -29,7 +29,7 @@ object Main extends App with LazyLogging {
 
   val streamsCompletion =
     List(flightCompletion, airplaneCompletion, airportCompletion, airlineCompletion, cityCompletion, flightStateCompletion)
-  Future.firstCompletedOf(streamsCompletion).foreach { _ =>
+  Future.firstCompletedOf(streamsCompletion).onComplete { _ =>
     logger.error("An unexpected error caused a stream completion. Terminating the application...")
     sys.exit(1)
   }
