@@ -30,9 +30,9 @@ object Dependencies {
 
   object Logging {
     lazy val prodDeps: Seq[ModuleID] = Seq(
-      "ch.qos.logback"             % "logback-classic"  % Versions.LogbackClassic, // required by scala-logging
-      "com.typesafe.scala-logging" %% "scala-logging"   % Versions.ScalaLogging,
-      "org.slf4j"                  % "log4j-over-slf4j" % Versions.Slf4j // mandatory when log4j gets excluded
+      "ch.qos.logback"              % "logback-classic"  % Versions.LogbackClassic, // required by scala-logging
+      "com.typesafe.scala-logging" %% "scala-logging"    % Versions.ScalaLogging,
+      "org.slf4j"                   % "log4j-over-slf4j" % Versions.Slf4j // mandatory when log4j gets excluded
     )
 
     lazy val excludeDeps: Seq[ExclusionRule] = Seq(
@@ -42,23 +42,23 @@ object Dependencies {
   }
 
   lazy val prodDeps: Seq[ModuleID] = Seq(
-    "com.github.pureconfig" %% "pureconfig"             % Versions.PureConfig,
-    "com.typesafe.akka"     %% "akka-http"              % Versions.AkkaHttp,
-    "com.typesafe.akka"     %% "akka-stream"            % Versions.Akka,
-    "com.typesafe.akka"     %% "akka-http-spray-json"   % Versions.AkkaHttp,
-    "io.confluent"          % "kafka-avro-serializer"   % Versions.ConfluentPlatform,
-    "it.bitrock.dvs"        %% "kafka-dvs-avro-schemas" % Versions.KafkaDVS,
-    "it.bitrock"            %% "kafka-commons"          % Versions.KafkaCommons,
-    "org.apache.kafka"      % "kafka-clients"           % Versions.Kafka,
-    "io.confluent"          % "monitoring-interceptors" % Versions.ConfluentPlatform exclude ("org.apache.kafka", "kafka-clients"),
-    "com.typesafe.akka"     %% "akka-stream-kafka"      % Versions.Alpakka
+    "com.github.pureconfig" %% "pureconfig"              % Versions.PureConfig,
+    "com.typesafe.akka"     %% "akka-http"               % Versions.AkkaHttp,
+    "com.typesafe.akka"     %% "akka-stream"             % Versions.Akka,
+    "com.typesafe.akka"     %% "akka-http-spray-json"    % Versions.AkkaHttp,
+    "io.confluent"           % "kafka-avro-serializer"   % Versions.ConfluentPlatform,
+    "it.bitrock.dvs"        %% "kafka-dvs-avro-schemas"  % Versions.KafkaDVS,
+    "it.bitrock"            %% "kafka-commons"           % Versions.KafkaCommons,
+    "org.apache.kafka"       % "kafka-clients"           % Versions.Kafka,
+    "io.confluent"           % "monitoring-interceptors" % Versions.ConfluentPlatform exclude ("org.apache.kafka", "kafka-clients"),
+    "com.typesafe.akka"     %% "akka-stream-kafka"       % Versions.Alpakka
   ) ++ Logging.prodDeps
 
   lazy val testDeps: Seq[ModuleID] = Seq(
     "com.typesafe.akka"       %% "akka-http-testkit"              % Versions.AkkaHttp,
     "com.typesafe.akka"       %% "akka-stream-testkit"            % Versions.Akka,
     "io.github.embeddedkafka" %% "embedded-kafka-schema-registry" % Versions.EmbeddedKafka,
-    "jakarta.ws.rs"           % "jakarta.ws.rs-api"               % Versions.JakartaWsRs, // mandatory when javax.ws.rs-api gets excluded
+    "jakarta.ws.rs"            % "jakarta.ws.rs-api"              % Versions.JakartaWsRs, // mandatory when javax.ws.rs-api gets excluded
     "it.bitrock"              %% "test-commons"                   % Versions.TestCommons
   ).map(_ % Test)
 
