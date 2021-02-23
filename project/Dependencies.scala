@@ -11,7 +11,7 @@ object Dependencies {
   object Versions {
     lazy val Scala               = "2.12.10"
     lazy val Akka                = "2.6.10"
-    lazy val AkkaHttp            = "10.2.2"
+    lazy val AkkaHttp            = "10.2.3"
     lazy val Alpakka             = "2.0.6"
     lazy val ConfluentPlatform   = "5.4.3"
     lazy val EmbeddedKafka       = "5.4.1.2"
