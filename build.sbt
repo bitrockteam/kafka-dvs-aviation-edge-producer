@@ -12,8 +12,8 @@ lazy val compileSettings = Seq(
     )
     .value,
   addCompilerPlugin(scalafixSemanticdb),
-  scalafixDependencies in ThisBuild += "org.scalatest"   %% "autofix"      % Versions.ScalaTestAutofix,
-  scalafixDependencies in ThisBuild += "com.nequissimus" %% "sort-imports" % Versions.ScalafixSortImports,
+  (ThisBuild / scalafixDependencies) += "org.scalatest"   %% "autofix"      % Versions.ScalaTestAutofix,
+  (ThisBuild / scalafixDependencies) += "com.nequissimus" %% "sort-imports" % Versions.ScalafixSortImports,
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding",
@@ -44,7 +44,7 @@ lazy val publishSettings = Seq(
     setReleaseVersion,
     commitReleaseVersion,
     tagRelease,
-    releaseStepTask(publishLocal in Docker),
+    releaseStepTask((Docker / publishLocal)),
     setNextVersion,
     commitNextVersion,
     pushChanges
@@ -72,11 +72,11 @@ enablePlugins(JavaAppPackaging, DockerPlugin, AshScriptPlugin)
 
 dockerBaseImage := "openjdk:8-jre-alpine"
 dockerRepository := Option(sys.env.getOrElse("DOCKER_REPOSITORY", "local"))
-maintainer in Docker := "Bitrock DVS team dvs@bitrock.it"
+(Docker / maintainer) := "Bitrock DVS team dvs@bitrock.it"
 
 // Fix for sbt-native-packager 1.3.19
-daemonUserUid in Docker := None
-daemonUser in Docker := "root"
+(Docker / daemonUserUid) := None
+(Docker / daemonUser) := "root"
 
 // Remove the top level directory for universal package
 topLevelDirectory := None
