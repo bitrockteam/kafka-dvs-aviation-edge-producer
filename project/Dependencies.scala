@@ -20,7 +20,7 @@ object Dependencies {
     lazy val KafkaCommons        = "0.0.8"
     lazy val KafkaDVS            = "1.0.18"
     lazy val LogbackClassic      = "1.2.10"
-    lazy val PureConfig          = "0.17.1"
+    lazy val PureConfig          = "0.17.2"
     lazy val ScalaLogging        = "3.9.4"
     lazy val ScalafixSortImports = "0.6.1"
     lazy val ScalaTestAutofix    = "3.1.0.1"
